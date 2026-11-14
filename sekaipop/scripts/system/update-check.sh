@@ -101,6 +101,9 @@ apply_managed() {
     old="$real.previous"
     rm -rf "$stage"
     cp -a "$new" "$stage" || { rm -rf "$stage"; echo "couldn't copy the new files"; return 1; }
+    for jpg in "$tmp/src/assets"/*.jpg; do
+        [ -f "$jpg" ] && cp -a "$jpg" "$stage/assets/images/" 2>/dev/null || true
+    done
     # install.sh leaves the developer tests out unless asked; keep it that way.
     [ -d "$real/tests" ] || rm -rf "$stage/tests"
     { echo "commit=$commit"; echo "repo=$repo"; echo "ref=$ref"; } > "$stage/.source"

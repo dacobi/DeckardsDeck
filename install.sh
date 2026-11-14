@@ -235,6 +235,11 @@ else
     fi
     run mkdir -p "$(dirname "$QS_DEST")"
     run cp -a "$RICE" "$QS_DEST" && REPLACED=1 || fail "could not copy the rice"
+    if [ "$DRY" != 1 ] && [ -d "$HERE/assets" ] && [ -d "$QS_DEST/assets/images" ]; then
+        for jpg in "$HERE/assets"/*.jpg; do
+            [ -f "$jpg" ] && cp -a "$jpg" "$QS_DEST/assets/images/" 2>/dev/null || true
+        done
+    fi
     run rm -rf "$QS_DEST/.git"
     [ "$WITH_TESTS" = 1 ] || run rm -rf "$QS_DEST/tests"
     [ "$DRY" = 1 ] || ok "copied (tests folder $([ "$WITH_TESTS" = 1 ] && echo kept || echo left out))"

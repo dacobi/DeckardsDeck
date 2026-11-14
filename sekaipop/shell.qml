@@ -122,14 +122,16 @@ ShellRoot {
 
     function applyFallbackWallpaper() {
         // `ready` also waits for the saved settings, so a wallpaper folder chosen
-        // earlier is known before the first-run picture is put anywhere.
-        if (!WallpaperService.ready || WallpaperService.defaultPath.length > 0)
+        // earlier is known before the bundled pictures are put anywhere.
+        if (!WallpaperService.ready)
             return;
         if (shellRoot.defaultSeed === "") {
             shellRoot.defaultSeed = "running";
             seedDefaultWallpaper.running = true;
             return;
         }
+        if (WallpaperService.defaultPath.length > 0)
+            return;
         if (shellRoot.defaultSeed === "failed" && fallbackWallpapers.count > 0)
             WallpaperService.ensureDefault(fallbackWallpapers.get(0, "filePath"));
     }

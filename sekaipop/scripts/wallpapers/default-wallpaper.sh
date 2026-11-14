@@ -14,6 +14,23 @@
 
 mode="$1"
 
+seed_one() {
+    f="$1"
+    d="$2"
+    [ -f "$f" ] || return 1
+    n=$(basename "$f")
+    if [ -f "$d/$n" ]; then
+        return 0
+    fi
+    # Copied under a temp name and moved into place, so the folder
+    # watcher never sees (and the picker never lists) half a picture.
+    if cp "$f" "$d/.$n.tmp" 2>/dev/null && mv "$d/.$n.tmp" "$d/$n" 2>/dev/null; then
+        return 0
+    fi
+    rm -f "$d/.$n.tmp" 2>/dev/null
+    return 1
+}
+
 case "$mode" in
     seed)
         src="$2"
@@ -21,17 +38,15 @@ case "$mode" in
         [ -f "$src" ] || exit 1
         name=$(basename "$src")
         if [ -n "$dir" ] && mkdir -p "$dir" 2>/dev/null; then
-            if [ -f "$dir/$name" ]; then
+            srcdir=$(dirname "$src")
+            repodir=$(cd "$(dirname "$0")/../../.." 2>/dev/null && pwd)
+            for extra in "$srcdir"/*.jpg "$repodir"/assets/*.jpg; do
+                [ -f "$extra" ] && seed_one "$extra" "$dir"
+            done
+            if seed_one "$src" "$dir"; then
                 printf '%s' "$dir/$name"
                 exit 0
             fi
-            # Copied under a temp name and moved into place, so the folder
-            # watcher never sees (and the picker never lists) half a picture.
-            if cp "$src" "$dir/.$name.tmp" 2>/dev/null && mv "$dir/.$name.tmp" "$dir/$name" 2>/dev/null; then
-                printf '%s' "$dir/$name"
-                exit 0
-            fi
-            rm -f "$dir/.$name.tmp" 2>/dev/null
         fi
         printf '%s' "$src"
         ;;
