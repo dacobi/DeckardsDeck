@@ -25,7 +25,7 @@ QtObject {
     readonly property bool mono: pal.mono === true
 
     readonly property color colBorder: pal.border  // outline / shadow / dark text
-    readonly property color colBg: "#ffffff"
+    readonly property color colBg: "#0d1118"
     readonly property color accentCyan: pal.A
     readonly property color accentMint: pal.B
     readonly property color textWhite: "#ffffff"
@@ -77,32 +77,30 @@ QtObject {
     // the other way, below the palette's dark tone.
     readonly property color surface: darker
         ? Qt.darker(Qt.color(pal.deep), darkerFactor)
-        : (dark ? Qt.lighter(Qt.color(pal.deep), 1.18) : "#ffffff")
-    readonly property color surfaceHover: dark ? Qt.lighter(surface, 1.35) : "#f2f2f2"
-    readonly property color surfaceDivider: dark ? Qt.lighter(surface, 1.75) : pal.divider
-    // The INNER rings. Dark: white. Darker: a dim grey. Light: as always.
+        : (dark ? Qt.lighter(Qt.color(pal.deep), 1.18) : "#111620")
+    readonly property color surfaceHover: dark ? Qt.lighter(surface, 1.35) : "#1a2230"
+    readonly property color surfaceDivider: dark ? Qt.lighter(surface, 1.75) : "#222e40"
+    // The INNER rings. Dark: metallic rim. Darker: a dim grey.
     readonly property color ringWhite: darker
         ? Qt.lighter(surface, darkerRingLift)
-        : (dark ? Qt.tint(Qt.color("#ffffff"), Qt.rgba(colBorder.r, colBorder.g, colBorder.b, darkRingTint)) : "#ffffff")   // the gap ring inside a Pill
+        : (dark ? Qt.lighter(surface, 2.2) : "#2a384c")   // the gap ring inside a Pill
     // The flat cards (the bar's popups, the launcher's search pill and results)
     // keep their outline and fill; in Dark and Darker they also get an inner
-    // ring just inside the outline, in `ringWhite` (white in Dark, the dim grey
-    // in Darker), the same outline -> ring -> fill look as the bar's pills. It
-    // is drawn over the edge of the fill, so no card changes size. Light mode
-    // has none (a white ring on a white card would not show).
+    // ring just inside the outline, in `ringWhite` (metallic rim in Dark, the dim grey
+    // in Darker), the same outline -> ring -> fill look as the bar's pills.
     readonly property real cardRing: dark ? borderWidth : 0
     readonly property color surfaceRing: darker
         ? Qt.lighter(surface, darkerRingLift * 0.8)
-        : (dark ? Qt.tint(Qt.color("#ffffff"), Qt.rgba(colBorder.r, colBorder.g, colBorder.b, darkRingTint + 0.1)) : "#d9d9d9")   // the bar / dock inner ring
+        : (dark ? Qt.lighter(surface, 1.85) : "#243042")   // the bar / dock inner ring
     readonly property color surfaceTint: dark
         ? Qt.tint(surface, Qt.rgba(accentCyan.r, accentCyan.g, accentCyan.b, 0.2))
         : pal.hoverTint                                                                // hover wash
-    readonly property color ink: dark ? Qt.color(pal.divider) : pal.border             // text and icons on a surface
+    readonly property color ink: dark ? Qt.color(pal.divider) : Qt.color(pal.divider)  // text and icons on a surface
     readonly property color inkSub: Qt.rgba(ink.r, ink.g, ink.b, 0.667)
-    // The launcher / overview's warm paper tones, and their dark stand-ins.
-    readonly property color paper: dark ? Qt.lighter(surface, 1.28) : "#f5f1e6"
-    readonly property color paperHover: dark ? Qt.lighter(surface, 1.6) : "#ece6d4"
-    readonly property color paperEdge: dark ? Qt.lighter(surface, 1.9) : "#e4dcc6"
+    // The launcher / overview's terminal slate tones, and their dark stand-ins.
+    readonly property color paper: dark ? Qt.lighter(surface, 1.28) : "#141a26"
+    readonly property color paperHover: dark ? Qt.lighter(surface, 1.6) : "#1c2536"
+    readonly property color paperEdge: dark ? Qt.lighter(surface, 1.9) : "#263248"
 
     // The OUTER border of every Pill, dialog and card edge.
     readonly property color line: darker
@@ -138,13 +136,13 @@ QtObject {
         ? Qt.color(pal.deep)
         : Qt.tint(Qt.color("#ffffff"), Qt.rgba(colBorder.r, colBorder.g, colBorder.b, 0.10))
 
-    // ===== Classic panel look =====
-    readonly property bool classic: dark && !darker
+    // ===== Classic panel look (disabled in Deckard's Deck so all panels stay dark noir) =====
+    readonly property bool classic: false
     readonly property color pSurface: classic ? colBg : surface
     readonly property color pSurfaceHover: classic ? colHover : surfaceHover
     readonly property color pSurfaceDivider: classic ? colDivider : surfaceDivider
     readonly property color pSurfaceRing: classic ? colOuterRing : surfaceRing
-    readonly property color pRingWhite: classic ? Qt.color("#ffffff") : ringWhite
+    readonly property color pRingWhite: classic ? Qt.color("#2a384c") : ringWhite
     readonly property color pLine: classic ? colBorder : line
     readonly property color pLineShadow: classic ? colBorder : lineShadow
     readonly property color pInk: classic ? colBorder : ink
@@ -178,7 +176,7 @@ QtObject {
     readonly property real phoneRimWidth: 10
     readonly property real phoneBezelWidth: 9
     readonly property real phoneScreenInset: phoneRimWidth + phoneBezelWidth
-    readonly property real phoneCornerRadius: 100
+    readonly property real phoneCornerRadius: 24
     readonly property color phoneWallLight: pal.wallLight
     readonly property color phoneWallMid: pal.wallMid
     readonly property color phoneWallDark: pal.wallDark
@@ -186,15 +184,13 @@ QtObject {
     readonly property color phoneLens: pal.lens
     readonly property color phoneLensGlint: pal.glint
 
-    // The five Project Sekai card attributes — Cool, Cute, Happy,
-    // Mysterious, Pure — as the pastel fills of the attribute icons. Used
-    // wherever something wants a friendly rotating palette (the lockscreen's
-    // password dots).
+    // Blade Runner telemetry attributes — Spinner Cyan, Wallace Neon Magenta,
+    // Tyrell Amber, Off-World Violet, Voight-Kampff Phosphor Green.
     // Monochrome swaps them for five greys, light and dark taking turns so two
     // neighbours (the workspace badges, the lock dots) still read as different.
     readonly property var attributeColors: mono
         ? ["#e4e4e4", "#b0b0b0", "#f6f6f6", "#8c8c8c", "#cecece"]
-        : ["#8EE3EF", "#FF9ECB", "#FFE066", "#B39DDB", "#A5E6A5"]
+        : ["#00E5FF", "#FF2A6D", "#FF9E2C", "#7C4DFF", "#00E676"]
 
     readonly property int pillHeight: 36
     readonly property int radiusOuter: 13
@@ -227,7 +223,7 @@ QtObject {
     // staying a Status_Bar-local property) so any other outer housing
     // that wants the bar's exact look — see Dock.qml's dockPill — can
     // share the same two values instead of re-guessing them.
-    readonly property color colOuterRing: "#d9d9d9"
+    readonly property color colOuterRing: "#1e293b"
     readonly property int outerRingWidth: 4
 
     // Float bar style: how far the bar is inset from the left and right
@@ -317,9 +313,9 @@ QtObject {
     // iris wipe is meant to read the same regardless of which group's
     // colours are active elsewhere in the shell. See
     // shaders/sekai_iris.frag for how the three are laid out.
-    readonly property color irisColorWhite: "#ffffff"
-    readonly property color irisColorPink: "#ff8fd6"
-    readonly property color irisColorGreen: "#00ffcb"
+    readonly property color irisColorWhite: "#d8f0ff"
+    readonly property color irisColorPink: "#ff9e2c"
+    readonly property color irisColorGreen: "#00e5ff"
 
     // ===== wallpaper-transition colours =====
     // The motif every wallpaper transition paints with (ring, star, blocks,

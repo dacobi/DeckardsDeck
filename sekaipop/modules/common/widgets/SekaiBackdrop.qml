@@ -81,34 +81,34 @@ Item {
         dotColor: root.mix(mt.colBorder, root.deep ? 0.22 : 0.10)
     }
 
-    // stars and notes
+    // cyberdeck HUD telemetry glyphs
     MaterialIcon {
         x: 112
         y: 664
-        size: 46
-        name: "star"
-        fill: 1
-        rotation: -14
-        color: root.mix(mt.attributeColors[2], 0.9)
+        size: 42
+        name: "radar"
+        fill: 0
+        rotation: 0
+        color: root.mix(mt.attributeColors[2], 0.65)
     }
 
     MaterialIcon {
         x: 238
         y: 690
         size: 30
-        name: "music_note"
-        fill: 1
-        rotation: 12
-        color: root.mix(ScrapbookTheme.accentPink, 0.8)
+        name: "my_location"
+        fill: 0
+        rotation: 0
+        color: root.mix(ScrapbookTheme.accentPink, 0.65)
     }
 
     MaterialIcon {
         x: 62
         y: 586
         size: 26
-        name: "diamond"
-        fill: 1
-        rotation: 8
-        color: root.mix(mt.accentCyan, 0.85)
+        name: "memory"
+        fill: 0
+        rotation: 0
+        color: root.mix(mt.accentCyan, 0.70)
     }
 }

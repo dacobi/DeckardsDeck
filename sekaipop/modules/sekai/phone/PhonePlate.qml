@@ -19,7 +19,7 @@ Item {
 
     default property alias content: inner.data
 
-    property real radius: 28
+    property real radius: 14
     property color fill: mt.pSurface
     property Gradient fillGradient: null
     property real borderW: 3

@@ -50,8 +50,8 @@ Item {
     readonly property real margin: 32 * root.u
     // Theme.pal holds plain strings, so the typed accent colour is the one to
     // take channels from.
-    readonly property color paper: Qt.tint("#ffffff", Qt.rgba(Theme.accentMint.r, Theme.accentMint.g, Theme.accentMint.b, 0.1))
-    readonly property color ink: Theme.pal.deep
+    readonly property color paper: Qt.tint("#090c12", Qt.rgba(Theme.accentMint.r, Theme.accentMint.g, Theme.accentMint.b, 0.08))
+    readonly property color ink: Qt.color(Theme.pal.divider)
 
     // ---- where we are ----
     property int index: 0
@@ -273,7 +273,7 @@ Item {
         visible: root.showContent
         x: root.margin
         y: root.margin
-        text: "SEKAIPOP\nWELCOME TOUR"
+        text: "DECKARD'S DECK\nLAPD // VK-2019"
     }
 
     Label {
@@ -287,7 +287,7 @@ Item {
         visible: root.showContent
         x: root.width - root.margin - width
         y: root.height - root.margin - height
-        text: "SEKAIPOP \u00b7 QUICKSHELL"
+        text: "BLADE RUNNER NOIR \u00b7 QUICKSHELL"
     }
 
     // ---- the hint at the bottom: how to move on, after a pause ----

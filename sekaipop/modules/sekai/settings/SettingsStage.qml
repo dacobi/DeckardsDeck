@@ -67,7 +67,7 @@ Item {
     // ===== the phone itself =====
     property real faceWidth: 1440
     property real faceHeight: 760
-    property real cornerRadius: 92
+    property real cornerRadius: 24
 
     // How thick the body is. The Quick Panel's is 92 on a phone 654 wide (14%
     // of its width); this phone is more than twice as wide, so the same chunky
@@ -81,8 +81,8 @@ Item {
     // a signpost, so it turns less and the camera is further away
     // (`perspective`) to keep the near/far difference between its two ends
     // about the same as the Quick Panel's.
-    property real yaw: 24
-    property real pitch: 12
+    property real yaw: 0
+    property real pitch: 0
     property real roll: 0
     property real perspective: 6000
 
@@ -90,9 +90,9 @@ Item {
     // turned by these many degrees, and pops up to full size with an overshoot
     // while the turn rings out like the Quick Panel's.
     property real popFrom: 0.55
-    property real tiltYaw: -22
-    property real tiltPitch: 14
-    property real tiltRoll: 7
+    property real tiltYaw: 0
+    property real tiltPitch: 0
+    property real tiltRoll: 0
     // How much of that turn the entrance really uses: none in 2D. The numbers above stay the
     // same in 2D on purpose, because they are also the ROOM the phone's picture and the window
     // are made with (`swingYaw/Pitch/Roll` below): the wobble that rings out when the turn lands
@@ -115,8 +115,8 @@ Item {
     // how much smaller the phone is held in the middle of it.
     property real flip: 1
     property real quickFit: 1
-    property real quickYaw: 33
-    property real quickPitch: 18
+    property real quickYaw: 0
+    property real quickPitch: 0
     property real dipDepth: 0.12
 
     // The entrance on its own (see above); at rest: 1, 1, 0.
@@ -170,7 +170,7 @@ Item {
     // Off: the gallery rests tilted like the Settings do.
     property bool straightOn: true
     // 2D: both screens face straight on. Otherwise only the Wallpapers do (`straightOn`).
-    readonly property real straightGoal: root.flatLook || (root.straightOn && root.content === "wallpapers") ? 1 : 0
+    readonly property real straightGoal: 1
     // 0 = the Settings' own pose, 1 = facing straight on. Animates only while the
     // phone is up and still (the Settings <-> Wallpapers swap); at any other time it
     // snaps, so the turn into the Wallpapers simply lands straight.
@@ -328,8 +328,8 @@ Item {
             // (2D: edge-on the whole time, so the wall is never built, the entrance included.)
             flat: root.direct || (root.flatLook && root.straightK >= 1)
             faceDirect: root.direct
-            // The flat design has a plain rim and a plain notch (as the Quick Panel's 2D phone).
-            plain: root.flatLook
+            // Keep cyberdeck bezel details visible in 2D front-facing mode.
+            plain: false
             // Where the flat front lands, not the tilted pose's middle: no hop when
             // the pixel path takes over.
             directCenterX: phone.frontCenter.x

@@ -34,7 +34,7 @@ Item {
     // ===== the phone itself =====
     property real faceWidth: 1440
     property real faceHeight: 760
-    property real cornerRadius: 92
+    property real cornerRadius: 24
     property real thickness: 135
 
     // Flat: 2D. (The launcher phone's own pose is what the turn starts from.)
@@ -46,9 +46,9 @@ Item {
     // How it arrives / leaves with the whole phone (same numbers as the launcher
     // phone's entrance).
     property real popFrom: 0.55
-    property real tiltYaw: -22
-    property real tiltPitch: 14
-    property real tiltRoll: 7
+    property real tiltYaw: 0
+    property real tiltPitch: 0
+    property real tiltRoll: 0
 
     // ===== where it is and how big =====
     property real fit: 1
@@ -60,8 +60,8 @@ Item {
     // phone's own scale and pose, which the turn starts from.
     property real flip: 1
     property real quickFit: 1
-    property real quickYaw: 33
-    property real quickPitch: 18
+    property real quickYaw: 0
+    property real quickPitch: 0
     property real dipDepth: 0.12
 
     // The entrance with the whole phone: pop 0..1(+overshoot), alpha 0..1, tilt 1..0.

@@ -97,20 +97,35 @@ Item {
                     dot(rnd() * w, rnd() * h, 0.6 + rnd() * 1.2);
                 }
 
-                // 3. pale flecks
+                // 3. phosphor telemetry flecks & tactical grid
                 const flecks = Math.round(area / 520);
-                ctx.fillStyle = "#f2d9ab";
+                ctx.fillStyle = "#00e5ff";
                 for (let i = 0; i < flecks; i++) {
-                    ctx.globalAlpha = 0.25 + rnd() * 0.35;
+                    ctx.globalAlpha = 0.08 + rnd() * 0.14;
                     dot(rnd() * w, rnd() * h, 0.6 + rnd() * 1.1);
                 }
 
-                // 4. a few pin-holes from notices that came down long ago
+                ctx.strokeStyle = "#00e5ff";
+                ctx.lineWidth = 1;
+                ctx.globalAlpha = 0.06;
+                const step = 48;
+                ctx.beginPath();
+                for (let gx = step; gx < w; gx += step) {
+                    ctx.moveTo(gx, 0);
+                    ctx.lineTo(gx, h);
+                }
+                for (let gy = step; gy < h; gy += step) {
+                    ctx.moveTo(0, gy);
+                    ctx.lineTo(w, gy);
+                }
+                ctx.stroke();
+
+                // 4. mounting anchor points
                 const holes = Math.round(area / 14000);
-                ctx.fillStyle = ScrapbookTheme.frameShade;
+                ctx.fillStyle = "#ff9e2c";
                 for (let i = 0; i < holes; i++) {
-                    ctx.globalAlpha = 0.35;
-                    dot(rnd() * w, rnd() * h, 1.1);
+                    ctx.globalAlpha = 0.22;
+                    dot(rnd() * w, rnd() * h, 1.2);
                 }
             }
         }

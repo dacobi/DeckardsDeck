@@ -134,7 +134,7 @@ SectionCard {
         icon: "menu_book"
         label: "How plugins work"
         detail: "docs/PLUGINS.md"
-        onActivated: Qt.openUrlExternally("https://github.com/Blapples/SekaiPop/blob/main/docs/PLUGINS.md")
+        onActivated: Qt.openUrlExternally("https://github.com/dacobi/DeckardsDeck/blob/main/docs/PLUGINS.md")
     }
 
     // ===== the list =====

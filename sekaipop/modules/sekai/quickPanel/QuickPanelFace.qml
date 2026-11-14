@@ -458,10 +458,10 @@ Item {
         Rectangle {
             anchors.fill: parent
             color: face.placeholderGrey
-            topLeftRadius: 74
-            topRightRadius: 74
-            bottomLeftRadius: 50
-            bottomRightRadius: 50
+            topLeftRadius: 16
+            topRightRadius: 16
+            bottomLeftRadius: 16
+            bottomRightRadius: 16
             visible: bannerImage.status !== Image.Ready
         }
 
@@ -559,10 +559,10 @@ Item {
             Rectangle {
                 anchors.fill: parent
                 color: "black"
-                topLeftRadius: 74
-                topRightRadius: 74
-                bottomLeftRadius: 50
-                bottomRightRadius: 50
+                topLeftRadius: 16
+                topRightRadius: 16
+                bottomLeftRadius: 16
+                bottomRightRadius: 16
             }
         }
 
@@ -579,10 +579,10 @@ Item {
             anchors.fill: parent
             color: mt.pLine
             opacity: face.bannerHovered ? 0.14 : 0
-            topLeftRadius: 74
-            topRightRadius: 74
-            bottomLeftRadius: 50
-            bottomRightRadius: 50
+            topLeftRadius: 16
+            topRightRadius: 16
+            bottomLeftRadius: 16
+            bottomRightRadius: 16
 
             Behavior on opacity {
                 NumberAnimation {
@@ -1341,7 +1341,7 @@ Item {
         y: 362
         width: 575
         height: 275 + face.tileExtra
-        radius: 40
+        radius: 18
         color: face.wallOn ? Qt.alpha(face.placeholderGrey, face.cardAlpha) : face.placeholderGrey
         antialiasing: true
     }
@@ -1820,7 +1820,7 @@ Item {
         y: 655 + 4 + face.tileExtra
         width: 575
         height: 515 - face.tileExtra
-        radius: 41
+        radius: 18
         color: mt.pLineShadow
         antialiasing: true
         // Under a see-through card it would show through as a dark slab, not a shadow.
@@ -1836,7 +1836,7 @@ Item {
         y: 655 + face.tileExtra
         width: 575
         height: 515 - face.tileExtra
-        radius: 41
+        radius: 18
         color: face.wallOn ? Qt.alpha(mt.pSurface, face.cardAlpha) : mt.pSurface
         border.width: 3
         border.color: mt.pLine
@@ -1882,12 +1882,12 @@ Item {
 
             readonly property bool shown: notificationsCard.empty && !notificationsCard.clearing
             readonly property var lines: [
-                "Nothing here. Suspiciously quiet.",
-                "All caught up. Go touch some grass.",
-                "No notifications. Even the group chat is asleep.",
-                "Inbox zero. The phone is proud of you.",
-                "Nothing new. Miku says hi anyway.",
-                "Silence. Enjoy it while it lasts."
+                "Nothing on the wire. Sector 4 is quiet.",
+                "No incoming dispatches. Rain keeps falling.",
+                "Voight-Kampff baseline steady. Zero alerts.",
+                "Terminal clear. All Nexus units accounted for.",
+                "Silence on the LAPD spinner frequency.",
+                "Off-world comms idle. Enjoy the neon."
             ]
             property string line: lines[0]
 

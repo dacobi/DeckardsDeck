@@ -235,7 +235,7 @@ Scope {
     // The wobble that rings out when the turn lands, like the pull-out's tilt:
     // how far (degrees of roll) it swings past upright / flat at first, and
     // how long the whole ring takes (ms). 0 for a plain stop.
-    property real flipWobble: 2.5
+    property real flipWobble: 0
     property int flipRingMs: 380
     // The two phone bodies are drawn on their light turn settings (PhoneBody `turnLite`: a
     // smaller picture, 2 samples, no mip chain) while they turn. The turn itself is over
@@ -349,9 +349,9 @@ Scope {
     // wall, and does not tilt as it comes out of the pocket; it just rises and settles. The Settings
     // turn is unchanged (the phone tips into the Settings pose on its way, as before).
     readonly property bool flat2d: Theme.quickFlat
-    property real tiltRoll: flat2d ? 0 : 12
-    property real tiltPitch: flat2d ? 0 : 10
-    property real tiltYaw: flat2d ? 0 : -6
+    property real tiltRoll: 0
+    property real tiltPitch: 0
+    property real tiltYaw: 0
 
     // The vibration when a notification arrives. buzzAmount is how far
     // (px on screen) the phone shakes sideways, buzzHz how fast, and it
@@ -2664,11 +2664,11 @@ Scope {
                     onPowerClicked: panelFace.togglePowerMenu()
                     // `flat` drops the side wall (and its layer) while it is at rest
                     // facing front; it comes back for the turn into the Settings.
-                    yaw: root.flat2d ? 0 : 33
-                    pitch: root.flat2d ? 0 : 18
-                    flat: root.flat2d && stage.flip === 0 && !stage.flipping
-                    // The flat design has a plain rim and a plain notch.
-                    plain: root.flat2d
+                    yaw: 0
+                    pitch: 0
+                    flat: stage.flip === 0 && !stage.flipping
+                    // Keep the cyberdeck hardware details visible on the front face.
+                    plain: false
                     // Up and still: on the pixel grid (`stage.direct`). Moving: the same offscreen
                     // pictures as the 2.5D phone (supersampled, mipmapped), so it is as sharp in the
                     // pull-out and the bounce as that one is.

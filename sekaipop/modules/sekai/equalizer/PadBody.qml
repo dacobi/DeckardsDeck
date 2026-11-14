@@ -83,7 +83,7 @@ Item {
             for (var sl_i = 0; sl_i < body.shadowLayers; sl_i++) {
                 var grow = body.shadowSpread * (body.shadowLayers - sl_i) / body.shadowLayers
                 ctx.beginPath()
-                PM.rr(ctx, body.depth * body.kx - grow, body.depth * body.ky - grow, W + grow * 2, H + grow * 2, 64 + grow)
+                PM.rr(ctx, body.depth * body.kx - grow, body.depth * body.ky - grow, W + grow * 2, H + grow * 2, 24 + grow)
                 ctx.fill()
             }
 
@@ -92,7 +92,7 @@ Item {
             for (var j = body.steps; j >= 1; j--) {
                 var hgt = j * body.depth / body.steps
                 ctx.beginPath()
-                PM.rr(ctx, hgt * body.kx, hgt * body.ky, W, H, 64)
+                PM.rr(ctx, hgt * body.kx, hgt * body.ky, W, H, 24)
                 ctx.fillStyle = j === 1 ? PM.css(PadPalette.rim) : PM.mixCss(wFar, wNear, (j - 1) / (body.steps - 1))
                 ctx.fill()
             }
@@ -103,13 +103,13 @@ Item {
             g.addColorStop(0.36, PM.css(PadPalette.faceMid))
             g.addColorStop(1, PM.css(PadPalette.faceDark))
             ctx.beginPath()
-            PM.rr(ctx, 0, 0, W, H, 64)
+            PM.rr(ctx, 0, 0, W, H, 24)
             ctx.fillStyle = g
             ctx.fill()
 
             ctx.save()
             ctx.beginPath()
-            PM.rr(ctx, 0, 0, W, H, 64)
+            PM.rr(ctx, 0, 0, W, H, 24)
             ctx.clip()
 
             // the sheen, top left
@@ -139,12 +139,12 @@ Item {
             ctx.restore()
 
             ctx.beginPath()
-            PM.rr(ctx, 0.5, 0.5, W - 1, H - 1, 64)
+            PM.rr(ctx, 0.5, 0.5, W - 1, H - 1, 24)
             ctx.lineWidth = 1
             ctx.strokeStyle = "rgba(255,255,255,0.3)"
             ctx.stroke()
             ctx.beginPath()
-            PM.rr(ctx, -0.5, -0.5, W + 1, H + 1, 64)
+            PM.rr(ctx, -0.5, -0.5, W + 1, H + 1, 24)
             ctx.strokeStyle = PM.alpha(PadPalette.edgeDark, 0.45)
             ctx.stroke()
 

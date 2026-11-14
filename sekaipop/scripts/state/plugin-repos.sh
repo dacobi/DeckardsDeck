@@ -39,9 +39,9 @@ repos="$data/plugin-repos"
 plugins="${SEKAIPOP_PLUGINS_DIR:-$config/plugins}"
 lockfile="$config/plugins-lock.json"
 listcache="$cache/plugins-list.json"
-# The reviewed list: plugins.json at the root of the SekaiPop repository. A fork, or a test,
+# The reviewed list: plugins.json at the root of the DeckardsDeck repository. A fork, or a test,
 # can point elsewhere (a URL, or a file:// path).
-listurl="${SEKAIPOP_PLUGIN_LIST:-https://raw.githubusercontent.com/Blapples/SekaiPop/main/plugins.json}"
+listurl="${SEKAIPOP_PLUGIN_LIST:-https://raw.githubusercontent.com/dacobi/DeckardsDeck/main/plugins.json}"
 
 export GIT_TERMINAL_PROMPT=0 GIT_ASKPASS=/bin/true SSH_ASKPASS=/bin/true
 export GIT_SSH_COMMAND="ssh -o BatchMode=yes -o ConnectTimeout=15"

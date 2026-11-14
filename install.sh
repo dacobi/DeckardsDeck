@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# install.sh: one command to turn a minimal Hyprland system into the SekaiPop desktop.
+# install.sh: one command to turn a minimal Hyprland system into the Deckard's Deck desktop.
 #
 # What it does:
 #   1. dependencies   packages, fonts, services, groups     (runs install-deps.sh)
@@ -18,8 +18,8 @@
 #                       merge  = keep YOUR config, only add a small sekaipop_session file to it
 #                       skip   = do not touch Hyprland at all
 #   --kitty MODE        keep   = keep the current Kitty theme choice
-#                       enable = opt in to SekaiPop's Kitty colours after validation
-#   --restore-kitty     remove only SekaiPop's Kitty colour integration and exit
+#                       enable = opt in to Deckard's Deck Kitty colours after validation
+#   --restore-kitty     remove only Deckard's Deck Kitty colour integration and exit
 #   --no-deps           do not install packages / services (only copy files)
 #   --with-tests        also copy the developer tests folder
 #   --restore           put back the Hyprland config that was backed up by the last run
@@ -104,7 +104,7 @@ QS_DEST="$CFG/quickshell/sekaipop"
 TS=$(date +%Y%m%d-%H%M%S)
 hypr_running() { [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ] && have hyprctl && hyprctl version >/dev/null 2>&1; }
 
-banner "SekaiPop installer" "Quickshell + Hyprland desktop"
+banner "Deckard's Deck installer" "Quickshell + Hyprland cyberdeck desktop"
 
 if [ "$RESTORE_KITTY" = 1 ]; then
     step "Restoring Kitty colours"
@@ -459,7 +459,7 @@ elif [ "$DRY" = 0 ] && [ "$HYPR" != skip ] && [ "$REPLACED" = 1 ] && shell_runni
     ask "The shell is running on the old files. Restart it now?" && restart_shell
 fi
 if [ "${#FAILED[@]}" -eq 0 ]; then
-    [ "$DRY" = 1 ] && result ok "Dry run finished, nothing was changed" || result ok "SekaiPop is installed"
+    [ "$DRY" = 1 ] && result ok "Dry run finished, nothing was changed" || result ok "Deckard's Deck is installed"
 else
     result bad "Finished with ${#FAILED[@]} problem(s), see above"
 fi

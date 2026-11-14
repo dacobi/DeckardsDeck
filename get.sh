@@ -1,30 +1,30 @@
 #!/usr/bin/env bash
-# get.sh: the one-command installer for SekaiPop.
+# get.sh: the one-command installer for Deckard's Deck.
 #
-#   bash <(curl -fsSL https://raw.githubusercontent.com/Blapples/SekaiPop/main/get.sh)
+#   bash <(curl -fsSL https://raw.githubusercontent.com/dacobi/DeckardsDeck/main/get.sh)
 #
-# It downloads SekaiPop into a temporary folder, runs install.sh from there (so nobody
+# It downloads Deckard's Deck into a temporary folder, runs install.sh from there (so nobody
 # has to clone, chmod or cd), and cleans up afterwards. Everything after the script is
 # passed on to install.sh, for example:
 #
-#   bash <(curl -fsSL https://raw.githubusercontent.com/Blapples/SekaiPop/main/get.sh) --dry-run
-#   bash <(curl -fsSL https://raw.githubusercontent.com/Blapples/SekaiPop/main/get.sh) --yes --hypr merge
+#   bash <(curl -fsSL https://raw.githubusercontent.com/dacobi/DeckardsDeck/main/get.sh) --dry-run
+#   bash <(curl -fsSL https://raw.githubusercontent.com/dacobi/DeckardsDeck/main/get.sh) --yes --hypr merge
 #
 # The "curl ... | bash -s -- --dry-run" form works too.
 #
 # Environment (all optional):
-#   SEKAIPOP_REF=<branch|tag>   what to install (default: main)
-#   SEKAIPOP_DIR=<folder>       keep the download there instead of a temporary folder
-#                               (it is updated on the next run; do not keep your own edits in it)
-#   SEKAIPOP_REPO=<git url>     install from a fork
+#   DECKARDSDECK_REF=<branch|tag>   what to install (default: main; SEKAIPOP_REF also accepted)
+#   DECKARDSDECK_DIR=<folder>       keep the download there instead of a temporary folder
+#                                   (it is updated on the next run; do not keep your own edits in it)
+#   DECKARDSDECK_REPO=<git url>     install from a fork (SEKAIPOP_REPO also accepted)
 #
 # Run as your normal user, not root: install.sh calls sudo itself where it needs to.
 
 set -euo pipefail
 
-REPO=${SEKAIPOP_REPO:-https://github.com/Blapples/SekaiPop.git}
-REF=${SEKAIPOP_REF:-main}
-KEEP=${SEKAIPOP_DIR:-}
+REPO=${DECKARDSDECK_REPO:-${SEKAIPOP_REPO:-https://github.com/dacobi/DeckardsDeck.git}}
+REF=${DECKARDSDECK_REF:-${SEKAIPOP_REF:-main}}
+KEEP=${DECKARDSDECK_DIR:-${SEKAIPOP_DIR:-}}
 # A preview uses a disposable download even when a persistent checkout was configured.
 for a in "$@"; do
     case "$a" in --dry-run) KEEP= ;; --) break ;; esac
@@ -51,13 +51,13 @@ else
 fi
 
 # ---- download: git if there is one, otherwise a tarball
-say "Downloading SekaiPop ($REF)"
+say "Downloading Deckard's Deck ($REF)"
 if have git; then
     if [ -d "$DIR/.git" ]; then
         git -C "$DIR" fetch --quiet --depth 1 origin "$REF"
         git -C "$DIR" checkout --quiet --force FETCH_HEAD
     else
-        [ -z "$(ls -A "$DIR" 2>/dev/null)" ] || die "$DIR is not empty and is not a SekaiPop download."
+        [ -z "$(ls -A "$DIR" 2>/dev/null)" ] || die "$DIR is not empty and is not a Deckard's Deck download."
         git clone --quiet --depth 1 --branch "$REF" "$REPO" "$DIR"
     fi
 elif have curl && have tar; then
@@ -66,7 +66,7 @@ elif have curl && have tar; then
 else
     die "Need git, or curl and tar. On Arch:  sudo pacman -S git"
 fi
-[ -f "$DIR/install.sh" ] || die "The download has no install.sh: wrong SEKAIPOP_REF or SEKAIPOP_REPO?"
+[ -f "$DIR/install.sh" ] || die "The download has no install.sh: wrong DECKARDSDECK_REF or DECKARDSDECK_REPO?"
 chmod +x "$DIR/install.sh" "$DIR/install-deps.sh" "$DIR/check-deps.sh" 2>/dev/null || true
 
 # ---- install.sh asks questions with read: give it the real terminal, because under

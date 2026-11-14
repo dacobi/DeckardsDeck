@@ -415,7 +415,7 @@ Item {
         y: 124 + 4
         width: face.gridW
         height: 68
-        radius: 34
+        radius: 14
         color: mt.pLineShadow
         antialiasing: true
     }
@@ -427,7 +427,7 @@ Item {
         y: 124
         width: face.gridW
         height: 68
-        radius: 34
+        radius: 14
         color: mt.pSurface
         border.width: 3
         border.color: mt.pLine
@@ -662,7 +662,7 @@ Item {
                 y: 8
                 width: parent.width - 16
                 height: parent.height - 12
-                radius: 26
+                radius: 14
                 color: mt.pLineShadow
                 antialiasing: true
             }
@@ -672,7 +672,7 @@ Item {
                 y: 4
                 width: parent.width - 16
                 height: parent.height - 12
-                radius: 26
+                radius: 14
                 color: mt.accentMint
                 border.width: 4
                 border.color: mt.pLine

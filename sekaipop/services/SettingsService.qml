@@ -86,7 +86,7 @@ Singleton {
         "panel.hotPeek": false,
         "panel.peek": 76,
         // The Quick Panel phone drawn flat (2D: no tilt, no side wall, buttons cast their shadow straight down like the bar's pills) instead of the 2.5D pose.
-        "quick.flat": false,
+        "quick.flat": true,
         // The soft shadow under every phone (Quick Panel, Apps, Wallpapers, Settings). Off = no shadow at all.
         "quick.phoneShadow": true,
         // A plain letter typed while the phone is up on Quick starts a search on the Apps screen.

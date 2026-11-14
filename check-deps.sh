@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# check-deps.sh: read-only dependency check for the SekaiPop Quickshell rice.
+# check-deps.sh: read-only dependency check for the Deckard's Deck Quickshell rice.
 # Run it BEFORE installing the rice. It installs nothing and changes nothing.
 #
 #   ./check-deps.sh            full report

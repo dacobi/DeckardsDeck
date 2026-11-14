@@ -113,7 +113,7 @@ SettingsPage {
             spacing: 2
 
             Text {
-                text: "SekaiPop"
+                text: "Deckard's Deck"
                 color: mt.pInk
                 font.family: mt.fontFamily
                 font.pixelSize: 34
@@ -122,7 +122,7 @@ SettingsPage {
             }
 
             Text {
-                text: "A Quickshell shell for Hyprland, styled like a phone."
+                text: "A Blade Runner noir Quickshell cyberdeck for Hyprland."
                 color: mt.pInkSub
                 font.family: mt.fontFamily
                 font.pixelSize: 17
@@ -405,6 +405,7 @@ SettingsPage {
 
         Repeater {
             model: [
+                { who: "Blapples · SekaiPop", what: "The upstream Quickshell + Hyprland desktop shell that Deckard's Deck is forked and transformed from" },
                 { who: "end4 · dots-hyprland", what: "The foundation of this shell: the Hyprland config, the Anti-Flashbang shaders and how the pages are organised (GPL-3.0)" },
                 { who: "pCtrade · end4-pC", what: "Inspiration for the shell's customizability, his support, and the aurora, dots, mirror and ring visualizers" },
                 { who: "p3dro", what: "The Discord Voice service, ported from his fork of Illogical Impulse" },

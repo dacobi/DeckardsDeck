@@ -47,50 +47,44 @@ QtObject {
 
     // ===== accents =====
     readonly property color mint: p.lockMint !== undefined ? Qt.color(p.lockMint)         // the selected tab, the Unlock pill, the AM/PM tag
-                                : hsl(hue(cB), Math.min(cB.hslSaturation, 0.75), 0.72)
-    readonly property color mintDeep: hsl(hue(mint), 0.6, 0.52)                            // halftone dots on the mint tab
+                                : hsl(hue(cB), Math.min(cB.hslSaturation, 0.85), 0.56)
+    readonly property color mintDeep: hsl(hue(mint), 0.7, 0.36)                            // halftone dots on the mint tab
     readonly property color pink: p.lockPink !== undefined ? Qt.color(p.lockPink)          // callout bubble, small tags
-                                : hsl(hue(cA), Math.min(cA.hslSaturation, 0.95), 0.73)
-    readonly property color paper: hsl(hue(cB), 0.6, 0.99)                                 // the white pill
+                                : hsl(hue(cA), Math.min(cA.hslSaturation, 0.95), 0.58)
+    readonly property color paper: hsl(hue(cB), 0.35, 0.12)                                // dark obsidian plate
 
     // ===== slate parts =====
-    readonly property color panel: alpha(Qt.darker(cBorder, 1.15), 0.85)                   // the side panel (85%)
-    readonly property color panelEdge: alpha(cRim, 0.4)                                    // its faint lighter rim
-    readonly property color divider: alpha(cBorder, 0.5)                                   // dotted rules between rows
-    readonly property color cap: alpha(Qt.darker(cBorder, 1.2), 0.85)                      // dark capsules (battery, "locked since")
-    readonly property color well: Qt.darker(cBorder, 1.35)                                 // the dark inset inside a pill (dots live here)
+    readonly property color panel: alpha(Qt.darker(cBorder, 1.35), 0.92)                   // the side panel (92%)
+    readonly property color panelEdge: alpha(cRim, 0.55)                                   // its metallic rim
+    readonly property color divider: alpha(cRim, 0.45)                                     // rules between rows
+    readonly property color cap: alpha(Qt.darker(cBorder, 1.4), 0.90)                      // dark capsules (battery, "locked since")
+    readonly property color well: Qt.darker(cBorder, 1.65)                                 // the dark inset inside a pill (dots live here)
 
     // ===== glow and text =====
     readonly property color periwinkle: cGlint                                             // glow around the big type
-    readonly property color band: hsl(hue(cGlint), Math.min(cGlint.hslSaturation, 0.6), 0.62, 0.55)  // the band behind the date line
+    readonly property color band: hsl(hue(cGlint), Math.min(cGlint.hslSaturation, 0.65), 0.24, 0.72)  // the band behind the date line
     readonly property color bandClear: alpha(band, 0)                                      // ...fading out to the right
-    readonly property color lavenderText: hsl(hue(cGlint), 0.8, 0.89)                      // soft secondary text on the panel
+    readonly property color lavenderText: hsl(hue(cGlint), 0.8, 0.86)                      // soft secondary text on the panel
 
-    readonly property color shadow: alpha(cDeep, 0.25)                                     // soft flat shadow under pills
+    readonly property color shadow: alpha(cDeep, 0.55)                                     // flat shadow under pills
 
     // ===== behind everything =====
-    readonly property color scrimBase: Qt.darker(cBorder, 1.45)
-    readonly property color scrimTop: alpha(scrimBase, 0.1)
+    readonly property color scrimBase: Qt.darker(cBorder, 1.8)
+    readonly property color scrimTop: alpha(scrimBase, 0.25)
     readonly property color scrimClear: alpha(scrimBase, 0)
-    readonly property color scrimBottom: alpha(scrimBase, 0.6)
+    readonly property color scrimBottom: alpha(scrimBase, 0.78)
 
     // The wash under the wallpaper, in case there is none yet.
-    readonly property color fallbackTop: Qt.lighter(cWall, 1.1)
-    readonly property color fallbackBottom: Qt.darker(cBorder, 1.6)
+    readonly property color fallbackTop: Qt.darker(cWall, 1.2)
+    readonly property color fallbackBottom: Qt.darker(cBorder, 2.0)
 
-    // The little twinkles drifting over the wallpaper (every third one).
-    readonly property color sparkle: hsl(hue(cA), 1, 0.94)
+    // The little telemetry glints drifting over the wallpaper (every third one).
+    readonly property color sparkle: hsl(hue(cA), 1, 0.78)
 
     // ===== the Calendar lockscreen (LockCalendar.qml) =====
-    // The shell's own blocks (outline, white ring, hard shadow: LockPlate.qml) in the
-    // THEME's colours: the outline, shadow and text are the border colour (cBorder), the
-    // plates are white (`paper` above) or one of three inks worked out like the rest of
-    // this file -- the candy pink (A) for weekends and the main alerts, the mint (B) for
-    // today and the Enter key, and a lilac from the glint -- on a pale tint of the theme
-    // for the sheet. A theme change (or the matugen wallpaper theme) recolours all of it.
-    readonly property color calPaper: hsl(hue(cGlint), 0.45, 0.91)                         // the sheet behind the plates
-    readonly property color calAccent: hsl(hue(pink), Math.max(0.7, Math.min(1, pink.hslSaturation)), 0.58)
-    readonly property color calMint: hsl(hue(mint), Math.max(0.6, Math.min(1, mint.hslSaturation)), 0.66)
-    readonly property color calLilac: hsl(hue(cGlint), 0.75, 0.74)
-    readonly property color calMuted: alpha(cBorder, 0.7)                                  // small captions
+    readonly property color calPaper: hsl(hue(cGlint), 0.35, 0.08)                         // dark obsidian sheet behind the plates
+    readonly property color calAccent: hsl(hue(pink), Math.max(0.7, Math.min(1, pink.hslSaturation)), 0.56)
+    readonly property color calMint: hsl(hue(mint), Math.max(0.6, Math.min(1, mint.hslSaturation)), 0.58)
+    readonly property color calLilac: hsl(hue(cGlint), 0.75, 0.62)
+    readonly property color calMuted: alpha(cGlint, 0.65)                                  // small captions
 }

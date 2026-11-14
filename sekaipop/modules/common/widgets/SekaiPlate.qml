@@ -25,13 +25,13 @@ Item {
 
     property color colorTop: mt.accentMint
     property color colorBottom: mt.accentCyan
-    property real cornerRadius: 16
+    property real cornerRadius: 12
     // Outline + the white line (Theme.whiteLine): the same as every block's.
     property real ringWidth: mt.borderWidth + mt.whiteLine
     // The halftone and the light bands. Dark dots / white bands suit a light
     // plate; a dark plate wants the other way round (set dotColor).
     property color dotColor: Qt.rgba(mt.colBorder.r, mt.colBorder.g, mt.colBorder.b, 0.16)
-    property color bandColor: Qt.rgba(1, 1, 1, 0.22)
+    property color bandColor: Qt.rgba(1, 1, 1, 0.14)
     property string dotCorner: "tr"
     property real dotSpacing: 14
     property bool pressed: false

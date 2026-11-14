@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# install-deps.sh: installs everything SekaiPop needs to be a full working desktop
+# install-deps.sh: installs everything Deckard's Deck needs to be a full working desktop
 # on Arch / CachyOS / EndeavourOS (anything with pacman), starting from a minimal Hyprland system.
 #
 # It does the same three jobs as end-4's "./setup install", for this rice:
@@ -108,7 +108,7 @@ ask() { # ask <question>: default yes in --yes and --dry-run
 have() { command -v "$1" >/dev/null 2>&1; }
 
 # ---------------------------------------------------------------- preconditions
-[ "${SEKAIPOP_FULL_INSTALL:-0}" = 1 ] || banner "SekaiPop dependencies" "packages, fonts, services, groups"
+[ "${SEKAIPOP_FULL_INSTALL:-0}" = 1 ] || banner "Deckard's Deck dependencies" "packages, fonts, services, groups"
 step "Checking the system"
 [ "$(id -u)" = 0 ] && { echo "Run this as your normal user, not root (it calls sudo itself)." >&2; exit 1; }
 have pacman || { echo "pacman not found: this installer is for Arch-based systems. Read DEPENDENCIES.md for the package list." >&2; exit 1; }

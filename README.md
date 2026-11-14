@@ -1,8 +1,8 @@
 <div align="center">
 
-<h1>SekaiPop</h1>
+<h1>Deckard's Deck</h1>
 
-<img src="assets/highlights.svg" alt="Phone control center, Sekai Pad equalizer, Edit Desktop, shader wallpaper transitions, two lockscreens, installs from a bare Arch" width="82%">
+<img src="assets/highlights.svg" alt="Front-facing Cyberdeck, VK-Pad 10-Band Equalizer, Edit Desktop Matrix, Shader Transitions, Two Noir Lockscreens, Installs from Bare Arch" width="82%">
 
 <br>
 
@@ -171,10 +171,10 @@ The portals are what make screen sharing work in Discord, browsers and OBS.
 ### 1. Install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Blapples/SekaiPop/main/get.sh | bash
+curl -fsSL https://raw.githubusercontent.com/dacobi/DeckardsDeck/main/get.sh | bash
 ```
 
-That is the whole install. It downloads SekaiPop, then does three jobs:
+That is the whole install. It downloads Deckard's Deck, then does three jobs:
 
 1. **Dependencies:** packages (repos and AUR), Google Sans Flex, services, groups.
 2. **The shell:** copied to `~/.config/quickshell/sekaipop` (an older copy is kept as `.bak-<time>`).
@@ -186,7 +186,7 @@ That is the whole install. It downloads SekaiPop, then does three jobs:
 Want to look first? Add `--dry-run`: it prints everything it would do and changes nothing.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Blapples/SekaiPop/main/get.sh | bash -s -- --dry-run
+curl -fsSL https://raw.githubusercontent.com/dacobi/DeckardsDeck/main/get.sh | bash -s -- --dry-run
 ```
 
 Options go after the command (see [Installer options](#installer-options)), for example `--yes` or `--hypr merge`.
@@ -195,8 +195,8 @@ Options go after the command (see [Installer options](#installer-options)), for 
 <summary>Prefer to clone it yourself?</summary>
 
 ```bash
-git clone https://github.com/Blapples/SekaiPop.git
-cd SekaiPop
+git clone https://github.com/dacobi/DeckardsDeck.git
+cd DeckardsDeck
 ./install.sh --dry-run      # look first
 ./install.sh                # install
 ```
@@ -216,7 +216,7 @@ Log out and back in, choosing the plain **Hyprland** session (**not** "uwsm"). T
 ### 3. Check everything
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Blapples/SekaiPop/main/get.sh | bash -s -- --check
+curl -fsSL https://raw.githubusercontent.com/dacobi/DeckardsDeck/main/get.sh | bash -s -- --check
 ```
 
 It is read-only: it lists what is installed and what is missing, and changes nothing.
@@ -348,10 +348,11 @@ Volume and brightness keys go through the shell's on-screen display.
 > [!CAUTION]
 > The region selector's **search** action uploads the cropped screenshot to `uguu.se` before opening Google Lens. Don't use it on anything private.
 
-SekaiPop is built on other people's work, and I'm grateful to all of them.
+Deckard's Deck is built on other people's work, and I'm grateful to all of them.
 
 **The foundation**
 
+- **[Blapples](https://github.com/Blapples)** and [SekaiPop](https://github.com/Blapples/SekaiPop): the original Quickshell + Hyprland desktop shell that Deckard's Deck is forked and transformed from.
 - **[end4](https://github.com/end-4)** and [dots-hyprland](https://github.com/end-4/dots-hyprland) (Illogical Impulse): the foundation of this whole shell. The Hyprland configuration in `hypr/` is adapted from it, the installer follows the idea of `./setup install`, and the Anti-Flashbang shaders are copied unchanged (GPL-3.0). The cheat sheet, the Overview and the way Settings is organised also take after it.
 - **[pCtrade](https://github.com/pctrade)** (end4-pC): the inspiration for how customizable this shell is, and for his support along the way. The `aurora`, `dots`, `mirror` and `ring` audio visualizers are ported from his work.
 - **[p3dro](https://github.com/P3DROVFX)**'s fork of Illogical Impulse: the Discord Voice service the bar pill and popup are ported from.

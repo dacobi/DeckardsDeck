@@ -37,8 +37,8 @@ Item {
 
         capW: root.capW
         capH: root.capH
-        skew: 0.24 * mt.settingsLean
-        radius: 17
+        skew: 0.16 * mt.settingsLean
+        radius: 10
         lit: root.selected
         hovered: root.hovered
         pressed: area.pressed

@@ -35,7 +35,7 @@ Item {
     // ===== the flat design this is built around =====
     property real faceWidth: 654
     property real faceHeight: 1214
-    property real cornerRadius: 100
+    property real cornerRadius: 24
     // A landscape phone (the Settings Panel): the same body turned a quarter
     // turn anticlockwise, so the camera cut-out is on the LEFT edge, the
     // charging port and speaker holes are on the right-hand wall (the one the
@@ -74,7 +74,6 @@ Item {
     readonly property bool powerDown: root.powerHeld || powerHoldTimer.running
     property real powerPress: root.powerDown ? 1 : 0
     readonly property real powerKeep: 0.15
-    readonly property real powerStickNow: root.buttonStick * (1 - (1 - root.powerKeep) * root.powerPress)
     readonly property real powerSlide: 11
     Behavior on powerPress {
         NumberAnimation {
@@ -122,8 +121,8 @@ Item {
     // right-hand wall); pitch > 0 tips the bottom edge toward the viewer
     // (showing a sliver of the bottom wall, and leaning the vertical
     // edges). roll spins it in the plane of the screen.
-    property real yaw: 33
-    property real pitch: 18
+    property real yaw: 0
+    property real pitch: 0
     property real roll: 0
     // Added on top of the pose above while drawing — but not to the size
     // the phone reports, so animating them (QuickPanel tilts the phone as
@@ -409,7 +408,7 @@ Item {
             if (root.powerButton)
                 boxes = [[W - 4, root.powerY, 0, W + root.powerStick, root.powerY + root.powerH, 0]]
         } else {
-            const stick = Math.max(root.buttonStick, root.powerStickNow)
+            const stick = root.buttonStick
             boxes = [[W, root.powerY, -T * 0.68, W + stick, root.powerY + root.powerH, -T * 0.24]]
             if (!root.plain)
                 boxes.push([W, 704, -T * 0.68, W + root.buttonStick, 872, -T * 0.24])
@@ -997,7 +996,7 @@ Item {
                 }
 
                 Rectangle {
-                    id: powerTab
+                    id: powerTab // Cyberdeck breaker switch
 
                     readonly property bool lit: root.powerOn || powerTabArea.containsMouse
 
@@ -1005,11 +1004,39 @@ Item {
                     y: root.powerY + 4 * root.powerPress
                     width: root.powerStick + 4
                     height: root.powerH
-                    radius: 8
+                    radius: 4
                     color: powerTabArea.pressed ? mt.accentCyan : (lit ? mt.accentMint : root.wallLight)
                     border.width: 2
                     border.color: root.wallDark
                     antialiasing: true
+
+                    // Cyberdeck knurled breaker switch ridges
+                    Column {
+                        anchors.centerIn: parent
+                        spacing: 8
+                        Repeater {
+                            model: 7
+                            delegate: Rectangle {
+                                width: 8
+                                height: 2
+                                radius: 1
+                                color: powerTab.lit ? root.wallDark : root.rimHighlight
+                                opacity: 0.75
+                            }
+                        }
+                    }
+
+                    // Active power indicator LED strip
+                    Rectangle {
+                        anchors.right: parent.right
+                        anchors.rightMargin: 3
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 2
+                        height: 36
+                        radius: 1
+                        color: powerTab.lit ? "#ff2a6d" : "#ff9e2c"
+                        opacity: powerTab.lit ? 1.0 : 0.7
+                    }
                 }
 
                 // The click area stays where the button rests (it is not the button's child):
@@ -1088,7 +1115,7 @@ Item {
                                    : Qt.size(Math.ceil(root.faceWidth * root.renderScale * root.contentSS),
                                              Math.ceil(root.faceHeight * root.renderScale * root.contentSS))
 
-                // Outline (the front edge of the metal frame)
+                // Outline (the front edge of the armored cyberdeck frame)
                 Rectangle {
                     anchors.fill: parent
                     radius: root.cornerRadius
@@ -1096,34 +1123,63 @@ Item {
                     antialiasing: true
                 }
 
-                // A thin bright line along it, like the highlight on the
-                // reference render's rim
+                // Chamfered metallic highlight along the cyberdeck chassis rim
                 Rectangle {
                     visible: !root.plain
                     anchors.fill: parent
                     anchors.margins: 2
-                    radius: root.cornerRadius - 2
+                    radius: Math.max(2, root.cornerRadius - 2)
                     color: "transparent"
                     border.width: 2
                     border.color: root.rimHighlight
                     antialiasing: true
                 }
 
-                // Dark glass
+                // Heavy gunmetal / obsidian cyberdeck inner bezel
                 Rectangle {
                     anchors.fill: parent
                     anchors.margins: root.rimWidth
-                    radius: root.cornerRadius - root.rimWidth
+                    radius: Math.max(2, root.cornerRadius - root.rimWidth)
                     color: root.bezelColor
                     antialiasing: true
                 }
 
-                // Screen
+                // Cyberdeck corner hex rivets / bolts on the outer bezel
+                Repeater {
+                    model: root.plain ? 0 : 4
+                    delegate: Rectangle {
+                        required property int index
+                        readonly property bool rightSide: (index % 2) === 1
+                        readonly property bool bottomSide: index >= 2
+                        x: rightSide ? root.faceWidth - 18 : 10
+                        y: bottomSide ? root.faceHeight - 18 : 10
+                        width: 8
+                        height: 8
+                        radius: 2
+                        color: root.hardwareDark
+                        border.width: 1
+                        border.color: root.rimHighlight
+                        antialiasing: true
+
+                        Rectangle {
+                            anchors.centerIn: parent
+                            width: 3
+                            height: 3
+                            radius: 1.5
+                            color: (index === 0 || index === 3) ? mt.accentCyan : "#ff9e2c"
+                            opacity: 0.65
+                        }
+                    }
+                }
+
+                // Screen CRT / OLED display recess
                 Rectangle {
                     anchors.fill: parent
                     anchors.margins: root.screenInset
-                    radius: root.cornerRadius - root.screenInset
+                    radius: Math.max(2, root.cornerRadius - root.screenInset)
                     color: root.screenColor
+                    border.width: 1
+                    border.color: Qt.alpha(mt.accentCyan, 0.24)
                     antialiasing: true
                 }
 
@@ -1133,12 +1189,9 @@ Item {
                     anchors.fill: parent
                 }
 
-                // Notch: flat on the top edge, rounded at the bottom. Its flat edge
-                // starts inside the dark glass (notchLead into the bezel, which is the
-                // same colour) rather than exactly on the screen's edge: two shapes
-                // that meet on one line leave a hairline of the screen showing
-                // between them wherever the line is off the pixel grid (it shows when
-                // the front is drawn straight to the pixels, see `faceDirect`).
+                // Voight-Kampff / Esper Optical Sensor & Telemetry Header Module (Portrait):
+                // Replaces the rounded smartphone notch with an angular LAPD 2019 sensor
+                // bar housing the optical iris lens, cooling vents, and status LEDs.
                 Item {
                     visible: !root.landscape
                     x: 202
@@ -1148,23 +1201,41 @@ Item {
                     clip: true
 
                     Rectangle {
-                        y: -27
+                        y: -10
                         width: parent.width
-                        height: parent.height + 27
-                        radius: 27
+                        height: parent.height + 10
+                        radius: 8
                         color: root.bezelColor
+                        border.width: 1.5
+                        border.color: root.rimHighlight
                         antialiasing: true
                     }
 
-                    // Camera lens
+                    // Inner recessed telemetry plate
                     Rectangle {
                         visible: !root.plain
-                        x: 24
-                        y: 15 + root.notchLead
+                        x: 8
+                        y: 6 + root.notchLead
+                        width: parent.width - 16
+                        height: 34
+                        radius: 4
+                        color: root.hardwareDark
+                        border.width: 1
+                        border.color: Qt.alpha(mt.accentCyan, 0.25)
+                        antialiasing: true
+                    }
+
+                    // Voight-Kampff optical iris scanner lens
+                    Rectangle {
+                        visible: !root.plain
+                        x: 18
+                        y: 12 + root.notchLead
                         width: 22
                         height: 22
                         radius: 11
                         color: root.hardwareDark
+                        border.width: 1.5
+                        border.color: Qt.alpha(mt.accentCyan, 0.55)
                         antialiasing: true
 
                         Rectangle {
@@ -1185,10 +1256,63 @@ Item {
                             }
                         }
                     }
+
+                    // Micro cooling vent grilles
+                    Row {
+                        visible: !root.plain
+                        x: 50
+                        y: 16 + root.notchLead
+                        spacing: 4
+                        Repeater {
+                            model: 5
+                            delegate: Rectangle {
+                                width: 3
+                                height: 14
+                                radius: 1
+                                color: root.bezelColor
+                                border.width: 0.5
+                                border.color: Qt.alpha(root.rimHighlight, 0.4)
+                            }
+                        }
+                    }
+
+                    // LAPD 2019 // VK-DECK telemetry stencil
+                    Text {
+                        visible: !root.plain
+                        x: 88
+                        y: 16 + root.notchLead
+                        text: "VK-2019 // LAPD"
+                        font.family: mt.fontFamilyMono
+                        font.pixelSize: 10
+                        font.weight: Font.Bold
+                        font.letterSpacing: 1.1
+                        color: Qt.alpha(mt.accentCyan, 0.82)
+                    }
+
+                    // 3 Diagnostic Status LEDs (Amber, Cyan, Crimson)
+                    Row {
+                        visible: !root.plain
+                        x: 198
+                        y: 19 + root.notchLead
+                        spacing: 7
+                        Rectangle {
+                            width: 7; height: 7; radius: 3.5
+                            color: "#ff9e2c"
+                            border.width: 1; border.color: "#40ffffff"
+                        }
+                        Rectangle {
+                            width: 7; height: 7; radius: 3.5
+                            color: "#00e5ff"
+                            border.width: 1; border.color: "#40ffffff"
+                        }
+                        Rectangle {
+                            width: 7; height: 7; radius: 3.5
+                            color: "#ff2a6d"
+                            border.width: 1; border.color: "#40ffffff"
+                        }
+                    }
                 }
-                // Landscape cut-out: the same notch turned to the LEFT edge. Flat
-                // on the rim, rounded toward the screen, in the middle of the
-                // edge, with the lens at the end the portrait phone's lens turns to.
+                // Landscape Cyberdeck Sensor Module: turned to the LEFT edge.
                 Item {
                     visible: root.landscape
                     x: root.screenInset - root.notchLead
@@ -1198,25 +1322,83 @@ Item {
                     clip: true
 
                     Rectangle {
-                        x: -27
-                        width: parent.width + 27
+                        x: -10
+                        width: parent.width + 10
                         height: parent.height
-                        radius: 27
+                        radius: 8
                         color: root.bezelColor
+                        border.width: 1.5
+                        border.color: root.rimHighlight
                         antialiasing: true
                     }
 
-                    // Camera lens: where the portrait notch has it (24 px in
-                    // from the end that is its left), turned a quarter turn with
-                    // it, so it sits at the bottom end of this one.
+                    // Inner recessed vertical sensor bay
                     Rectangle {
                         visible: !root.plain
-                        x: 15 + root.notchLead
-                        y: 249 - 24 - 22
+                        x: 6 + root.notchLead
+                        y: 8
+                        width: 34
+                        height: parent.height - 16
+                        radius: 4
+                        color: root.hardwareDark
+                        border.width: 1
+                        border.color: Qt.alpha(mt.accentCyan, 0.25)
+                        antialiasing: true
+                    }
+
+                    // 3 Diagnostic Status LEDs at the top of the landscape sensor bay
+                    Column {
+                        visible: !root.plain
+                        x: 19 + root.notchLead
+                        y: 22
+                        spacing: 7
+                        Rectangle {
+                            width: 7; height: 7; radius: 3.5
+                            color: "#ff9e2c"
+                            border.width: 1; border.color: "#40ffffff"
+                        }
+                        Rectangle {
+                            width: 7; height: 7; radius: 3.5
+                            color: "#00e5ff"
+                            border.width: 1; border.color: "#40ffffff"
+                        }
+                        Rectangle {
+                            width: 7; height: 7; radius: 3.5
+                            color: "#ff2a6d"
+                            border.width: 1; border.color: "#40ffffff"
+                        }
+                    }
+
+                    // Vertical cooling vent slots
+                    Column {
+                        visible: !root.plain
+                        x: 16 + root.notchLead
+                        y: 85
+                        spacing: 5
+                        Repeater {
+                            model: 8
+                            delegate: Rectangle {
+                                width: 14
+                                height: 3
+                                radius: 1
+                                color: root.bezelColor
+                                border.width: 0.5
+                                border.color: Qt.alpha(root.rimHighlight, 0.4)
+                            }
+                        }
+                    }
+
+                    // Voight-Kampff optical scanner lens at bottom of bay
+                    Rectangle {
+                        visible: !root.plain
+                        x: 12 + root.notchLead
+                        y: 249 - 18 - 22
                         width: 22
                         height: 22
                         radius: 11
                         color: root.hardwareDark
+                        border.width: 1.5
+                        border.color: Qt.alpha(mt.accentCyan, 0.55)
                         antialiasing: true
 
                         Rectangle {
@@ -1242,4 +1424,6 @@ Item {
             }
         }
     }
+
+    readonly property real powerStickNow: root.buttonStick * (1 - (1 - root.powerKeep) * root.powerPress)
 }

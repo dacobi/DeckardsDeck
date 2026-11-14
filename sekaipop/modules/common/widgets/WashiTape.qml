@@ -100,17 +100,17 @@ Item {
             ctx.fillStyle = root.color;
             ctx.fill();
 
-            // faint diagonal stripes, like printed tape texture
+            // industrial hazard stripes
             ctx.save();
             ctx.clip();
-            ctx.globalAlpha = 0.16;
-            ctx.fillStyle = "#ffffff";
+            ctx.globalAlpha = 0.34;
+            ctx.fillStyle = "#080b10";
             for (let x = -h; x < w + h; x += 9) {
                 ctx.beginPath();
                 ctx.moveTo(x, 0);
                 ctx.lineTo(x + h * 0.6, h);
-                ctx.lineTo(x + h * 0.6 + 3, h);
-                ctx.lineTo(x + 3, 0);
+                ctx.lineTo(x + h * 0.6 + 3.5, h);
+                ctx.lineTo(x + 3.5, 0);
                 ctx.closePath();
                 ctx.fill();
             }

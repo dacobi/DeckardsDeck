@@ -54,10 +54,10 @@ ClippingRectangle {
     property real washBody: 0.04
     // How much darker the screen gets right at its edge (the backlight does not
     // reach the corners as well), and how far in that fade reaches (design units).
-    property real edgeDark: 0.06
-    property real edgeSize: 34
+    property real edgeDark: 0.24
+    property real edgeSize: 44
     // The strength of the reflection across the glass (0 = none).
-    property real glare: 0.16
+    property real glare: 0.08
     // The mesh as a whole (the tile has its own strength in it): 0 = none, 1 = as drawn.
     property real meshStrength: 1
 
@@ -167,8 +167,8 @@ ClippingRectangle {
     // ===== backlight falloff at the edges =====
     // Four fades from the edge inward; where two meet in a corner it is a little darker,
     // like a real panel's corners.
-    readonly property color edgeTint: Qt.rgba(0.24, 0.24, 0.39, lcd.edgeDark)
-    readonly property color edgeClear: Qt.rgba(0.24, 0.24, 0.39, 0)
+    readonly property color edgeTint: Qt.rgba(0.02, 0.04, 0.08, lcd.edgeDark)
+    readonly property color edgeClear: Qt.rgba(0.02, 0.04, 0.08, 0)
 
     Rectangle {
         anchors.left: parent.left

@@ -68,11 +68,11 @@ cfgdir="${XDG_CONFIG_HOME:-$HOME/.config}/sekaipop"
 marker="$here/.source"
 mark() { sed -n "s/^$1=//p" "$marker" 2>/dev/null | head -n 1 | tr -d '\r'; }
 installed=$(mark commit)
-repo="$SEKAIPOP_REPO"
+repo="${DECKARDSDECK_REPO:-$SEKAIPOP_REPO}"
 [ -n "$repo" ] || repo=$(mark repo)
 [ -n "$repo" ] || repo=$(head -n 1 "$cfgdir/update-repo" 2>/dev/null | tr -d '\r')
-[ -n "$repo" ] || repo=https://github.com/Blapples/SekaiPop.git
-ref="$SEKAIPOP_REF"
+[ -n "$repo" ] || repo=https://github.com/dacobi/DeckardsDeck.git
+ref="${DECKARDSDECK_REF:-$SEKAIPOP_REF}"
 [ -n "$ref" ] || ref=$(mark ref)
 { [ -n "$ref" ] && [ "$ref" != HEAD ]; } || ref=main
 is_managed() { ! is_git && have_git; }

@@ -28,41 +28,41 @@
 var SLIDES = [
     {
         kind: "logo",
-        title: "Welcome to SekaiPop,\nyour Project SEKAI desktop",
+        title: "Welcome to Deckard's Deck,\nyour Blade Runner noir desktop",
         sub: "",
         top: true,
         ghost: true
     },
     {
         kind: "glyph",
-        glyph: "phone_iphone",
+        glyph: "terminal",
         glyphFill: 0,
-        title: "The Phone",
-        sub: "Quick settings, apps, wallpapers and overview\nare all screens of one phone",
+        title: "The Cyberdeck",
+        sub: "Quick controls, apps, wallpapers and overview\nare all screens of one front-facing cyberdeck",
         top: false,
         ghost: false
     },
     {
         kind: "units",
-        title: "Pick Your Unit",
-        sub: "Six unit themes, or let matugen follow your wallpaper",
+        title: "Pick Your Sector",
+        sub: "Six noir sector palettes, or let matugen follow your city wallpaper",
         top: false,
         ghost: false
     },
     {
         kind: "frame",
-        title: "Make It Yours",
-        sub: "Move the bar, dock and widgets in Edit Desktop",
+        title: "Calibrate Your Rig",
+        sub: "Move the bar, dock and HUD widgets in Edit Desktop",
         top: false,
         ghost: false
     },
     {
         kind: "credits",
-        title: "You're All Set!",
+        title: "Baseline Verified.",
         lines: [
-            "Open the phone: qs -c sekaipop ipc call phone toggle",
-            "Settings and themes are on the phone",
-            "See this again: qs -c sekaipop ipc call welcome show"
+            "Open the cyberdeck: qs -c sekaipop ipc call phone toggle",
+            "Settings and noir themes are on the deck",
+            "Replay baseline briefing: qs -c sekaipop ipc call welcome show"
         ],
         top: false,
         ghost: true

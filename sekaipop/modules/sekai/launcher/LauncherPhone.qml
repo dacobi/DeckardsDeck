@@ -85,9 +85,9 @@ Scope {
     // The pull-out: how far (px) it rises past its resting spot before dropping
     // back, and the degrees it is turned while it is still "in the pocket".
     property real bounce: 34
-    property real tiltRoll: 12
-    property real tiltPitch: 10
-    property real tiltYaw: -6
+    property real tiltRoll: 0
+    property real tiltPitch: 0
+    property real tiltYaw: 0
 
     // The Wallpapers were opened from the Apps screen of the one phone
     // (QuickPanel.qml): Back goes there again instead of just closing. Asked for
@@ -134,7 +134,7 @@ Scope {
     property int flipMs: 200
     readonly property var flipCurve: [0.30, 0.0, 0.20, 1.0, 1.0, 1.0]
     property real flipDip: 0.12
-    property real flipWobble: 2.5
+    property real flipWobble: 0
     property int flipRingMs: 380
     readonly property bool flipping: flipPrep.running || flipAnim.running
     // Opened straight into the Wallpapers (the IPC `wallpaperphone`, the bar's
@@ -808,6 +808,10 @@ Scope {
                 // away, the full-quality ones take over once it has landed.
                 moving: root.animating || !win.visible || root.flipping
                 turnRoll: root.flipping ? -90 : 0
+                yaw: 0
+                pitch: 0
+                flat: root.flip === 0 && !root.flipping
+                plain: false
 
                 // Turned while it is coming out of / going into the pocket, and
                 // rings out past upright on the overshoot (the Quick Panel's

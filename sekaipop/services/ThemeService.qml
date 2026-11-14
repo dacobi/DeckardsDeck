@@ -54,28 +54,25 @@ Singleton {
     id: root
 
     readonly property var baseGroups: [
-        { id: "vs", name: "Virtual Singer", c: { border: "#555473", A: "#04feee", B: "#00ffcb", deep: "#232235", rimHi: "#9796b8", bezel: "#3d3d52", wallLight: "#b3b2d4", wallMid: "#6e6d94", wallDark: "#48475f", hardware: "#191828", divider: "#e4e4ec", lens: "#4b45b5", glint: "#a9a6ff", hoverTint: "#d9fff6", boardBg: "#f3fbf9", boardDot: "#cfe6e1", lockMint: "#7fe8d8", lockPink: "#ff75ac" } },
-        { id: "leoneed", name: "Leo/need", c: { border: "#2d3775", A: "#8ea3ff", B: "#9fd8ff", deep: "#181e3f", rimHi: "#808bce", bezel: "#2a3265", wallLight: "#a8b0de", wallMid: "#4958b8", wallDark: "#313a75", hardware: "#12162e", divider: "#dee1f2", lens: "#5968b3", glint: "#c1ccff", hoverTint: "#f1f9ff", boardBg: "#f3f8fb", boardDot: "#cfdde6" } },
-        { id: "mmj", name: "MORE MORE JUMP!", c: { border: "#39662d", A: "#a4ee55", B: "#7fe9a8", deep: "#223c1b", rimHi: "#93c985", bezel: "#38622d", wallLight: "#b6daac", wallMid: "#64b150", wallDark: "#427135", hardware: "#192c14", divider: "#e3f1df", lens: "#69a33f", glint: "#cdf6a2", hoverTint: "#ecfcf2", boardBg: "#f3fbf6", boardDot: "#cfe6d8" } },
-        { id: "vbs", name: "Vivid BAD SQUAD", c: { border: "#561938", A: "#ff5c9a", B: "#ff96c0", deep: "#43142c", rimHi: "#d777a8", bezel: "#6d2248", wallLight: "#e4a2c4", wallMid: "#c53c82", wallDark: "#7d2954", hardware: "#320e20", divider: "#f5dbe8", lens: "#a23764", glint: "#ffa5c7", hoverTint: "#ffeff6", boardBg: "#fbf3f6", boardDot: "#e6cfd8" } },
-        { id: "wxs", name: "Wonderlands×Showtime", c: { border: "#6a3c11", A: "#ffa51f", B: "#ffd54a", deep: "#4b2a0c", rimHi: "#e7a567", bezel: "#784617", wallLight: "#eec298", wallMid: "#db7d26", wallDark: "#8b511b", hardware: "#371f09", divider: "#f9e7d7", lens: "#ad6b17", glint: "#ffce84", hoverTint: "#fff9e4", boardBg: "#fbf9f3", boardDot: "#e6e1cf" } },
-        { id: "nightcord", name: "Nightcord at 25:00", c: { border: "#43285f", A: "#c08cf2", B: "#e2b5ff", deep: "#2b1a3d", rimHi: "#a683cb", bezel: "#472c63", wallLight: "#c3abdb", wallMid: "#804eb3", wallDark: "#523472", hardware: "#20132d", divider: "#e8dff1", lens: "#7b55a1", glint: "#dcc0f8", hoverTint: "#fbf4ff", boardBg: "#f8f3fb", boardDot: "#ddcfe6" } }
+        { id: "vs", name: "LAPD 2019 Spinner", c: { border: "#243b52", A: "#00e5ff", B: "#00b8d4", deep: "#0a0e16", rimHi: "#4a7491", bezel: "#111924", wallLight: "#34546e", wallMid: "#1e3346", wallDark: "#101b26", hardware: "#06090e", divider: "#d6eef8", lens: "#0091ea", glint: "#84ffff", hoverTint: "#162b3b", boardBg: "#0b1018", boardDot: "#1d3142", lockMint: "#00e5ff", lockPink: "#ff9e2c" } },
+        { id: "leoneed", name: "Tyrell Corp Amber", c: { border: "#3d291a", A: "#ff9e2c", B: "#ff6b1a", deep: "#120c08", rimHi: "#8c5e38", bezel: "#1c130c", wallLight: "#6b472a", wallMid: "#422b19", wallDark: "#24170d", hardware: "#0a0604", divider: "#f7e6d4", lens: "#ff6d00", glint: "#ffd180", hoverTint: "#2c1e13", boardBg: "#110c08", boardDot: "#362417", lockMint: "#ff9e2c", lockPink: "#00e5ff" } },
+        { id: "mmj", name: "Voight-Kampff Phosphor", c: { border: "#1c3d2d", A: "#00e676", B: "#1de9b6", deep: "#08120d", rimHi: "#3f8261", bezel: "#0d1c15", wallLight: "#2e6349", wallMid: "#1c3f2e", wallDark: "#10241a", hardware: "#050a07", divider: "#d4f5e4", lens: "#00c853", glint: "#b9f6ca", hoverTint: "#142b20", boardBg: "#09110d", boardDot: "#1b3829", lockMint: "#00e676", lockPink: "#ffab00" } },
+        { id: "vbs", name: "Joi // Wallace Neon", c: { border: "#3f1c35", A: "#ff2a6d", B: "#d500f9", deep: "#130811", rimHi: "#8f3d78", bezel: "#1e0d1a", wallLight: "#6e2b5c", wallMid: "#451a3a", wallDark: "#260f20", hardware: "#0b0409", divider: "#f7d8ec", lens: "#c51162", glint: "#ff80ab", hoverTint: "#2e1427", boardBg: "#120910", boardDot: "#3b1a32", lockMint: "#00e5ff", lockPink: "#ff2a6d" } },
+        { id: "wxs", name: "Bradbury Acid Rain", c: { border: "#3d341c", A: "#ffd600", B: "#ff9100", deep: "#120f08", rimHi: "#8a7740", bezel: "#1c180d", wallLight: "#66582f", wallMid: "#40371d", wallDark: "#241f10", hardware: "#0a0804", divider: "#f7efd6", lens: "#ffab00", glint: "#ffff8d", hoverTint: "#2b2514", boardBg: "#110f09", boardDot: "#362f1b", lockMint: "#ffd600", lockPink: "#ff6d00" } },
+        { id: "nightcord", name: "Off-World Colony", c: { border: "#28204d", A: "#7c4dff", B: "#40c4ff", deep: "#0b0917", rimHi: "#5c4ba6", bezel: "#120f24", wallLight: "#44377d", wallMid: "#2a224f", wallDark: "#17122e", hardware: "#06050d", divider: "#e2dcf7", lens: "#651fff", glint: "#b388ff", hoverTint: "#1c1736", boardBg: "#0a0914", boardDot: "#241e42", lockMint: "#40c4ff", lockPink: "#7c4dff" } }
     ]
 
-    // Themes that are not one of the six Project Sekai units. They show up in the
+    // Themes that are not one of the six base sectors. They show up in the
     // picker (and in IPC / cycle) after the units, but stay OUT of `baseGroups`, so the
     // welcome screen's six-unit row and the transition colours' reference palette
-    // (Virtual Singer = baseGroups[0]) are untouched.
+    // (LAPD 2019 Spinner = baseGroups[0]) are untouched.
     //
-    // Monochrome: every colour is a neutral grey (r = g = b), so nothing in the shell
+    // Esper Monochrome: every colour is a neutral grey (r = g = b), so nothing in the shell
     // can pick up a tint. `mono: true` tells the few places that work out colours from
-    // a hue (the lockscreen, the pastel attribute icons, the system scheme, Discord)
-    // to stay grey as well. Tweak any grey right here.
-    //   border   #444444  outlines, shadows and the ink in Light mode
-    //   A / B    #f4f4f4 / #bdbdbd  the two stops of every "lit" gradient (white -> silver)
-    //   deep     #1a1a1a  the dark surface in Dark / Darker
+    // a hue (the lockscreen, the attribute icons, the system scheme, Discord)
+    // to stay grey as well.
     readonly property var extraGroups: [
-        { id: "mono", name: "Monochrome", c: { mono: true, border: "#444444", A: "#f4f4f4", B: "#bdbdbd", deep: "#1a1a1a", rimHi: "#9a9a9a", bezel: "#333333", wallLight: "#bcbcbc", wallMid: "#757575", wallDark: "#4a4a4a", hardware: "#121212", divider: "#ececec", lens: "#6a6a6a", glint: "#d0d0d0", hoverTint: "#e9e9e9", boardBg: "#f4f4f4", boardDot: "#d4d4d4", lockMint: "#e6e6e6", lockPink: "#9e9e9e" } }
+        { id: "mono", name: "Esper Monochrome", c: { mono: true, border: "#383838", A: "#e6e6e6", B: "#a8a8a8", deep: "#0c0c0c", rimHi: "#787878", bezel: "#1c1c1c", wallLight: "#545454", wallMid: "#343434", wallDark: "#1e1e1e", hardware: "#080808", divider: "#e8e8e8", lens: "#5a5a5a", glint: "#d4d4d4", hoverTint: "#222222", boardBg: "#0e0e0e", boardDot: "#292929", lockMint: "#d8d8d8", lockPink: "#888888" } }
     ]
 
     // The base groups plus the wallpaper theme. The matugen row carries the
@@ -167,7 +164,7 @@ Singleton {
     // the shell starts DARK (see bootSaved()).
     property bool dark: true
     property bool darkTouched: false
-    property bool darkerPref: false
+    property bool darkerPref: true
     property bool darkerTouched: false
 
     readonly property string stateDir: {
@@ -613,17 +610,17 @@ Singleton {
             border: dk.primary_container,                          // outlines, shadows, dark text
             A: dk.primary,
             B: dk.tertiary,
-            deep: Qt.darker(Qt.color(dk.on_primary), 1.2),
-            hoverTint: Qt.tint(Qt.color(lt.primary_container), Qt.rgba(1, 1, 1, 0.55)),
+            deep: Qt.darker(Qt.color(dk.on_primary), 1.45),
+            hoverTint: Qt.darker(Qt.color(dk.primary_container), 1.35),
             divider: lt.surface_variant,
-            boardBg: lt.surface,
-            boardDot: lt.secondary_container,
+            boardBg: Qt.darker(Qt.color(dk.on_primary), 1.6),
+            boardDot: dk.secondary_container,
             rimHi: dk.outline,
-            bezel: Qt.darker(Qt.color(dk.primary_container), 1.35),
+            bezel: Qt.darker(Qt.color(dk.primary_container), 1.55),
             wallLight: dk.secondary,
-            wallMid: lt.primary,
-            wallDark: dk.secondary_container,
-            hardware: Qt.darker(Qt.color(dk.on_primary), 1.7),
+            wallMid: dk.primary_container,
+            wallDark: Qt.darker(Qt.color(dk.secondary_container), 1.3),
+            hardware: Qt.darker(Qt.color(dk.on_primary), 1.9),
             lens: dk.inverse_primary,
             glint: dk.primary
         }

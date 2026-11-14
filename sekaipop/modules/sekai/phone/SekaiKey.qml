@@ -33,8 +33,8 @@ Item {
 
     property real capW: 200
     property real capH: 60
-    property real skew: 0.2 * mt.settingsLean
-    property real radius: 18
+    property real skew: 0.14 * mt.settingsLean
+    property real radius: 10
 
     property bool lit: false
     property bool hovered: false

@@ -16,45 +16,45 @@ import qs.services
 QtObject {
     id: root
 
-    // ===== paper =====
-    readonly property color page: "#f5eeda"        // cream paper
-    readonly property color ink: "#4a4536"         // warm near-black ink
+    // ===== paper (Terminal Data Slate) =====
+    readonly property color page: "#0f141e"        // dark terminal slate
+    readonly property color ink: "#d6eef8"         // phosphor cyan-white ink
 
-    // ===== accents =====
-    readonly property color tapeTeal: "#7fb8bd"
-    readonly property color tapeCoral: "#e8886f"
-    readonly property color tapeMint: "#b7d99a"
-    readonly property color tag: "#eec25e"          // mustard hang-tag
-    readonly property color accentCurrent: "#3fa7c4" // "this one's picked" ring + marker
+    // ===== accents (Hazard / Telemetry Tape) =====
+    readonly property color tapeTeal: "#00e5ff"
+    readonly property color tapeCoral: "#ff6b1a"
+    readonly property color tapeMint: "#00e676"
+    readonly property color tag: "#ff9e2c"          // amber data tag
+    readonly property color accentCurrent: "#00e5ff" // "this one's picked" ring + marker
 
-    // ===== cork board =====
-    readonly property color cork: "#c99a63"
-    readonly property color corkLight: "#dfb883"
-    readonly property color corkDark: "#a97b48"
-    readonly property color corkSpeck: "#6f4a29"
-    readonly property color frameWood: "#9b6a3f"
-    readonly property color frameHighlight: "#bd8a58"
-    readonly property color frameShade: "#5b3c22"
-    readonly property color noteShadow: "#4d3220"   // pinned paper's drop shadow
-    readonly property color pinPink: "#d98cc0"
+    // ===== tactical evidence board (CorkBoard.qml) =====
+    readonly property color cork: "#0f141e"
+    readonly property color corkLight: "#182232"
+    readonly property color corkDark: "#090c12"
+    readonly property color corkSpeck: "#05070b"
+    readonly property color frameWood: "#161e2c"
+    readonly property color frameHighlight: "#26344a"
+    readonly property color frameShade: "#070a0f"
+    readonly property color noteShadow: "#04060a"   // pinned slate's drop shadow
+    readonly property color pinPink: "#ff2a6d"
 
-    // ===== film strip (the Overview) =====
-    readonly property color filmBase: "#18171c"        // the film itself
-    readonly property color filmEdge: "#0b0a0e"        // its dark outline / gaps between frames
-    readonly property color filmFrame: "#232229"       // one frame's slightly lighter box
-    readonly property color filmScreen: "#2b2a33"      // the picture area inside a frame
-    readonly property color filmScreenHover: "#2f4a3a" // ...while a window is dragged over it
-    readonly property color filmHole: "#e9e3d2"        // sprocket holes (light, like the lamp behind)
-    readonly property color filmHoleShade: "#a39d8b"   // their inner shadow
-    readonly property color filmPrint: "#f0a63c"       // amber edge print (frame numbers)
-    readonly property color filmPrintSoft: "#88f0e8d6" // faint text on the picture area
+    // ===== Esper microfiche reel (the Overview) =====
+    readonly property color filmBase: "#090c12"        // the data reel base
+    readonly property color filmEdge: "#040609"        // its dark outline / gaps between frames
+    readonly property color filmFrame: "#111722"       // one frame's slightly lighter box
+    readonly property color filmScreen: "#161e2c"      // the picture area inside a frame
+    readonly property color filmScreenHover: "#182c3c" // ...while a window is dragged over it
+    readonly property color filmHole: "#1e293b"        // sprocket holes
+    readonly property color filmHoleShade: "#0b0f17"   // their inner shadow
+    readonly property color filmPrint: "#ff9e2c"       // amber edge print (frame numbers)
+    readonly property color filmPrintSoft: "#8800e5ff" // faint telemetry text on the picture area
 
     // ===== wallpaper board =====
     readonly property color boardBg: ThemeService.palette.boardBg            // the tray behind the cards
     readonly property color boardBgClear: Qt.rgba(boardBg.r, boardBg.g, boardBg.b, 0)  // same colour, no alpha (edge fades)
     readonly property color boardDot: ThemeService.palette.boardDot           // the dot grid on it
-    readonly property color tapePink: "#f4a3c8"           // 4th tape colour (others above)
-    readonly property color accentPink: "#ff8fd6"         // same pink as Theme.irisColorPink
-    readonly property color labelPaper: "#fffdf7"         // name tags
-    readonly property color inkSoft: "#8b8aa6"            // captions
+    readonly property color tapePink: "#ff2a6d"           // 4th tape colour (others above)
+    readonly property color accentPink: "#ff9e2c"         // same amber as Theme.irisColorPink
+    readonly property color labelPaper: "#121824"         // name tags
+    readonly property color inkSoft: "#7890a8"            // captions
 }
