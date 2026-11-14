@@ -25,7 +25,7 @@ Item {
 
     property color colorTop: mt.accentMint
     property color colorBottom: mt.accentCyan
-    property real cornerRadius: 12
+    property real cornerRadius: mt.edgy ? mt.radiusInner : 12
     // Outline + the white line (Theme.whiteLine): the same as every block's.
     property real ringWidth: mt.borderWidth + mt.whiteLine
     // The halftone and the light bands. Dark dots / white bands suit a light

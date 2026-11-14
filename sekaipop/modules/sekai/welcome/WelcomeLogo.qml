@@ -64,14 +64,16 @@ Item {
     readonly property color waveDeep: Qt.darker(root.fill, 1.22)
     readonly property color waveMid: Qt.darker(root.fill, 1.08)
     readonly property color waveCrest: Qt.tint(root.fill, Qt.rgba(1, 1, 1, 0.7))
-    // The small line above the word: hiragana "se ka i". (Katakana is
-    // "\u30bb\u30ab\u30a4".)
-    property var kana: ["\u305b", "\u304b", "\u3044"]
+    // The small line above the word: katakana "de-kku" ("デック"), matching
+    // Blade Runner's Japanese neon signage.
+    property var kana: ["\u30c7", "\u30c3", "\u30af"]
 
-    // Sized so the whole mark (kana, sparkles and stroke included) is about 60% of
-    // the page width and 32% of its height, as the logo in the video is.
+    // Sized so the whole mark (kana, reticles and stroke included) is about 60% of
+    // the page width and 32% of its height.
     readonly property real size: 114 * root.unit
-    readonly property var axes: ({ "wght": 1000, "ROND": 100, "wdth": 100 })
+    readonly property real l1Size: Math.round(root.size * 0.72)
+    readonly property real l2Size: Math.round(root.size * 0.86)
+    readonly property var axes: ({ "wght": 1000, "ROND": 0, "wdth": 90 })
     // The margin round the word. The stroke, its shadow and the sparkles are drawn
     // in it, and anything that reaches past it is cut off flat, so it has to be
     // wider than the stroke and its shadow with room to spare.
@@ -123,7 +125,7 @@ Item {
         id: fm1
 
         font.family: Theme.fontFamily
-        font.pixelSize: Math.round(root.size)
+        font.pixelSize: root.l1Size
         font.weight: Font.Black
         font.variableAxes: root.axes
     }
@@ -132,21 +134,21 @@ Item {
         id: fm2
 
         font.family: Theme.fontFamily
-        font.pixelSize: Math.round(root.size * 0.9)
+        font.pixelSize: root.l2Size
         font.weight: Font.Black
         font.variableAxes: root.axes
     }
 
     readonly property real l1X: root.pad
-    readonly property real l1Y: root.pad + 4 * root.unit
-    readonly property real l2Y: root.pad + root.size * 0.77
+    readonly property real l1Y: root.pad + 8 * root.unit
+    readonly property real l2Y: root.pad + root.size * 0.72
     // (tightBoundingRect() does not announce a change of font, so each of these
     // reads the metrics' ascent and descent first: they do announce it, and the
     // measurement is taken again when the font is really set. Without that it was
     // taken once, before the font, for the default 9 px one, and the wave was
     // built for a letter 9 px tall.)
-    readonly property rect t1: (fm1.ascent + fm1.descent > 0) ? fm1.tightBoundingRect("S") : Qt.rect(0, 0, 0, 0)
-    readonly property rect t2: (fm2.ascent + fm2.descent > 0) ? fm2.tightBoundingRect("P") : Qt.rect(0, 0, 0, 0)
+    readonly property rect t1: (fm1.ascent + fm1.descent > 0) ? fm1.tightBoundingRect("D") : Qt.rect(0, 0, 0, 0)
+    readonly property rect t2: (fm2.ascent + fm2.descent > 0) ? fm2.tightBoundingRect("D") : Qt.rect(0, 0, 0, 0)
     readonly property real l1Top: root.l1Y + fm1.ascent + root.t1.y
     readonly property real l1Bottom: root.l1Top + root.t1.height
     readonly property real l2Top: root.l2Y + fm2.ascent + root.t2.y
@@ -666,7 +668,7 @@ Item {
                 height: comp.height
             }
 
-            // ---- first line, "Sekai": the backs, then the faces, then the textures ----
+            // ---- first line, "DECKARD": the backs, then the faces, then the textures ----
             Item {
                 width: comp.width
                 height: comp.height
@@ -677,9 +679,9 @@ Item {
 
                     x: root.l1X
                     y: root.l1Y
-                    chars: ["S", "e", "k", "a", "i"]
+                    chars: ["D", "E", "C", "K", "A", "R", "D"]
                     slotBase: 0
-                    pixelSize: root.size
+                    pixelSize: root.l1Size
                     part: "back"
                 }
             }
@@ -694,9 +696,9 @@ Item {
                 Line {
                     x: root.l1X
                     y: root.l1Y
-                    chars: ["S", "e", "k", "a", "i"]
+                    chars: ["D", "E", "C", "K", "A", "R", "D"]
                     slotBase: 0
-                    pixelSize: root.size
+                    pixelSize: root.l1Size
                     part: "face"
                 }
             }
@@ -724,7 +726,7 @@ Item {
                 visible: root.fxDots > 0.001 || root.fxWave > 0.001 || root.shineU > 0.001
             }
 
-            // ---- second line, "Pop", sits lower and to the right, in front of the first ----
+            // ---- second line, "DECK", sits lower and to the right, in front of the first ----
             Item {
                 width: comp.width
                 height: comp.height
@@ -735,9 +737,9 @@ Item {
 
                     x: root.pad + root.width - line2Back.implicitWidth - 4 * root.unit
                     y: root.l2Y
-                    chars: ["P", "o", "p"]
-                    slotBase: 5
-                    pixelSize: Math.round(root.size * 0.9)
+                    chars: ["D", "E", "C", "K"]
+                    slotBase: 7
+                    pixelSize: root.l2Size
                     part: "back"
                 }
             }
@@ -752,9 +754,9 @@ Item {
                 Line {
                     x: line2Back.x
                     y: root.l2Y
-                    chars: ["P", "o", "p"]
-                    slotBase: 5
-                    pixelSize: Math.round(root.size * 0.9)
+                    chars: ["D", "E", "C", "K"]
+                    slotBase: 7
+                    pixelSize: root.l2Size
                     part: "face"
                 }
             }
@@ -782,12 +784,12 @@ Item {
                 visible: root.fxDots > 0.001 || root.fxWave > 0.001 || root.shineU > 0.001
             }
 
-            // ---- the small kana above the first line: letters of their own ----
+            // ---- the small katakana above the first line: letters of their own ----
             Row {
                 id: kanaRow
 
-                x: root.pad + line1Back.implicitWidth * 0.5
-                y: root.pad - root.size * 0.30
+                x: root.pad + line1Back.implicitWidth * 0.56
+                y: root.pad - root.size * 0.28
                 z: 7
                 spacing: -root.size * 0.012
 
@@ -795,7 +797,7 @@ Item {
                     model: root.kana
 
                     Cell {
-                        slotBase: 8
+                        slotBase: 11
                         lineX: kanaRow.x
                         lineY: kanaRow.y
                         pixelSize: Math.round(root.size * 0.27)

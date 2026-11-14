@@ -609,7 +609,7 @@ PanelWindow {
                             id: tile
                             width: 36
                             height: 36
-                            radius: 11
+                            radius: mt.edgy ? mt.radiusInner : 11
                             border.width: mt.borderWidth
                             border.color: mt.pLine
                             gradient: Gradient {
@@ -659,7 +659,7 @@ PanelWindow {
                             anchors.verticalCenter: parent.verticalCenter
                             width: clearTextSmall.implicitWidth + 22
                             height: 26
-                            radius: 13
+                            radius: mt.edgy ? mt.radiusInner : 13
                             border.width: 2
                             border.color: mt.pLine
                             color: clearAreaSmall.containsMouse ? mt.irisColorPink : mt.pSurface

@@ -69,6 +69,8 @@ Singleton {
         "util.record": true,
         "util.wallpapers": true,
         // ===== General =====
+        // Widget & shell style: "cyberpunk" (angular cyberdeck default) | "sekaipop" (classic curvy look).
+        "appearance.style": "cyberpunk",
         "time.use24h": false,
         "weather.fahrenheit": false,
         // How a new notification announces itself: phone (the Quick Panel's phone rises and buzzes; the default) | popups (a stack of cards in the corner).
@@ -238,11 +240,12 @@ Singleton {
         // Remembered between visits; not part of a desktop preset (browsing, not the look).
         // (A merge once dropped these and set() ignores a key with no default, so every
         // choice was thrown away: tests/settings-test/keys_have_defaults_test.js guards it.)
-        "wallhaven.sort": "",           // "" = relevance for a search, the month's top without one
-        "wallhaven.topRange": "1M",
-        "wallhaven.categories": "general,anime,people",
-        "wallhaven.shape": "landscape",
-        "wallhaven.atLeast": "screen",  // "screen" = the monitor the picker is on
+        "wallhaven.query": "cyberpunk", // remembered search query (default "cyberpunk" for Deckard's Deck)
+        "wallhaven.sort": "toplist",    // "" = relevance for a search, toplist without one
+        "wallhaven.topRange": "1y",
+        "wallhaven.categories": "general",
+        "wallhaven.shape": "any",
+        "wallhaven.atLeast": "any",     // "screen" = the monitor the picker is on
         "wallhaven.colour": "",
         // ===== Matugen =====
         // The Matugen theme's knobs (Edit Desktop > THEME > Matugen; MatugenMath.js): the

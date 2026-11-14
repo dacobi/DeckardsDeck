@@ -135,8 +135,9 @@ ok(S.heroPose("logo").scale === 1 && S.heroPose("logo").openY === 1 && S.heroPos
 
 // ---- the logo's run: a burst out of the middle, in ms ----
 {
-    const n = 11
-    ok(M.BURST.length === n && M.LETTER_REST.length === n, "one burst and one resting pose for each of the 11 slots (5 + 3 letters and 3 kana)")
+    const n = 14
+    const nLetters = 11
+    ok(M.BURST.length === n && M.LETTER_REST.length === n, "one burst and one resting pose for each of the 14 slots (7 + 4 letters and 3 katakana)")
     let exact = true, mono = true
     for (let i = 0; i < n; i++) {
         if (M.letterProgress(0, i) !== 0 || M.letterProgress(1, i) !== 1 || M.burstSpring(0, i) !== 0 || M.burstSpring(1, i) !== 1) exact = false
@@ -145,10 +146,10 @@ ok(S.heroPose("logo").scale === 1 && S.heroPose("logo").openY === 1 && S.heroPos
     }
     ok(exact, "every slot is at exactly 0 at reveal 0 and exactly 1 at reveal 1 (its progress and its spring)")
     ok(mono, "no slot's progress ever goes backwards")
-    const at = M.BURST.slice(0, 8).map(b => b.at)
+    const at = M.BURST.slice(0, nLetters).map(b => b.at)
     ok(!at.every((v, i) => i === 0 || v > at[i - 1]), "the letters do not come in left to right (a burst, not a text cursor)")
-    ok(at[2] === Math.min(...at), "the letter in the middle of the word (the k) is the first to leave the middle")
-    ok(new Set(at).size === 8, "no two letters start together")
+    ok(at[3] === Math.min(...at), "the letter in the middle of the word (the K of DECKARD) is the first to leave the middle")
+    ok(new Set(at).size === nLetters, "no two letters start together")
     ok(new Set(M.BURST.map(b => b.zeta + "/" + b.omega)).size === n, "no two slots share a spring (each has its own damping and speed)")
     ok(new Set(M.BURST.map(b => b.tilt)).size === n && M.BURST.every(b => Math.abs(b.tilt) >= 20 && Math.abs(b.tilt) <= 60), "each slot starts at its own angle (20-60 degrees)")
     let peaksOk = true, peaks = []
@@ -160,10 +161,10 @@ ok(S.heroPose("logo").scale === 1 && S.heroPose("logo").openY === 1 && S.heroPos
     }
     ok(peaksOk, "every slot hops 10-30% past its size, each a different amount (" + peaks.join(" ") + ")")
     ok(M.BURST.every(b => b.dur >= 600), "each pop runs for at least 600 ms (not rushed)")
-    const lettersEnd = Math.max(...M.BURST.slice(0, 8).map(b => b.at + b.dur))
-    ok(M.BURST[8].at < lettersEnd && M.BURST[8].at > Math.min(...at), "the kana come in while the last letters are still landing, not before the burst and not after it")
+    const lettersEnd = Math.max(...M.BURST.slice(0, nLetters).map(b => b.at + b.dur))
+    ok(M.BURST[nLetters].at < lettersEnd && M.BURST[nLetters].at > Math.min(...at), "the kana come in while the last letters are still landing, not before the burst and not after it")
     ok(M.BURST.every(b => b.at + b.dur <= 0.6 * M.LOGO_RUN_MS), "every pop is over by 60% of the run, leaving the rest for the combined pass")
-    ok(M.BURST.slice(8).every(b => Math.abs(b.swirl) >= 0.25) && M.BURST.slice(0, 8).every(b => Math.abs(b.swirl) < 0.2), "the kana fly on arcs, the letters on nearly straight lines")
+    ok(M.BURST.slice(nLetters).every(b => Math.abs(b.swirl) >= 0.25) && M.BURST.slice(0, nLetters).every(b => Math.abs(b.swirl) < 0.2), "the kana fly on arcs, the letters on nearly straight lines")
 }
 {
     ok(M.seg(0, 100, 200) === 0 && M.seg(1, 100, 200) === 1 && M.seg(100 / M.LOGO_RUN_MS, 100, 200) === 0 && near(M.seg(200 / M.LOGO_RUN_MS, 100, 200), 0.5), "seg: a stretch of the run starts at its start and takes its length")
@@ -171,8 +172,8 @@ ok(S.heroPose("logo").scale === 1 && S.heroPose("logo").openY === 1 && S.heroPos
     const exact = [M.strokeRun, M.halftoneRun, M.squiggleRun, M.ignitionRun, M.warpRun, M.sweepRun, r => M.decorRun(r, 0), r => M.decorRun(r, 3)]
     ok(exact.every(f => f(0) === 0 && f(1) === 1), "every combined pass is exactly 0 at reveal 0 and exactly 1 at reveal 1")
     ok(exact.every(f => { let prev = 0, ok2 = true; for (let r = 0; r <= 1; r += 0.005) { const v = f(r); if (v < prev - 1e-12) ok2 = false; prev = v } return ok2 }), "no combined pass goes backwards")
-    const lettersEnd = Math.max(...M.BURST.slice(0, 8).map(b => b.at + b.dur))
-    ok(M.STROKE_AT > Math.min(...M.BURST.slice(0, 8).map(b => b.at)) && M.STROKE_AT < lettersEnd, "the light outer stroke starts growing while the letters are still arriving")
+    const lettersEnd = Math.max(...M.BURST.slice(0, 11).map(b => b.at + b.dur))
+    ok(M.STROKE_AT > Math.min(...M.BURST.slice(0, 11).map(b => b.at)) && M.STROKE_AT < lettersEnd, "the light outer stroke starts growing while the letters are still arriving")
     ok(M.HALFTONE_AT > M.STROKE_AT && M.DECOR_AT > M.HALFTONE_AT && M.SQUIGGLE_AT > M.DECOR_AT, "the stroke, its halftone, the sparkles and the squiggle come one after the other")
     ok(M.WARP_AT >= lettersEnd, "the wave pass starts once every letter has landed")
     ok(M.SWEEP_AT >= M.WARP_AT && M.SWEEP_AT + M.SWEEP_MS <= M.WARP_AT + M.WARP_MS, "the light sweep crosses while the wave pass runs (the shader draws both)")
@@ -190,8 +191,8 @@ ok(S.heroPose("logo").scale === 1 && S.heroPose("logo").openY === 1 && S.heroPos
     const fx = [M.fxWaveRun, M.fxDotsRun, M.fxMatteRun, M.fxShineRun]
     ok(fx.every(f => f(0) === 0 && f(1) === 1), "every texture of the word is exactly 0 at reveal 0 and exactly 1 at reveal 1")
     ok(fx.every(f => { let prev = 0, good = true; for (let r = 0; r <= 1; r += 0.005) { const v = f(r); if (v < prev - 1e-12) good = false; prev = v } return good }), "no texture of the word goes backwards")
-    const lastStart = Math.max(...M.BURST.slice(0, 8).map(b => b.at))
-    const lettersEnd = Math.max(...M.BURST.slice(0, 8).map(b => b.at + b.dur))
+    const lastStart = Math.max(...M.BURST.slice(0, 11).map(b => b.at))
+    const lettersEnd = Math.max(...M.BURST.slice(0, 11).map(b => b.at + b.dur))
     const starts = [M.FX_WAVE_AT, M.FX_DOTS_AT, M.FX_MATTE_AT, M.FX_SHINE_AT]
     ok(starts.every(t => t > lastStart), "the textures start once every letter has left the middle (a letter is never the only one without them)")
     ok(starts.every(t => t >= 0.75 * lettersEnd), "and while the last letters are only settling, not before they are on their way")
@@ -200,17 +201,18 @@ ok(S.heroPose("logo").scale === 1 && S.heroPose("logo").openY === 1 && S.heroPos
 }
 // ---- the exit: everything collapses into the middle ----
 {
-    const n = 11
+    const n = 14
+    const nLetters = 11
     let exact = true, endsOk = true
     for (let i = 0; i < n; i++) {
         if (M.leaveProgress(0, i) !== 0 || M.leaveProgress(1, i) !== 1) exact = false
-        const dur = i >= 8 ? M.LEAVE_KANA_MS : M.LEAVE_LETTER_MS
+        const dur = i >= nLetters ? M.LEAVE_KANA_MS : M.LEAVE_LETTER_MS
         if (M.leaveStart(i) + dur > M.LOGO_LEAVE_MS) endsOk = false
     }
     ok(exact, "leaveProgress: exactly 0 when the exit has not started and exactly 1 when it is over, for every slot")
     ok(endsOk, "every slot has gone into the middle before the exit's last frame")
-    ok(M.leaveStart(8) < Math.min(...Array.from({ length: 8 }, (_, i) => M.leaveStart(i))) || M.leaveStart(8) === 0, "the kana are the first to go")
-    ok(M.leaveStart(7) <= M.leaveStart(5) && M.leaveStart(5) < M.leaveStart(2) && M.leaveStart(7) === 0, "the last letters to come in are the first to go (the exit mirrors the entrance)")
+    ok(M.leaveStart(nLetters) < Math.min(...Array.from({ length: nLetters }, (_, i) => M.leaveStart(i))) || M.leaveStart(nLetters) === 0, "the kana are the first to go")
+    ok(M.leaveStart(10) <= M.leaveStart(7) && M.leaveStart(7) < M.leaveStart(3) && M.leaveStart(10) === 0, "the last letters to come in are the first to go (the exit mirrors the entrance)")
     ok(M.collapse(0) === 0 && M.collapse(1) === 1, "collapse: starts at 0 and ends exactly at 1")
     let lo = 0
     for (let t = 0; t <= 1; t += 0.005) lo = Math.min(lo, M.collapse(t))
@@ -245,8 +247,8 @@ ok(S.heroPose("logo").scale === 1 && S.heroPose("logo").openY === 1 && S.heroPos
     ok(starts.every((v, i) => i === 0 || v > starts[i - 1]), "the layers of a letter start one after the other")
 }
 ok(near(M.squash(0), 0) && near(M.squash(1), 0) && near(M.squash(0.5), 1) && near(M.squash(-1), 0) && near(M.squash(2), 0), "squash is 0 at both ends of a pop and 1 in the middle")
-ok(M.LETTER_REST.length === 11 && M.LETTER_REST.every(r => Math.abs(r[0]) <= 8 && Math.abs(r[1]) <= 0.06), "every letter rests a little crooked, within a few degrees")
-ok(new Set(M.LETTER_REST.map(r => r[0] + "/" + r[1])).size === 11, "no two letters rest the same way (randomized placement)")
+ok(M.LETTER_REST.length === 14 && M.LETTER_REST.every(r => Math.abs(r[0]) <= 8 && Math.abs(r[1]) <= 0.06), "every letter rests a little crooked, within a few degrees")
+ok(new Set(M.LETTER_REST.map(r => r[0] + "/" + r[1])).size === 14, "no two letters rest the same way (randomized placement)")
 ok(M.letterRest(99)[0] === 0 && M.letterRest(99)[1] === 0 && M.letterRest(2) === M.LETTER_REST[2], "letterRest: an unknown slot sits straight")
 ok([ "logo", "glyph", "units", "frame", "credits" ].every(k => { const q = S.heroPose(k); return q.scale > 0 && q.scale <= 1 && q.openY > 0 && q.openY <= 1 && q.rise >= 0 && q.rate > 0 && q.rate <= 1 }), "every hero has a starting pose")
 ok(S.heroPose("nope") === S.HERO_POSE.glyph, "an unknown hero lands like an icon")

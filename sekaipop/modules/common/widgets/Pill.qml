@@ -58,7 +58,10 @@ Item {
     property color fillColor: classicScope ? mt.pSurface : mt.surface
     property Gradient fillGradient: null
     property real cornerRadius: height / 2
-    property real ringWidth: 8
+    readonly property real effectiveRadius: mt.edgy
+        ? Math.min(root.cornerRadius, (root.width >= 160 && root.height >= 50) ? mt.radiusOuter : mt.radiusInner)
+        : root.cornerRadius
+    property real ringWidth: mt.edgy ? (mt.borderWidth + mt.whiteLine) : 8
 
     // A ring drawn over the outer edge of the fill (inside, so the pill does
     // not grow), for the flat cards whose ringWidth equals their outline and
@@ -103,7 +106,7 @@ Item {
         y: root.shadowDy
         width: root.capWidth
         height: root.capHeight
-        radius: root.cornerRadius
+        radius: root.effectiveRadius
         color: root.capRim ? mt.capShade
             : (root.classicScope ? mt.pLineShadow : mt.lineShadow)
         antialiasing: true
@@ -164,7 +167,7 @@ Item {
             id: face
             visible: !root.capsule && !root.bare
             anchors.fill: parent
-            radius: root.cornerRadius
+            radius: root.effectiveRadius
             border.width: root.borderWidth
             border.color: root.capRim ? mt.capRim
                 : (root.classicScope ? mt.pLine : mt.line)
@@ -188,7 +191,7 @@ Item {
             id: fill
             anchors.fill: face
             anchors.margins: root.capsule ? 0 : root.ringWidth
-            radius: root.capsule ? Math.min(width, height) / 2 : Math.max(0, root.cornerRadius - root.ringWidth)
+            radius: root.capsule ? (mt.edgy ? mt.radiusInner : Math.min(width, height) / 2) : Math.max(0, root.effectiveRadius - root.ringWidth)
             color: root.bare ? "transparent"
                 : (root.capsule
                     ? (root.capKeepsFill ? root.fillColor : mt.capChip)
@@ -202,6 +205,22 @@ Item {
                 }
             }
             antialiasing: true
+        }
+
+        // Cyberpunk HUD corner brackets on card-sized surfaces.
+        Item {
+            id: hudCorners
+            anchors.fill: fill
+            visible: mt.edgy && !root.capsule && !root.bare && root.width >= 180 && root.height >= 60
+            readonly property color bracketColor: Qt.rgba(mt.accentMint.r, mt.accentMint.g, mt.accentMint.b, mt.dark ? 0.55 : 0.40)
+
+            // Top-left L-bracket
+            Rectangle { x: 3; y: 3; width: 10; height: 2; color: hudCorners.bracketColor }
+            Rectangle { x: 3; y: 5; width: 2;  height: 8; color: hudCorners.bracketColor }
+
+            // Bottom-right L-bracket
+            Rectangle { x: parent.width - 13; y: parent.height - 5; width: 10; height: 2; color: hudCorners.bracketColor }
+            Rectangle { x: parent.width - 5;  y: parent.height - 13; width: 2; height: 8; color: hudCorners.bracketColor }
         }
 
         // Above the fill and everything declared inside the Pill.

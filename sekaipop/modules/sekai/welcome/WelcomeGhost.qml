@@ -16,9 +16,9 @@ Item {
     property real shown: 1
 
     // The lettering is sized by the page's width, but never taller than the screen.
-    readonly property real fontPx: Math.min(root.width * 0.37, root.height * 0.95)
+    readonly property real fontPx: Math.min(root.width * 0.28, root.height * 0.72)
     readonly property real rimPx: root.fontPx * 0.05
-    readonly property var axes: ({ "wght": 1000, "ROND": 100, "wdth": 100 })
+    readonly property var axes: ({ "wght": 1000, "ROND": 0, "wdth": 88 })
 
     opacity: root.shown
     visible: root.shown > 0.001
@@ -43,7 +43,7 @@ Item {
             Text {
                 x: lines.dx
                 y: lines.dy
-                text: "Sekai"
+                text: "DECKARD"
                 color: lines.ink
                 font.family: Theme.fontFamily
                 font.pixelSize: root.fontPx
@@ -52,20 +52,20 @@ Item {
             }
 
             Text {
-                x: lines.dx + root.fontPx * 0.95
-                y: lines.dy + root.fontPx * 0.78
-                text: "Pop"
+                x: lines.dx + root.fontPx * 1.05
+                y: lines.dy + root.fontPx * 0.82
+                text: "DECK"
                 color: lines.ink
                 font.family: Theme.fontFamily
-                font.pixelSize: root.fontPx
+                font.pixelSize: root.fontPx * 1.12
                 font.weight: Font.Black
                 font.variableAxes: root.axes
             }
         }
 
         Item {
-            x: -root.fontPx * 0.12
-            y: root.height * 0.5 - root.fontPx * 0.95
+            x: -root.fontPx * 0.08
+            y: root.height * 0.5 - root.fontPx * 1.02
 
             Repeater {
                 model: 16

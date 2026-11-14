@@ -695,7 +695,7 @@ PanelWindow {
         height: 44
         cornerRadius: 13
         ringWidth: 3
-        rotation: -5
+        rotation: -5 * mt.badgeTilt
         transformOrigin: Item.Center
         fillGradient: Gradient {
             GradientStop { position: 0.0; color: mt.accentMint }
@@ -729,7 +729,7 @@ PanelWindow {
 
         Rectangle {
             anchors.fill: parent
-            radius: 10
+            radius: mt.edgy ? mt.radiusInner : 10
             color: mt.pSurfaceHover
             border.width: mt.borderWidth
             border.color: mt.pLine
@@ -738,7 +738,7 @@ PanelWindow {
         Rectangle {
             y: 3
             height: sw.height - 6
-            radius: 7
+            radius: mt.edgy ? Math.max(1, mt.radiusInner - 1) : 7
             color: mt.accentMint
             x: 3 + (sw.full ? 0 : (sw.pm ? sw.half : 0))
             width: sw.full ? sw.width - 6 : sw.half
@@ -811,7 +811,7 @@ PanelWindow {
         cornerRadius: 10
         ringWidth: 3
         fillColor: mt.chipFill
-        rotation: 3
+        rotation: 3 * mt.badgeTilt
         transformOrigin: Item.Center
 
         Text {
@@ -838,7 +838,7 @@ PanelWindow {
         cornerRadius: 9
         ringWidth: 2
         fillColor: mt.accentMint
-        rotation: 3
+        rotation: 3 * mt.badgeTilt
         transformOrigin: Item.Center
 
         Text {
@@ -873,7 +873,7 @@ PanelWindow {
             y: 5
             width: db.width
             height: db.height - 6
-            radius: 9
+            radius: mt.edgy ? mt.radiusInner : 9
             color: mt.pLineShadow
         }
 
@@ -881,10 +881,10 @@ PanelWindow {
             width: db.width
             height: db.height - (db.today ? 6 : 8)
             y: db.today ? 1 : 3
-            radius: 9
+            radius: mt.edgy ? mt.radiusInner : 9
             color: db.today ? "transparent" : mt.pSurfaceHover
             opacity: db.past ? 0.55 : 1
-            rotation: db.today ? -3 : 0
+            rotation: db.today ? -3 * mt.badgeTilt : 0
             transformOrigin: Item.Center
             border.width: db.today ? mt.borderWidth : 0
             border.color: mt.pLine
@@ -959,8 +959,8 @@ PanelWindow {
                 readonly property int pad: 14
 
                 // How much attitude the keys have. 0 / 0 = a flat, level row.
-                readonly property real tilt: 2.5       // degrees, outer keys; inner keys lean 40% of it
-                readonly property int stagger: 10      // px the inner keys sit lower (the V)
+                readonly property real tilt: mt.cardTilt       // degrees, outer keys; inner keys lean 40% of it
+                readonly property int stagger: Math.round(10 * mt.cardStagger)  // px the inner keys sit lower (the V)
 
                 // On the navy chip: bright accents in the dark modes, navy ink in
                 // Light (where the chip is pale and mint would vanish).
@@ -1283,7 +1283,8 @@ PanelWindow {
                                     height: kripple.r * 2
                                     x: kstage.width / 2 - kripple.r
                                     y: kripple.cy - kripple.r
-                                    radius: kripple.r
+                                    radius: mt.edgy ? 4 : kripple.r
+                                    rotation: mt.edgy ? 45 : 0
                                     color: "transparent"
                                     border.width: 3
                                     border.color: win.secs % 2 === 0 ? mt.accentMint : mt.accentCyan
@@ -1393,7 +1394,7 @@ PanelWindow {
                                         anchors.verticalCenter: parent.verticalCenter
                                         width: parent.width
                                         height: 12
-                                        radius: 6
+                                        radius: mt.edgy ? 1 : 6
                                         color: mt.pSurfaceDivider
                                         border.width: 2
                                         border.color: mt.pLine
@@ -1404,7 +1405,7 @@ PanelWindow {
                                         x: 2
                                         anchors.verticalCenter: parent.verticalCenter
                                         height: 8
-                                        radius: 4
+                                        radius: mt.edgy ? 1 : 4
                                         width: Math.max(0, ktrack.headX + ktrack.headSize / 2 - 2)
 
                                         gradient: Gradient {
@@ -1557,7 +1558,7 @@ PanelWindow {
                                         x: 7
                                         width: 12
                                         height: vlane.height
-                                        radius: 6
+                                        radius: mt.edgy ? 1 : 6
                                         color: mt.pSurfaceDivider
                                         border.width: 2
                                         border.color: mt.pLine
@@ -1568,7 +1569,7 @@ PanelWindow {
                                         x: 9
                                         y: 2
                                         width: 8
-                                        radius: 4
+                                        radius: mt.edgy ? 1 : 4
                                         height: Math.max(0, vlane.headY + vlane.headSize / 2 - 2)
 
                                         gradient: Gradient {

@@ -11,13 +11,15 @@ ordinary wallpaper: per monitor, lockscreen, presets and the Matugen colours all
   The picker opens on your folder every time, except
   `qs -c sekaipop ipc call wallpaperpicker wallhaven`, which opens it on Wallhaven.
 - **Search** as you would on the site: words or tags, `-tag` to leave one out, `@user` for
-  someone's uploads, `like:<id>` for similar pictures. With no search it shows the month's top.
-- **Sort**: Relevance (needs a search), Top (over a day ... a year), Latest, Views,
-  Favourites, Random.
-- **Filters** (the badge says how many are changed): categories (General, Anime, People), shape
-  (Landscape by default, or an exact ratio, or any), minimum size (this monitor's by default),
-  and one of Wallhaven's colours. They apply as you pick, and the sort and filters are
-  remembered (they are not part of a desktop preset).
+  someone's uploads, `like:<id>` for similar pictures. Defaults to `"cyberpunk"` and remembers
+  your query between visits (`wallhaven.query`).
+- **Sort**: Relevance (needs a search), Top (over a day ... a year; defaults to **Top · Year**),
+  Latest, Views, Favourites, Random.
+- **Filters** (the badge says how many are changed): quick-tag chips (`Cyberpunk`, `Blade Runner`,
+  `Sci-Fi`, `Synthwave`, `Cityscape`, `All`), categories (**General** by default, plus Anime and
+  People), shape (**Any** by default, or Landscape, or an exact ratio), minimum size (**Any size**
+  by default, or this monitor's, or 1080p/4K), and one of Wallhaven's colours. They apply as you
+  pick, and the query, sort, and filters are remembered (they are not part of a desktop preset).
 - In the **viewer**: category, size, file type, the picture's colours, views and favourites;
   **Set as Desktop / Lockscreen** (downloads first, with its progress on the key and on the
   picture; **Esc** stops it), **Save to folder** without setting it, and **wallhaven.cc**.
@@ -48,7 +50,7 @@ like any other picture.
   open-ended) and keeps its place when a page is added.
 - **Rate limit.** Wallhaven allows 45 requests a minute; the service keeps under 40 by itself.
   If Wallhaven still says no, the message counts down to trying again.
-- **Settings**: `wallhaven.sort`, `.topRange`, `.categories`, `.shape`, `.atLeast`, `.colour`.
+- **Settings**: `wallhaven.query`, `wallhaven.sort`, `.topRange`, `.categories`, `.shape`, `.atLeast`, `.colour`.
 
 ## Where it departs from the handoff
 

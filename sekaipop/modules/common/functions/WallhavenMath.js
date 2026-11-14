@@ -33,6 +33,16 @@ var TOP_RANGES = [
 var CATEGORIES = ["general", "anime", "people"]
 var CATEGORY_LABELS = { general: "General", anime: "Anime", people: "People" }
 
+// One-click search chips in the Filters card for Deckard's Deck.
+var QUICK_TAGS = [
+    { id: "cyberpunk", label: "Cyberpunk" },
+    { id: "blade runner", label: "Blade Runner" },
+    { id: "sci-fi", label: "Sci-Fi" },
+    { id: "synthwave", label: "Synthwave" },
+    { id: "cityscape", label: "Cityscape" },
+    { id: "", label: "All" }
+]
+
 // The Filters card's choices. `ratios` is what Wallhaven gets ("" = no filter).
 var SHAPES = [
     { id: "landscape", label: "Landscape", ratios: "landscape" },
@@ -57,7 +67,7 @@ var COLOURS = ["#660000", "#990000", "#cc0000", "#cc3333", "#ea4c88", "#993399",
 
 // The filters as nothing has been changed: what Reset puts back, and what the badge counts
 // against.
-var DEFAULT_FILTERS = { categories: ["general", "anime", "people"], shape: "landscape", atLeast: "screen", colour: "" }
+var DEFAULT_FILTERS = { categories: ["general"], shape: "any", atLeast: "any", colour: "" }
 
 function has(list, id) {
     for (var i = 0; i < list.length; i++) {
@@ -67,7 +77,17 @@ function has(list, id) {
     return false
 }
 
-// What to sort by when nothing was chosen: relevance for a search, the month's top
+function sameCats(a, b) {
+    if (a.length !== b.length)
+        return false
+    for (var i = 0; i < a.length; i++) {
+        if (b.indexOf(a[i]) < 0)
+            return false
+    }
+    return true
+}
+
+// What to sort by when nothing was chosen: relevance for a search, the year's top
 // otherwise (an empty search sorted by relevance is just noise).
 function defaultSort(query) {
     return String(query || "").trim() !== "" ? "relevance" : "toplist"
@@ -84,7 +104,7 @@ function searchUrl(o) {
     var q = String(o.query || "").trim()
     if (q !== "")
         add("q", q)
-    var cats = Array.isArray(o.categories) ? o.categories : CATEGORIES
+    var cats = Array.isArray(o.categories) ? o.categories : DEFAULT_FILTERS.categories
     var bits = ""
     for (var i = 0; i < CATEGORIES.length; i++)
         bits += cats.indexOf(CATEGORIES[i]) >= 0 ? "1" : "0"
@@ -94,7 +114,7 @@ function searchUrl(o) {
     add("sorting", sort)
     add("order", "desc")
     if (sort === "toplist")
-        add("topRange", has(TOP_RANGES, o.topRange) ? o.topRange : "1M")
+        add("topRange", has(TOP_RANGES, o.topRange) ? o.topRange : "1y")
     var size = atLeastSize(o)
     if (size !== "")
         add("atleast", size)
@@ -113,16 +133,17 @@ function searchUrl(o) {
 }
 
 function shapeOf(id) {
+    var want = id || DEFAULT_FILTERS.shape
     for (var i = 0; i < SHAPES.length; i++) {
-        if (SHAPES[i].id === id)
+        if (SHAPES[i].id === want)
             return SHAPES[i]
     }
-    return SHAPES[0]
+    return SHAPES[SHAPES.length - 1]
 }
 
 // "2560x1440" for Wallhaven's atleast, or "" for none.
 function atLeastSize(o) {
-    var a = o && typeof o.atLeast === "string" ? o.atLeast : "screen"
+    var a = o && typeof o.atLeast === "string" && o.atLeast !== "" ? o.atLeast : DEFAULT_FILTERS.atLeast
     if (a === "any")
         return ""
     if (/^[0-9]+x[0-9]+$/.test(a))
@@ -135,12 +156,12 @@ function atLeastSize(o) {
 function filterCount(f) {
     f = f || {}
     var n = 0
-    var cats = Array.isArray(f.categories) ? f.categories : DEFAULT_FILTERS.categories
-    if (cats.length > 0 && cats.length < CATEGORIES.length)
+    var cats = Array.isArray(f.categories) && f.categories.length > 0 ? f.categories : DEFAULT_FILTERS.categories
+    if (!sameCats(cats, DEFAULT_FILTERS.categories))
         n++
     if (shapeOf(f.shape).id !== DEFAULT_FILTERS.shape)
         n++
-    if ((f.atLeast || "screen") !== DEFAULT_FILTERS.atLeast)
+    if ((f.atLeast || DEFAULT_FILTERS.atLeast) !== DEFAULT_FILTERS.atLeast)
         n++
     if (COLOURS.indexOf(String(f.colour || "").toLowerCase()) >= 0)
         n++
@@ -150,7 +171,7 @@ function filterCount(f) {
 var RANGE_WORDS = { "1d": "today", "3d": "over 3 days", "1w": "this week", "1M": "this month",
     "3M": "over 3 months", "6M": "over 6 months", "1y": "this year" }
 
-// The sort key's text: "Top \u00b7 Month", "Relevance", ...
+// The sort key's text: "Top \u00b7 Year", "Relevance", ...
 function sortLabel(sort, topRange) {
     for (var i = 0; i < SORTS.length; i++) {
         if (SORTS[i].id !== sort)
@@ -161,12 +182,12 @@ function sortLabel(sort, topRange) {
             if (TOP_RANGES[j].id === topRange)
                 return "Top \u00b7 " + TOP_RANGES[j].label
         }
-        return "Top \u00b7 Month"
+        return "Top \u00b7 Year"
     }
     return "Relevance"
 }
 
-// The line under the toolbar: what is being shown. "Top this month on Wallhaven \u00b7
+// The line under the toolbar: what is being shown. "Top this year on Wallhaven \u00b7
 // 2560\u00d71440 and up \u00b7 landscape".
 function describe(o) {
     o = o || {}
@@ -176,7 +197,7 @@ function describe(o) {
     if (q !== "")
         what = "\u201c" + q + "\u201d on Wallhaven"
     else if (sort === "toplist")
-        what = "Top " + (RANGE_WORDS[o.topRange] || RANGE_WORDS["1M"]) + " on Wallhaven"
+        what = "Top " + (RANGE_WORDS[o.topRange] || RANGE_WORDS["1y"]) + " on Wallhaven"
     else if (sort === "date_added")
         what = "Latest on Wallhaven"
     else if (sort === "views")
@@ -194,7 +215,7 @@ function describe(o) {
     var shape = shapeOf(o.shape)
     if (shape.id !== "any")
         parts.push(shape.id === "landscape" ? "landscape" : shape.label)
-    var cats = Array.isArray(o.categories) ? o.categories : CATEGORIES
+    var cats = Array.isArray(o.categories) && o.categories.length > 0 ? o.categories : DEFAULT_FILTERS.categories
     if (cats.length > 0 && cats.length < CATEGORIES.length)
         parts.push(cats.map(function (c) { return CATEGORY_LABELS[c] }).join(" + "))
     return parts.join(" \u00b7 ")
@@ -205,14 +226,14 @@ function describe(o) {
 function filtersSentence(f) {
     f = f || {}
     var bits = []
-    var cats = Array.isArray(f.categories) ? f.categories : CATEGORIES
-    if (cats.length > 0 && cats.length < CATEGORIES.length)
+    var cats = Array.isArray(f.categories) && f.categories.length > 0 ? f.categories : DEFAULT_FILTERS.categories
+    if (!sameCats(cats, DEFAULT_FILTERS.categories) && cats.length < CATEGORIES.length)
         bits.push(cats.map(function (c) { return CATEGORY_LABELS[c] }).join(" and ") + " only")
     var shape = shapeOf(f.shape)
     if (shape.id !== DEFAULT_FILTERS.shape)
         bits.push(shape.id === "any" ? "any shape" : shape.label + " only")
-    if ((f.atLeast || "screen") !== DEFAULT_FILTERS.atLeast)
-        bits.push(f.atLeast === "any" ? "any size" : "at least " + String(f.atLeast).replace("x", "\u00d7"))
+    if ((f.atLeast || DEFAULT_FILTERS.atLeast) !== DEFAULT_FILTERS.atLeast)
+        bits.push(f.atLeast === "any" ? "any size" : (f.atLeast === "screen" ? "this screen's size" : "at least " + String(f.atLeast).replace("x", "\u00d7")))
     if (COLOURS.indexOf(String(f.colour || "").toLowerCase()) >= 0)
         bits.push("mostly " + String(f.colour).toLowerCase())
     if (bits.length === 0)

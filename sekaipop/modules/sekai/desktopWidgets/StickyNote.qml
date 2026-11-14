@@ -117,7 +117,7 @@ Item {
 
         width: 26
         height: 26
-        radius: 9
+        radius: mt.edgy ? mt.radiusInner : 9
         color: btn.danger ? mt.irisColorPink
              : (btnArea.containsMouse ? Qt.rgba(1, 1, 1, 0.7) : (btn.lit ? Qt.rgba(1, 1, 1, 0.45) : "transparent"))
 
@@ -203,7 +203,7 @@ Item {
             // ===== the paper =====
             Pill {
                 anchors.fill: parent
-                cornerRadius: 14
+                cornerRadius: mt.edgy ? 3 : 14
                 ringWidth: mt.borderWidth + 3
                 ringColorTop: Qt.lighter(note.paper, 1.12)
                 ringColorBottom: ringColorTop

@@ -35,6 +35,11 @@ QtObject {
     readonly property bool dark: ThemeService.dark          // true for dark AND darker
     readonly property bool darker: ThemeService.darker
 
+    // "cyberpunk" (default, angular cyberdeck look) or "sekaipop" (classic curvy look).
+    readonly property string widgetStyle: SettingsService.get("appearance.style") === "sekaipop"
+        ? "sekaipop" : "cyberpunk"
+    readonly property bool edgy: widgetStyle === "cyberpunk"
+
     // Light mode: how much of the theme's border colour stays in the border
     // and in the drop shadow (0 = white, 1 = the full navy). Lower = lighter.
     // Pixels one mouse-wheel notch scrolls any list in the shell (WheelScroll.qml).
@@ -176,7 +181,7 @@ QtObject {
     readonly property real phoneRimWidth: 10
     readonly property real phoneBezelWidth: 9
     readonly property real phoneScreenInset: phoneRimWidth + phoneBezelWidth
-    readonly property real phoneCornerRadius: 24
+    readonly property real phoneCornerRadius: edgy ? 6 : 24
     readonly property color phoneWallLight: pal.wallLight
     readonly property color phoneWallMid: pal.wallMid
     readonly property color phoneWallDark: pal.wallDark
@@ -193,17 +198,21 @@ QtObject {
         : ["#00E5FF", "#FF2A6D", "#FF9E2C", "#7C4DFF", "#00E676"]
 
     readonly property int pillHeight: 36
-    readonly property int radiusOuter: 13
-    readonly property int radiusBadge: 15
-    readonly property int borderWidth: 3
+    readonly property int radiusOuter: edgy ? 3 : 13
+    readonly property int radiusBadge: edgy ? 3 : 15
+    readonly property int radiusInner: edgy ? 2 : 10
+    readonly property int borderWidth: edgy ? 2 : 3
     // The white line between a block's navy outline and its colour (a Pill's ring on the
     // desktop cards' keys and digit blocks), and the white ring inside a sticker text's navy
     // outline (StickerText). It is the clock's digit blocks' line (the clock is the reference,
     // so it is left exactly as it was). ONE number, so they all match:
     // a block's ringWidth is borderWidth + whiteLine. The card housing's wide pale ring
     // (outerRingWidth) and Dark mode's inner ring (cardRing) are different things, not this.
-    readonly property real whiteLine: 2
-    readonly property int shadowOffset: 4
+    readonly property real whiteLine: edgy ? 1 : 2
+    readonly property int shadowOffset: edgy ? 3 : 4
+    readonly property real cardTilt: edgy ? 0 : 2.5
+    readonly property real cardStagger: edgy ? 0 : 1
+    readonly property real badgeTilt: edgy ? 0 : 1
 
     // The Quick Panel phone in its flat (2D) look: Settings -> Quick -> Quick Panel phone, and
     // always while Game Mode is on (GameModeService.qml), whatever that says.
@@ -224,7 +233,7 @@ QtObject {
     // that wants the bar's exact look — see Dock.qml's dockPill — can
     // share the same two values instead of re-guessing them.
     readonly property color colOuterRing: "#1e293b"
-    readonly property int outerRingWidth: 4
+    readonly property int outerRingWidth: edgy ? 2 : 4
 
     // Float bar style: how far the bar is inset from the left and right
     // screen edges. It's the same gap the bar keeps between its own edge

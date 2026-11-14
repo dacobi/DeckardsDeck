@@ -426,24 +426,23 @@ Item {
                     dotColor: Qt.rgba(root.dotColor.r, root.dotColor.g, root.dotColor.b, 0.9)
                 }
 
-                // the soft gloss along the top of the letter, and a small round
-                // highlight at its left end
+                // sharp laser-chamfer highlight strip along the top edge of the glyph
                 Rectangle {
-                    x: parent.width * 0.1
-                    y: parent.height * 0.1
-                    width: parent.width * 0.5
-                    height: Math.max(3, parent.height * 0.1)
-                    radius: height / 2
-                    color: Qt.rgba(root.glossColor.r, root.glossColor.g, root.glossColor.b, 0.55)
+                    x: parent.width * 0.08
+                    y: parent.height * 0.09
+                    width: parent.width * 0.58
+                    height: Math.max(2, parent.height * 0.075)
+                    radius: 1
+                    color: Qt.rgba(root.glossColor.r, root.glossColor.g, root.glossColor.b, 0.58)
                 }
 
                 Rectangle {
-                    x: parent.width * 0.05
-                    y: parent.height * 0.1
-                    width: Math.max(3, parent.height * 0.08)
-                    height: width
-                    radius: width / 2
-                    color: Qt.rgba(root.glossColor.r, root.glossColor.g, root.glossColor.b, 0.55)
+                    x: parent.width * 0.70
+                    y: parent.height * 0.09
+                    width: Math.max(3, parent.height * 0.075)
+                    height: Math.max(2, parent.height * 0.075)
+                    radius: 1
+                    color: Qt.rgba(root.glossColor.r, root.glossColor.g, root.glossColor.b, 0.58)
                 }
 
                 // the hard shine: two slanted bands with hard edges that sweep

@@ -875,10 +875,10 @@ PanelWindow {
                                         y: 8
                                         width: 68
                                         height: 70
-                                        cornerRadius: 34
+                                        cornerRadius: mt.edgy ? 4 : 34
                                         ringWidth: mt.borderWidth + mt.whiteLine
                                         shadowDy: 4
-                                        rotation: 6
+                                        rotation: 6 * mt.badgeTilt
                                         transformOrigin: Item.Center
                                         pressed: discArea.pressed
                                         fillColor: mt.chipFill
@@ -1092,7 +1092,7 @@ PanelWindow {
                                         anchors.fill: parent
                                         scale: (0.55 + 0.45 * WM.outBack(humTile.t, 2.2)) * (humArea.containsMouse ? 1.05 : 1)
                                         opacity: Math.min(1, humTile.t * 2.5)
-                                        rotation: humArea.containsMouse ? 0 : -1.6
+                                        rotation: humArea.containsMouse ? 0 : -1.6 * mt.badgeTilt
                                         transformOrigin: Item.Center
                                         Behavior on rotation { NumberAnimation { duration: 200; easing.type: Easing.OutBack; easing.overshoot: 2 } }
 
@@ -1105,7 +1105,7 @@ PanelWindow {
 
                                             Water {
                                                 level: humTile.value / 100 * WM.outBack(humTile.t, 1.4)
-                                                corner: 10
+                                                corner: mt.edgy ? mt.radiusInner : 10
                                             }
                                             TileLabel { x: 8; y: 5; width: parent.width - 10; text: "HUMIDITY" }
                                             Text {
@@ -1136,7 +1136,7 @@ PanelWindow {
                                         anchors.fill: parent
                                         scale: (0.55 + 0.45 * WM.outBack(windTile.t, 2.2)) * (windArea.containsMouse ? 1.05 : 1)
                                         opacity: Math.min(1, windTile.t * 2.5)
-                                        rotation: windArea.containsMouse ? 0 : 1.2
+                                        rotation: windArea.containsMouse ? 0 : 1.2 * mt.badgeTilt
                                         transformOrigin: Item.Center
                                         Behavior on rotation { NumberAnimation { duration: 200; easing.type: Easing.OutBack; easing.overshoot: 2 } }
 
@@ -1227,7 +1227,7 @@ PanelWindow {
                                         anchors.fill: parent
                                         scale: (0.55 + 0.45 * WM.outBack(uvTile.t, 2.2)) * (uvArea.containsMouse ? 1.05 : 1)
                                         opacity: Math.min(1, uvTile.t * 2.5)
-                                        rotation: uvArea.containsMouse ? 0 : -1.2
+                                        rotation: uvArea.containsMouse ? 0 : -1.2 * mt.badgeTilt
                                         transformOrigin: Item.Center
                                         Behavior on rotation { NumberAnimation { duration: 200; easing.type: Easing.OutBack; easing.overshoot: 2 } }
 
@@ -1286,7 +1286,7 @@ PanelWindow {
                                 // The lane the notes run along.
                                 Rectangle {
                                     anchors.fill: parent
-                                    radius: 13
+                                    radius: mt.edgy ? mt.radiusInner : 13
                                     color: mt.classic ? mt.pSurfaceHover : Qt.rgba(mt.colBorder.r, mt.colBorder.g, mt.colBorder.b, 0.28)
                                     border.width: 2
                                     border.color: mt.pLine
@@ -1464,7 +1464,7 @@ PanelWindow {
 
                                             Rectangle {
                                                 anchors.fill: parent
-                                                radius: 11
+                                                radius: mt.edgy ? mt.radiusInner : 11
                                                 color: mt.pSurfaceHover
                                                 border.width: 2
                                                 border.color: dayRow.hovered ? mt.accentMint : mt.pLine
@@ -1477,7 +1477,7 @@ PanelWindow {
                                                     y: 2
                                                     height: parent.height - 4
                                                     width: Math.max(0, (parent.width - 4) * Math.min(1, dayRow.modelData.rain / 100) * WM.outBack(dayRow.t, 1.4))
-                                                    radius: 9
+                                                    radius: mt.edgy ? 1 : 9
                                                     color: Qt.rgba(mt.accentCyan.r, mt.accentCyan.g, mt.accentCyan.b, 0.2)
                                                 }
                                             }
@@ -1489,7 +1489,7 @@ PanelWindow {
                                                 width: 56
                                                 height: 16
                                                 skew: 0.2
-                                                radius: 6
+                                                radius: mt.edgy ? 2 : 6
                                                 color: dayRow.isToday ? "transparent" : mt.chipFill
                                                 gradient: dayRow.isToday ? accentGradient : null
                                                 borderColor: mt.pLine
@@ -1672,10 +1672,10 @@ PanelWindow {
                                     y: 8
                                     width: 76
                                     height: 78
-                                    cornerRadius: 38
+                                    cornerRadius: mt.edgy ? 4 : 38
                                     ringWidth: mt.borderWidth + mt.whiteLine
                                     shadowDy: 4
-                                    rotation: 6
+                                    rotation: 6 * mt.badgeTilt
                                     transformOrigin: Item.Center
                                     pressed: mdiscArea.pressed
                                     fillColor: mt.chipFill

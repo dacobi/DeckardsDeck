@@ -18,11 +18,13 @@ Item {
     // This monitor's theme: Theme.of() gives the shell's own unless the monitor has one.
     readonly property var mt: Theme.of(QsWindow.window)
 
+    property string query: ""
     property var filters: WH.DEFAULT_FILTERS
     // "2560×1440": the monitor the picker is on (the "This screen" choice).
     property string screenLabel: ""
     property bool shown: false
 
+    signal queryPicked(string query)
     signal categoriesPicked(var categories)
     signal picked(string key, string value)
     signal resetRequested()
@@ -31,7 +33,7 @@ Item {
     readonly property real swatch: 20
     readonly property int perRow: 15
 
-    width: Math.ceil(Math.max(cats.implicitWidth, shapes.implicitWidth, sizes.implicitWidth,
+    width: Math.ceil(Math.max(tags.implicitWidth, cats.implicitWidth, shapes.implicitWidth, sizes.implicitWidth,
                               colours.implicitWidth, foot.implicitWidth) + 2 * root.pad)
     height: col.implicitHeight + 2 * 14
 
@@ -80,7 +82,22 @@ Item {
             y: 14
             spacing: 7
 
-            Head { text: "CATEGORIES" }
+            Head { text: "QUICK TAGS" }
+            Row {
+                id: tags
+                spacing: 5
+                Repeater {
+                    model: WH.QUICK_TAGS
+                    delegate: WallhavenChip {
+                        required property var modelData
+                        text: modelData.label
+                        on: root.query.trim().toLowerCase() === modelData.id
+                        onClicked: root.queryPicked(modelData.id)
+                    }
+                }
+            }
+
+            Head { text: "CATEGORIES"; topPadding: 4 }
             Row {
                 id: cats
                 spacing: 5
@@ -88,7 +105,8 @@ Item {
                     model: WH.CATEGORIES
                     delegate: WallhavenChip {
                         required property string modelData
-                        readonly property var list: Array.isArray(root.filters.categories) ? root.filters.categories : WH.CATEGORIES
+                        readonly property var list: Array.isArray(root.filters.categories) && root.filters.categories.length > 0
+                            ? root.filters.categories : WH.DEFAULT_FILTERS.categories
                         text: modelData.charAt(0).toUpperCase() + modelData.slice(1)
                         on: list.indexOf(modelData) >= 0
                         onClicked: {
@@ -110,7 +128,7 @@ Item {
                     delegate: WallhavenChip {
                         required property var modelData
                         text: modelData.label
-                        on: (root.filters.shape || "landscape") === modelData.id
+                        on: (root.filters.shape || WH.DEFAULT_FILTERS.shape) === modelData.id
                         onClicked: root.picked("shape", modelData.id)
                     }
                 }
@@ -127,7 +145,7 @@ Item {
                         icon: modelData.id === "screen" ? "desktop_windows" : ""
                         text: modelData.id === "screen" && root.screenLabel !== ""
                             ? "This screen · " + root.screenLabel : modelData.label
-                        on: (root.filters.atLeast || "screen") === modelData.id
+                        on: (root.filters.atLeast || WH.DEFAULT_FILTERS.atLeast) === modelData.id
                         onClicked: root.picked("atLeast", modelData.id)
                     }
                 }

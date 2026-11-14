@@ -277,7 +277,7 @@ function layerRun(p, delay, span) {
     return clamp01((p - delay) / span);
 }
 
-// Slots 0..4 are "Sekai", 5..7 "Pop", 8..10 the three kana.
+// Slots 0..6 are "DECKARD", 7..10 "DECK", 11..13 the three katakana ("デック").
 //
 // Each slot has its own character, so no two letters pop alike:
 //   at, dur   when its pop starts and how long it runs (ms into the logo's run)
@@ -285,20 +285,23 @@ function layerRun(p, delay, span) {
 //   tilt      the angle it starts at, in degrees (it swings through upright)
 //   swirl     how far its flight bends sideways (fraction of its distance from
 //             the middle; the kana bend a lot more, they arrive on arcs)
-// The order is k, e, a, S, o, i, P, p: it starts in the middle of the word and
-// jumps about, which reads as a burst, not as typing.
+// The order starts at K (slot 3, the middle of DECKARD) and jumps outward,
+// which reads as a burst, not as typing.
 var BURST = [
-    { at: 250, dur: 720, zeta: 0.50, omega: 16.5, tilt: -36, swirl:  0.10 },
-    { at:  90, dur: 760, zeta: 0.46, omega: 17.5, tilt:  30, swirl: -0.08 },
-    { at:   0, dur: 780, zeta: 0.52, omega: 16.0, tilt: -24, swirl:  0.06 },
-    { at: 170, dur: 740, zeta: 0.48, omega: 18.0, tilt:  40, swirl: -0.12 },
-    { at: 350, dur: 700, zeta: 0.54, omega: 17.0, tilt: -30, swirl:  0.09 },
-    { at: 430, dur: 760, zeta: 0.47, omega: 16.8, tilt:  34, swirl: -0.07 },
-    { at: 300, dur: 720, zeta: 0.51, omega: 17.2, tilt: -42, swirl:  0.11 },
-    { at: 520, dur: 740, zeta: 0.49, omega: 17.8, tilt:  28, swirl: -0.10 },
-    { at: 820, dur: 620, zeta: 0.50, omega: 17.0, tilt: -52, swirl:  0.38 },
+    { at: 280, dur: 710, zeta: 0.50, omega: 16.5, tilt: -36, swirl:  0.10 },
+    { at: 150, dur: 740, zeta: 0.46, omega: 17.5, tilt:  30, swirl: -0.08 },
+    { at:  60, dur: 760, zeta: 0.49, omega: 16.3, tilt: -26, swirl:  0.07 },
+    { at:   0, dur: 780, zeta: 0.52, omega: 16.0, tilt: -22, swirl:  0.05 },
+    { at:  90, dur: 750, zeta: 0.48, omega: 18.0, tilt:  38, swirl: -0.11 },
+    { at: 190, dur: 720, zeta: 0.54, omega: 17.0, tilt: -32, swirl:  0.09 },
+    { at: 330, dur: 700, zeta: 0.47, omega: 16.8, tilt:  34, swirl: -0.07 },
+    { at: 380, dur: 730, zeta: 0.51, omega: 17.2, tilt: -42, swirl:  0.11 },
+    { at: 240, dur: 750, zeta: 0.45, omega: 17.6, tilt:  28, swirl: -0.09 },
+    { at: 450, dur: 710, zeta: 0.53, omega: 16.6, tilt: -34, swirl:  0.08 },
+    { at: 520, dur: 740, zeta: 0.49, omega: 17.8, tilt:  24, swirl: -0.10 },
+    { at: 820, dur: 620, zeta: 0.50, omega: 17.1, tilt: -52, swirl:  0.38 },
     { at: 910, dur: 620, zeta: 0.46, omega: 16.2, tilt:  46, swirl: -0.34 },
-    { at: 1000, dur: 620, zeta: 0.52, omega: 17.6, tilt: -38, swirl:  0.30 }
+    { at: 1000, dur: 620, zeta: 0.52, omega: 17.7, tilt: -38, swirl:  0.30 }
 ];
 
 function burstOf(slot) {
@@ -318,12 +321,12 @@ function burstSpring(p, i) {
 }
 
 // Where each letter ends up: [tilt in degrees, drop in letter-heights]. Fixed
-// numbers, so the logo is crooked the same way on every start. Slots 0..4 are
-// "Sekai", 5..7 "Pop", 8..10 the three kana.
+// numbers, kept tight and angular for the Deckard's Deck lockup. Slots 0..6 are
+// "DECKARD", 7..10 "DECK", 11..13 the three katakana.
 var LETTER_REST = [
-    [-5.5,  0.005], [4.0, -0.030], [-3.0, 0.020], [6.0, -0.025], [-4.5, 0.015],
-    [ 3.5,  0.000], [-5.0, 0.030], [5.0, -0.020],
-    [-7.0,  0.000], [-2.0, -0.060], [-6.0, 0.030]
+    [-1.8,  0.004], [ 1.2, -0.008], [-0.9,  0.006], [ 1.5, -0.006], [-1.3,  0.005], [ 1.0, -0.004], [-1.6,  0.007],
+    [ 1.4,  0.000], [-1.5,  0.008], [ 1.1, -0.005], [-1.2,  0.003],
+    [-2.5,  0.000], [-0.8, -0.015], [-2.0,  0.010]
 ];
 
 function letterRest(i) {
@@ -382,8 +385,8 @@ function sweepPos(u)      { var t = clamp01(u); return -0.3 + 1.6 * (0.6 * t + 0
 // the letters, outermost last-in first-out (the reverse of how they came), each
 // one drawing a short breath outward before it is pulled into the middle.
 function leaveStart(slot) {
-    if (slot >= 8)
-        return (slot - 8) * 30;
+    if (slot >= 11)
+        return (slot - 11) * 30;
     return (520 - burstOf(slot).at) * 0.3;
 }
 var LEAVE_LETTER_MS = 330;
@@ -394,7 +397,7 @@ function leaveProgress(leave, slot) {
         return 0;
     if (leave >= 1)
         return 1;
-    var dur = slot >= 8 ? LEAVE_KANA_MS : LEAVE_LETTER_MS;
+    var dur = slot >= 11 ? LEAVE_KANA_MS : LEAVE_LETTER_MS;
     return clamp01((leave * LOGO_LEAVE_MS - leaveStart(slot)) / dur);
 }
 

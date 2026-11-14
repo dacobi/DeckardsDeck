@@ -59,15 +59,19 @@ Singleton {
     property int screenH: 0
     property string seed: ""
 
-    // ===== the sort and the filters (remembered: settings wallhaven.*) =====
+    // ===== the query, sort and filters (remembered: settings wallhaven.*) =====
+    readonly property string savedQuery: String(SettingsService.get("wallhaven.query") ?? "cyberpunk")
     readonly property string sort: String(SettingsService.get("wallhaven.sort") || "")
-    readonly property string topRange: String(SettingsService.get("wallhaven.topRange") || "1M")
-    readonly property var filters: ({
-        categories: String(SettingsService.get("wallhaven.categories") || "").split(",").filter(c => WH.CATEGORIES.indexOf(c) >= 0),
-        shape: String(SettingsService.get("wallhaven.shape") || "landscape"),
-        atLeast: String(SettingsService.get("wallhaven.atLeast") || "screen"),
-        colour: String(SettingsService.get("wallhaven.colour") || "")
-    })
+    readonly property string topRange: String(SettingsService.get("wallhaven.topRange") || "1y")
+    readonly property var filters: {
+        const rawCats = String(SettingsService.get("wallhaven.categories") || "").split(",").filter(c => WH.CATEGORIES.indexOf(c) >= 0)
+        return {
+            categories: rawCats.length > 0 ? rawCats : WH.DEFAULT_FILTERS.categories,
+            shape: String(SettingsService.get("wallhaven.shape") || WH.DEFAULT_FILTERS.shape),
+            atLeast: String(SettingsService.get("wallhaven.atLeast") || WH.DEFAULT_FILTERS.atLeast),
+            colour: String(SettingsService.get("wallhaven.colour") || "")
+        }
+    }
     readonly property int filterCount: WH.filterCount(root.filters)
     // The sort actually in use ("" means it depends on whether there is text).
     readonly property string sortInUse: root.sort !== "" ? root.sort : WH.defaultSort(root.query)
@@ -107,7 +111,8 @@ Singleton {
     property var have: ({})
 
     function search(query, w, h) {
-        root.query = String(query || "")
+        root.query = String(query ?? "")
+        SettingsService.set("wallhaven.query", root.query.trim())
         root.screenW = Math.floor(Number(w)) || 0
         root.screenH = Math.floor(Number(h)) || 0
         root.seed = ""

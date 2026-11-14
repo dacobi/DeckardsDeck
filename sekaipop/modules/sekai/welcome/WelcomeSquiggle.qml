@@ -1,9 +1,9 @@
 import QtQuick
 import QtQuick.Shapes
 
-// A small wavy accent line, drawn on (the reference has two of them beside the
-// logo): a dark stroke with a paler stroke on top, so it reads as an outlined
-// line. `draw` (0..1) is how much of it exists, from its left end.
+// An angular cyberpunk telemetry circuit trace line, drawn on from its left end:
+// a dark outline stroke with a bright trace on top, using 45-degree step knees.
+// `draw` (0..1) is how much of it exists, from its left end.
 //
 //   WelcomeSquiggle { length: 60; draw: 0.5 }
 Item {
@@ -17,17 +17,28 @@ Item {
     property color fill: "#ffefce"
     property color ink: "#232235"
 
+    readonly property var knots: [
+        Qt.point(0.00,  root.amplitude * 0.8),
+        Qt.point(0.28,  root.amplitude * 0.8),
+        Qt.point(0.38, -root.amplitude * 0.8),
+        Qt.point(0.68, -root.amplitude * 0.8),
+        Qt.point(0.78,  0.0),
+        Qt.point(1.00,  0.0)
+    ]
+
     readonly property var pts: {
         const a = [];
-        const n = 40;
-        const upto = Math.max(0, Math.min(1, root.draw)) * n;
-        const last = Math.floor(upto);
-        for (let i = 0; i <= last && i <= n; i++)
-            a.push(Qt.point(root.length * i / n, root.amplitude * Math.sin(2 * Math.PI * root.cycles * i / n)));
-        const f = upto - last;
-        if (f > 0.001 && last < n) {
-            const t = (last + f) / n;
-            a.push(Qt.point(root.length * t, root.amplitude * Math.sin(2 * Math.PI * root.cycles * t)));
+        const k = root.knots;
+        const segs = k.length - 1;
+        const u = Math.max(0, Math.min(1, root.draw)) * segs;
+        const last = Math.floor(u);
+        for (let i = 0; i <= last && i < k.length; i++)
+            a.push(Qt.point(root.length * k[i].x, k[i].y));
+        const f = u - last;
+        if (f > 0.001 && last < segs) {
+            const p0 = k[last];
+            const p1 = k[last + 1];
+            a.push(Qt.point(root.length * (p0.x + (p1.x - p0.x) * f), p0.y + (p1.y - p0.y) * f));
         }
         return a;
     }
@@ -45,8 +56,8 @@ Item {
             strokeColor: root.ink
             strokeWidth: root.stroke * 2.5
             fillColor: "transparent"
-            capStyle: ShapePath.RoundCap
-            joinStyle: ShapePath.RoundJoin
+            capStyle: ShapePath.SquareCap
+            joinStyle: ShapePath.MiterJoin
 
             PathPolyline { path: root.pts }
         }
@@ -55,8 +66,8 @@ Item {
             strokeColor: root.fill
             strokeWidth: root.stroke
             fillColor: "transparent"
-            capStyle: ShapePath.RoundCap
-            joinStyle: ShapePath.RoundJoin
+            capStyle: ShapePath.SquareCap
+            joinStyle: ShapePath.MiterJoin
 
             PathPolyline { path: root.pts }
         }

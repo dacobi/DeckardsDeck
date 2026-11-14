@@ -769,10 +769,10 @@ PanelWindow {
                                     y: 8
                                     width: 62
                                     height: 66
-                                    cornerRadius: 31
+                                    cornerRadius: mt.edgy ? 4 : 31
                                     ringWidth: mt.borderWidth + mt.whiteLine
                                     shadowDy: 4
-                                    rotation: 6
+                                    rotation: 6 * mt.badgeTilt
                                     transformOrigin: Item.Center
                                     pressed: discArea.pressed
                                     fillColor: mt.chipFill
@@ -1010,7 +1010,7 @@ PanelWindow {
                                         y: 2
                                         width: parent.width
                                         height: parent.height
-                                        radius: 9
+                                        radius: mt.edgy ? mt.radiusInner : 9
                                         color: mt.pLineShadow
                                         antialiasing: true
                                     }
@@ -1019,7 +1019,7 @@ PanelWindow {
                                         id: keycap
                                         width: parent.width
                                         height: parent.height - (cell.raised ? 2 : 0)
-                                        radius: 9
+                                        radius: mt.edgy ? mt.radiusInner : 9
                                         antialiasing: true
                                         border.width: cell.raised ? 2.5 : 0
                                         border.color: mt.pLine
@@ -1182,7 +1182,7 @@ PanelWindow {
                                     anchors.verticalCenter: parent.verticalCenter
                                     width: 30
                                     height: 30
-                                    radius: 10
+                                    radius: mt.edgy ? mt.radiusInner : 10
                                     border.width: 2.5
                                     border.color: mt.pLine
                                     opacity: CalendarCardService.full ? 0.45 : 1
@@ -1344,7 +1344,7 @@ PanelWindow {
                                             readonly property bool chosen: win.formKind === modelData.kind
                                             width: (form.width - 104 - 16) / 2
                                             height: 32
-                                            radius: 11
+                                            radius: mt.edgy ? mt.radiusInner : 11
                                             border.width: 2.5
                                             border.color: mt.pLine
                                             color: chosen ? mt.accentMint : (kindArea.containsMouse ? mt.pSurfaceHover : mt.pSurface)
@@ -1646,7 +1646,7 @@ PanelWindow {
                                         y: 2
                                         width: parent.width
                                         height: parent.height
-                                        radius: 8
+                                        radius: mt.edgy ? mt.radiusInner : 8
                                         color: mt.pLineShadow
                                         antialiasing: true
                                     }
@@ -1654,7 +1654,7 @@ PanelWindow {
                                     Rectangle {
                                         width: parent.width
                                         height: parent.height - (mcell.raised ? 2 : 0)
-                                        radius: 8
+                                        radius: mt.edgy ? mt.radiusInner : 8
                                         antialiasing: true
                                         border.width: mcell.raised ? 2 : 0
                                         border.color: mt.pLine

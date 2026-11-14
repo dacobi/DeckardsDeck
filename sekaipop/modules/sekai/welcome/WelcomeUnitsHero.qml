@@ -16,8 +16,8 @@ Item {
     property bool idling: false
     property real pageWidth: 576
 
-    // Short names for the unit themes (the full names are too long for a badge).
-    readonly property var tags: ({ vs: "VS", leoneed: "L/N", mmj: "MMJ", vbs: "VBS", wxs: "WxS", nightcord: "25:00" })
+    // Short sector codes for the Blade Runner themes (ThemeService.baseGroups).
+    readonly property var tags: ({ vs: "2019", leoneed: "TYRL", mmj: "V-K", vbs: "JOI", wxs: "BRAD", nightcord: "OFFW" })
     // The row is 6 badges with a gap of a third of a badge between them; on a
     // narrow page the badges shrink so the row always fits inside the band.
     readonly property real badge: Math.min(88 * root.unit, (root.pageWidth - 64 * root.unit) / 7.7)
@@ -58,22 +58,32 @@ Item {
 
                     width: root.badge
                     height: root.badge
-                    radius: root.badge / 2
-                    border.width: Math.max(2, 3 * root.unit)
+                    radius: Math.max(2, 4 * root.unit)
+                    border.width: Math.max(2, 2.5 * root.unit)
                     border.color: "#ffffff"
                     gradient: Gradient {
                         GradientStop { position: 0.0; color: unitItem.modelData.c.A }
                         GradientStop { position: 1.0; color: unitItem.modelData.c.B }
                     }
 
-                    // a small gloss, like the letters have
+                    // Angular technical top-edge highlight bar
                     Rectangle {
-                        x: parent.width * 0.2
-                        y: parent.height * 0.15
-                        width: parent.width * 0.34
-                        height: Math.max(3, parent.height * 0.1)
-                        radius: height / 2
-                        color: Qt.rgba(1, 1, 1, 0.55)
+                        x: parent.width * 0.14
+                        y: parent.height * 0.12
+                        width: parent.width * 0.52
+                        height: Math.max(2, parent.height * 0.07)
+                        radius: 1
+                        color: Qt.rgba(1, 1, 1, 0.6)
+                    }
+
+                    // Bottom-right corner telemetry notch
+                    Rectangle {
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                        anchors.margins: Math.max(3, 5 * root.unit)
+                        width: parent.width * 0.22
+                        height: Math.max(2, parent.height * 0.06)
+                        color: Qt.rgba(0, 0, 0, 0.45)
                     }
                 }
 

@@ -240,6 +240,17 @@ SettingsPage {
         title: "Widgets"
 
         SettingChoice {
+            label: "Widget & shell style"
+            sublabel: "Cyberpunk uses sharp cyberdeck corners and level keycaps; SekaiPop restores curvy cards and tilted stickers"
+            current: SettingsService.get("appearance.style")
+            options: [
+                { id: "cyberpunk", label: "Cyberpunk", icon: "terminal" },
+                { id: "sekaipop", label: "SekaiPop", icon: "auto_awesome" }
+            ]
+            onPicked: id => SettingsService.set("appearance.style", id)
+        }
+
+        SettingChoice {
             label: "Default monitor"
             sublabel: "Where a widget goes when it has no monitor of its own, or its monitor is switched off. Chosen by name, so a restart cannot swap them"
             current: DesktopMonitors.defaultScreen

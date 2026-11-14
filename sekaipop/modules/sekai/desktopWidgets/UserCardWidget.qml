@@ -799,8 +799,8 @@ PanelWindow {
                 height: card.contentH + card.inset * 2 + mt.shadowOffset
 
                 // How much attitude the keys have. 0 / 0 = a flat, level row.
-                readonly property real tilt: 2.5       // degrees, outer keys
-                readonly property int stagger: 6       // px the middle key sits lower (the V)
+                readonly property real tilt: mt.cardTilt       // degrees, outer keys
+                readonly property int stagger: Math.round(6 * mt.cardStagger)  // px the middle key sits lower (the V)
 
                 // On the navy chip: bright accent in the dark modes, navy ink in
                 // Light (where the chip is pale and mint would vanish).
@@ -937,9 +937,9 @@ PanelWindow {
                             anchors.fill: parent
                             source: PanelImages.banner
                             framing: PanelImages.framingFor("banner")
-                            radius: Math.max(0, banner.cornerRadius - banner.ringWidth)
+                            radius: Math.max(0, banner.effectiveRadius - banner.ringWidth)
                             frameWidth: banner.borderWidth
-                            frameRadius: banner.cornerRadius
+                            frameRadius: banner.effectiveRadius
                             frameColor: banner.classicScope ? mt.pLine : mt.line
                         }
 
@@ -972,7 +972,7 @@ PanelWindow {
                         cornerRadius: 10
                         ringWidth: mt.borderWidth + mt.whiteLine
                         fillColor: mt.chipFill
-                        rotation: 3
+                        rotation: 3 * mt.badgeTilt
                         transformOrigin: Item.Center
 
                         Text {
@@ -1004,7 +1004,7 @@ PanelWindow {
                         property real lift: card.avatarHover ? 1.05 : 1
                         property real hit: 1
 
-                        rotation: card.avatarHover ? 3 : -4
+                        rotation: (card.avatarHover ? 3 : -4) * mt.badgeTilt
                         scale: avatarSlot.lift * avatarSlot.hit
 
                         Behavior on rotation {
@@ -1024,7 +1024,7 @@ PanelWindow {
                         Pill {
                             id: avatarPill
                             anchors.fill: parent
-                            cornerRadius: 26
+                            cornerRadius: mt.edgy ? 4 : 26
                             ringWidth: mt.borderWidth   // no white ring: the picture meets the outline
                             shadowDx: 3
                             shadowDy: 4
@@ -1049,9 +1049,9 @@ PanelWindow {
                                 anchors.fill: parent
                                 source: PanelImages.avatar
                             framing: PanelImages.framingFor("avatar")
-                                radius: Math.max(0, avatarPill.cornerRadius - avatarPill.ringWidth)
+                                radius: Math.max(0, avatarPill.effectiveRadius - avatarPill.ringWidth)
                                 frameWidth: avatarPill.borderWidth
-                                frameRadius: avatarPill.cornerRadius
+                                frameRadius: avatarPill.effectiveRadius
                                 frameColor: avatarPill.classicScope ? mt.pLine : mt.line
                             }
                         }
@@ -1180,7 +1180,7 @@ PanelWindow {
                             cornerRadius: 10
                             ringWidth: 3
                             fillColor: mt.chipFill
-                            rotation: 3
+                            rotation: 3 * mt.badgeTilt
                             transformOrigin: Item.Center
 
                             Text {
@@ -1232,7 +1232,7 @@ PanelWindow {
                                 anchors.verticalCenter: parent.verticalCenter
                                 width: parent.width
                                 height: 12
-                                radius: 6
+                                radius: mt.edgy ? 1 : 6
                                 color: mt.pSurfaceDivider
                                 border.width: 2
                                 border.color: mt.pLine
@@ -1243,7 +1243,7 @@ PanelWindow {
                                 x: 2
                                 anchors.verticalCenter: parent.verticalCenter
                                 height: 8
-                                radius: 4
+                                radius: mt.edgy ? 1 : 4
                                 width: Math.max(0, track.headX + track.headSize / 2 - 2)
 
                                 gradient: Gradient {

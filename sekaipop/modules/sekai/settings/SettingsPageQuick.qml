@@ -18,6 +18,17 @@ SettingsPage {
         title: "Look"
 
         SettingChoice {
+            label: "Style"
+            sublabel: "Edgy cyberdeck geometry or classic curvy SekaiPop"
+            current: SettingsService.get("appearance.style")
+            options: [
+                { id: "cyberpunk", label: "Cyberpunk", icon: "terminal" },
+                { id: "sekaipop", label: "SekaiPop", icon: "auto_awesome" }
+            ]
+            onPicked: id => SettingsService.set("appearance.style", id)
+        }
+
+        SettingChoice {
             label: "Mode"
             sublabel: "Light, dark, or near-black"
             current: ThemeService.mode

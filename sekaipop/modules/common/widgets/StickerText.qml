@@ -25,11 +25,11 @@ Item {
     property color outlineColor: mt.colBorder
     property color ringColor: mt.ringWhite
     // How far the navy outline reaches around the glyphs, and the white ring inside it.
-    property real outline: Math.max(2.5, root.pixelSize * 0.085)
+    property real outline: Math.max(mt.edgy ? 1.8 : 2.5, root.pixelSize * (mt.edgy ? 0.065 : 0.085))
     // The white ring: the same thin line as a block's (Theme.whiteLine), at every size.
     property real ring: mt.whiteLine
-    property real shadowDx: Math.max(2, root.pixelSize * 0.05)
-    property real shadowDy: Math.max(3, root.pixelSize * 0.075)
+    property real shadowDx: Math.max(2, root.pixelSize * (mt.edgy ? 0.04 : 0.05))
+    property real shadowDy: Math.max(2, root.pixelSize * (mt.edgy ? 0.055 : 0.075))
     property bool popOnChange: true
     property real pop: 1
 
@@ -105,6 +105,7 @@ Item {
                 font.pixelSize: ring.px
                 font.weight: Font.ExtraBold
                 font.styleName: mt.fontStyleBold
+                font.variableAxes: ({ "ROND": mt.edgy ? 0 : 100 })
             }
         }
     }

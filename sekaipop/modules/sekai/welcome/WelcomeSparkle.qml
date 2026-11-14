@@ -1,9 +1,9 @@
 import QtQuick
 import QtQuick.Shapes
 
-// The four-point sparkle from the reference logo: cream star, dark outline,
-// sides curved in. `pop` (0..1+) is how far in it is; it scales the sparkle,
-// so a value past 1 (the spring's overshoot) makes it hop a little bigger.
+// Angular cyberpunk targeting reticle / diamond crosshair for the welcome logo:
+// sharp geometric diamond with technical crosshair ticks, dark bezel, bright fill.
+// `pop` (0..1+) scales the reticle so spring overshoot hops past 1.
 Item {
     id: root
 
@@ -12,32 +12,46 @@ Item {
     property color ink: "#232235"
     property real stroke: Math.max(1.6, root.size * 0.075)
     property real pop: 1
-    // 0..1: a slow twinkle, driven from outside while the logo idles.
+    // 0..1: a slow pulse, driven from outside while the logo idles.
     property real twinkle: 0
 
     width: root.size
     height: root.size
     visible: root.pop > 0.001
     transformOrigin: Item.Center
-    scale: Math.max(0, root.pop) * (1 + 0.1 * root.twinkle)
-    rotation: (1 - Math.min(1, root.pop)) * -50 + 6 * root.twinkle
+    scale: Math.max(0, root.pop) * (1 + 0.08 * root.twinkle)
+    rotation: (1 - Math.min(1, root.pop)) * -45 + 4 * root.twinkle
 
     Shape {
         anchors.fill: parent
         preferredRendererType: Shape.CurveRenderer
 
+        // Outer crosshair ticks
+        ShapePath {
+            strokeColor: root.ink
+            strokeWidth: root.stroke * 1.4
+            fillColor: "transparent"
+            capStyle: ShapePath.FlatCap
+
+            PathMove { x: root.width / 2; y: 0 }
+            PathLine { x: root.width / 2; y: root.height }
+            PathMove { x: 0; y: root.height / 2 }
+            PathLine { x: root.width; y: root.height / 2 }
+        }
+
+        // Sharp angular diamond core
         ShapePath {
             strokeColor: root.ink
             strokeWidth: root.stroke
             fillColor: root.fill
-            joinStyle: ShapePath.RoundJoin
+            joinStyle: ShapePath.MiterJoin
             startX: root.width / 2
-            startY: root.stroke / 2
+            startY: root.height * 0.16
 
-            PathQuad { x: root.width - root.stroke / 2; y: root.height / 2; controlX: root.width * 0.56; controlY: root.height * 0.44 }
-            PathQuad { x: root.width / 2; y: root.height - root.stroke / 2; controlX: root.width * 0.56; controlY: root.height * 0.56 }
-            PathQuad { x: root.stroke / 2; y: root.height / 2; controlX: root.width * 0.44; controlY: root.height * 0.56 }
-            PathQuad { x: root.width / 2; y: root.stroke / 2; controlX: root.width * 0.44; controlY: root.height * 0.44 }
+            PathLine { x: root.width * 0.84; y: root.height / 2 }
+            PathLine { x: root.width / 2; y: root.height * 0.84 }
+            PathLine { x: root.width * 0.16; y: root.height / 2 }
+            PathLine { x: root.width / 2; y: root.height * 0.16 }
         }
     }
 }

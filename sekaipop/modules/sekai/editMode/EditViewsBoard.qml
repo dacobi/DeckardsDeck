@@ -21,6 +21,11 @@ import qs.modules.common.widgets
 Item {
     id: root
 
+    readonly property var widgetStyleOptions: [
+        { id: "cyberpunk", label: "Cyberpunk", icon: "terminal" },
+        { id: "sekaipop", label: "SekaiPop", icon: "auto_awesome" }
+    ]
+
     readonly property var phoneOptions: [
         { id: "tilted", label: "2.5D", icon: "view_in_ar" },
         { id: "flat", label: "2D", icon: "crop_portrait" }
@@ -38,9 +43,11 @@ Item {
     ]
 
     readonly property bool scroll: SettingsService.get("overview.style") === "scroll"
+    readonly property string widgetStyleNow: SettingsService.get("appearance.style") === "sekaipop" ? "sekaipop" : "cyberpunk"
     readonly property string phoneNow: SettingsService.flag("quick.flat") ? "flat" : "tilted"
     readonly property int count: Math.max(1, Math.min(10, Math.round(Number(SettingsService.get("overview.workspaces")) || 5)))
 
+    property string widgetStyleHover: ""
     property string phoneHover: ""
     property string styleHover: ""
     property string positionHover: ""
@@ -72,6 +79,38 @@ Item {
         width: root.width - 12
         y: Math.max(0, Math.round((root.height - groups.height) / 2))
         spacing: 32
+
+        Column {
+            spacing: 9
+
+            EditPickHead {
+                title: "STYLE"
+                value: root.labelFor(root.widgetStyleOptions,
+                    root.widgetStyleHover !== "" ? root.widgetStyleHover : root.widgetStyleNow)
+            }
+
+            Row {
+                spacing: 8
+
+                Repeater {
+                    model: root.widgetStyleOptions
+
+                    EditPickKey {
+                        required property var modelData
+
+                        icon: modelData.icon
+                        on: root.widgetStyleNow === modelData.id
+                        onPicked: SettingsService.set("appearance.style", modelData.id)
+                        onHoveredChanged: {
+                            if (hovered)
+                                root.widgetStyleHover = modelData.id
+                            else if (root.widgetStyleHover === modelData.id)
+                                root.widgetStyleHover = ""
+                        }
+                    }
+                }
+            }
+        }
 
         Column {
             spacing: 9

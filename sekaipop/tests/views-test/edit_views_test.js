@@ -62,3 +62,22 @@ console.log('edit_views_test: all checks passed')
     assert.ok(/readonly property real ctlW: 244/.test(L) && !/WORKSPACES|workspaceCount/.test(L), 'the BAR tab is back to its original width, with nothing added')
 }
 console.log('bar pills checks passed')
+
+// Widget & shell style switcher ("cyberpunk" default vs "sekaipop"): Settings -> Quick, Settings -> Desktop, and Edit Desktop -> VIEWS.
+{
+    const D = fs.readFileSync(root + 'modules/sekai/settings/SettingsPageDesktop.qml', 'utf8')
+    const TS = fs.readFileSync(root + 'modules/common/ThemeSet.qml', 'utf8')
+    const P = fs.readFileSync(root + 'modules/common/widgets/Pill.qml', 'utf8')
+    assert.ok(/"appearance\.style":\s*"cyberpunk"/.test(S), 'appearance.style defaults to cyberpunk')
+    assert.ok(/readonly property bool edgy:\s*widgetStyle === "cyberpunk"/.test(TS), 'ThemeSet exposes edgy flag')
+    assert.ok(/readonly property real effectiveRadius:\s*mt\.edgy/.test(P), 'Pill clamps cornerRadius via effectiveRadius when edgy')
+    assert.ok(/set\("appearance\.style", id\)/.test(Q), 'Settings Quick switches appearance.style')
+    assert.ok(/set\("appearance\.style", id\)/.test(D), 'Settings Desktop switches appearance.style')
+    assert.ok(/set\("appearance\.style", modelData\.id\)/.test(B), 'Edit Desktop VIEWS switches appearance.style')
+    for (const id of ['cyberpunk', 'sekaipop']) {
+        assert.ok(Q.includes('id: "' + id + '"'), 'Settings Quick has option ' + id)
+        assert.ok(D.includes('id: "' + id + '"'), 'Settings Desktop has option ' + id)
+        assert.ok(B.includes('id: "' + id + '"'), 'Edit Desktop VIEWS has option ' + id)
+    }
+}
+console.log('widget style switcher checks passed')

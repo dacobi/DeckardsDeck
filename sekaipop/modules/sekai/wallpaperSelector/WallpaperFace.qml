@@ -162,11 +162,19 @@ Item {
         face.filtersOpen = false
         face.closeViewer()
         face.source = src
-        search.clear()
-        face.searchText = ""
         whSearchDelay.stop()
-        if (face.onWallhaven && (WallhavenService.page === 0 || WallhavenService.query !== ""))
-            WallhavenService.search("", face.screenPxW, face.screenPxH)
+        if (face.onWallhaven) {
+            const q = WallhavenService.savedQuery
+            search.text = q
+            face.searchText = q
+            whSearchDelay.stop()
+            if (WallhavenService.page === 0 || WallhavenService.query !== q)
+                WallhavenService.search(q, face.screenPxW, face.screenPxH)
+        } else {
+            search.clear()
+            face.searchText = ""
+            whSearchDelay.stop()
+        }
         // Back on the folder with something new in it (a Wallhaven download): read it again,
         // so the download is there at once rather than behind the Refresh dot.
         if (!face.onWallhaven && face.hasNew)
@@ -1465,8 +1473,15 @@ Item {
             x: Math.max(0, Math.min(toolbar.width - width, controls.x + filterChip.x + filterChip.width - width))
             y: face.toolbarH + 6
             shown: face.filtersOpen && face.onWallhaven
+            query: face.searchText
             filters: WallhavenService.filters
             screenLabel: face.screenPxW > 0 ? face.screenPxW + "\u00d7" + face.screenPxH : ""
+            onQueryPicked: q => {
+                search.text = q
+                face.searchText = q
+                whSearchDelay.stop()
+                WallhavenService.search(q, face.screenPxW, face.screenPxH)
+            }
             onCategoriesPicked: list => WallhavenService.setFilter("categories", list)
             onPicked: (key, value) => WallhavenService.setFilter(key, value)
             onResetRequested: WallhavenService.resetFilters()
