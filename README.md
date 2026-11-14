@@ -20,9 +20,9 @@
 
 <br>
 
-<img src="assets/shot-desktop-widgets.png" alt="SekaiPop desktop with clock, weather, calendar, to-do, palette, user card, sticky notes and lyrics widgets" width="100%">
+<img src="assets/shot-desktop-widgets.png" alt="Desktop with a few widgets and a Dock." width="100%">
 
-<sub>Clock, weather, calendar, to-do, palette, user card, sticky notes, lyrics and custom images. Every widget is draggable, resizable and optional.</sub>
+<sub>Desktop with a few widgets and a Dock. Every widget is draggable, resizable and optional.</sub>
 
 </div>
 
@@ -33,21 +33,21 @@
 <table>
 <tr>
 <td width="50%" valign="top">
-<img src="assets/shot-quick-panel-phone.png" alt="Quick Panel phone with Wi-Fi, Bluetooth, mic, speaker, brightness and notifications" width="100%">
-<br><b>Quick Panel: the control center is a phone</b><br>
+<img src="assets/shot-quick-panel-phone.png" alt="Quick Panel Cyberdeck with Wi-Fi, Bluetooth, mic, speaker, brightness and notifications" width="100%">
+<br><b>Quick Panel: the control center is a cyberdeck</b><br>
 Wi-Fi, Bluetooth, mic, speaker, brightness, night light, easy effects and notifications sit on a 2.5D phone that bounces up from the bottom of the screen. A new notification makes it rise just far enough to show it.
 </td>
 <td width="50%" valign="top">
 <img src="assets/shot-settings-phone.png" alt="Settings as a landscape phone in the Monochrome theme" width="100%">
-<br><b>Settings: flip the phone sideways</b><br>
-Settings opens by rotating the Quick Panel phone into landscape. Six pages: Quick, General, Bar, Desktop, Hyprland and About / Update. Shown here in the Monochrome theme.
+<br><b>Settings: flip the deck sideways</b><br>
+Settings opens by rotating the Quick Panel deck into landscape. Six pages: Quick, General, Bar, Desktop, Hyprland and About / Update. Shown here in the Monochrome theme.
+(I added settings for display orientation)
 </td>
 </tr>
 <tr>
 <td width="50%" valign="top">
-<img src="assets/shot-sekai-pad-eq.png" alt="Sekai Pad: a ten-band equalizer drawn as a handheld game console" width="100%">
-<br><b>Sekai Pad: the equalizer is a handheld console</b><br>
-A 10-band EQ (EasyEffects) with a D-pad for picking a band, face buttons for save, undo and auto, and preset cartridges you slot in at the top.
+<img src="assets/shot-sekai-pad-eq.png" alt="Cyberdeck Wallpapers" width="100%">
+<br><b>Cyberdeck Wallpapers</b><br>
 </td>
 <td width="50%" valign="top">
 <img src="assets/shot-edit-desktop.png" alt="Edit Desktop mode with a shelf of widgets, bar, dock, views, theme and presets" width="100%">
