@@ -12,9 +12,9 @@
 
 <div align="left">
 
-> ⚠️ **Warning: this is a passion project, and it is heavily vibe-coded.**
+> ⚠️ **Warning: this is a fork of SekaiPop, and is entirely vibe-coded.**
 >
-> I designed and directed SekaiPop myself: the visuals, the UI, how everything should animate and how everything should behave. Claude wrote most of the code to make that possible, so expect rough edges and bugs.
+> I take no credit, was inspired by the awesome SekaiPop rice, but prefer a more cyberpunk look and feel. I gave Gemeni 4 a general plan an pressed enter a lot. Then of course a lot of tweaking and some new wallpapers, etc.
 
 </div>
 

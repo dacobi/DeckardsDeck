@@ -729,6 +729,14 @@ SettingsPage {
                 }
 
                 SettingChoice {
+                    visible: scr.d !== null && scr.d.on
+                    label: "Orientation"
+                    current: scr.d ? String(scr.d.transform) : "0"
+                    options: DisplayService.transforms
+                    onPicked: id => DisplayService.setTransform(scr.modelData, id)
+                }
+
+                SettingChoice {
                     visible: scr.d !== null && scr.d.on && scr.modelData !== DisplayService.mainName
                     label: "Placed"
                     sublabel: "Jump next to " + DisplayService.mainName

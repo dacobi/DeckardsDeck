@@ -39,9 +39,30 @@ try {
     for (const line of run("A|on|preferred|0|0|1", "B|on|800x600@60.00|-800|0|2"))
         assert.ok(/, disabled = false \}\)$/.test(line), "an on rule without disabled = false: " + line)
 
+    // orientation transform is passed through when specified
+    const rot = run("DP-3|on|1920x1080@180|0|0|1|3", "DP-2|on|2560x1080@74.99|1080|0|1.25|0")
+    assert.deepStrictEqual(rot, [
+        'hl.monitor({ output = "DP-3", mode = "1920x1080@180", position = "0x0", scale = 1, transform = 3, disabled = false })',
+        'hl.monitor({ output = "DP-2", mode = "2560x1080@74.99", position = "1080x0", scale = 1.25, transform = 0, disabled = false })'
+    ])
+
+    // save writes transform into monitors.lua and replaces an existing transform line
+    const cfgDir = path.join(tmp, "config")
+    const hyprDir = path.join(cfgDir, "hypr")
+    fs.mkdirSync(hyprDir, { recursive: true })
+    fs.writeFileSync(path.join(hyprDir, "monitors.lua"), 'hl.monitor({\n    output = "DP-3",\n    mode = "1920x1080@180",\n    position = "0x0",\n    scale = 1,\n    transform = 1,\n    vrr = 0\n})\n')
+    const saveRes = spawnSync("sh", [script, "save", "DP-3|on|1920x1080@180|0|0|1.00|3"], { env: Object.assign({}, process.env, { XDG_CONFIG_HOME: cfgDir }), encoding: "utf8" })
+    assert.strictEqual(saveRes.status, 0, saveRes.stderr)
+    const savedLua = fs.readFileSync(path.join(hyprDir, "monitors.lua"), "utf8")
+    assert.ok(savedLua.includes("transform = 3"), "saved transform = 3")
+    assert.ok(!savedLua.includes("transform = 1"), "replaced old transform = 1")
+    assert.ok(savedLua.includes("vrr = 0"), "preserved extra vrr = 0 line")
+
     // bad specs are still refused before anything runs
     const bad = spawnSync("sh", [script, "apply", "DP-2|on|preferred|0|0|1); os.exit()"], { env: Object.assign({}, process.env, { PATH: bin + ":" + process.env.PATH }), encoding: "utf8" })
     assert.strictEqual(bad.status, 2)
+    const badTransform = spawnSync("sh", [script, "apply", "DP-2|on|preferred|0|0|1|9"], { env: Object.assign({}, process.env, { PATH: bin + ":" + process.env.PATH }), encoding: "utf8" })
+    assert.strictEqual(badTransform.status, 2)
 } finally {
     fs.rmSync(tmp, { recursive: true, force: true })
 }

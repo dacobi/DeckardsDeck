@@ -39,6 +39,7 @@ Singleton {
     property var previous: []
 
     readonly property var scales: DM.SCALES
+    readonly property var transforms: DM.TRANSFORMS
     readonly property int enabledCount: root.draft.filter(d => d.on).length
     readonly property var enabledNames: root.draft.filter(d => d.on).map(d => d.name)
 
@@ -241,6 +242,16 @@ Singleton {
         root.resized(name, before)
     }
 
+    function setTransform(name, t) {
+        const d = root.item(name)
+        const nextT = Number(t) | 0
+        if (!d || nextT < 0 || nextT > 7 || d.transform === nextT)
+            return
+        const before = root.sizeOf(d)
+        root.edit(name, { transform: nextT })
+        root.resized(name, before)
+    }
+
     // Put a screen at a place in the layout (what dragging it does). It is slid off
     // any screen it would sit on; the layout is then moved so it starts at 0, 0.
     function setPosition(name, x, y) {
@@ -291,13 +302,13 @@ Singleton {
         root.rects().forEach(r => { edge = Math.max(edge, norm[r.name][0] + r.w) })
         return root.draft.map(d => {
             const p = norm[d.name] || [Math.round(edge), 0]
-            return DM.spec(d.name, d.on, d.modeId, p[0], p[1], d.scale)
+            return DM.spec(d.name, d.on, d.modeId, p[0], p[1], d.scale, d.transform)
         })
     }
 
     // The screens as they are now, to go back to.
     function liveSpecs() {
-        return root.live.map(m => DM.spec(m.name, m.on, DM.matchMode(m.modes, m.w, m.h, m.hz), m.on ? m.x : undefined, m.on ? m.y : undefined, m.scale))
+        return root.live.map(m => DM.spec(m.name, m.on, DM.matchMode(m.modes, m.w, m.h, m.hz), m.on ? m.x : undefined, m.on ? m.y : undefined, m.scale, m.on ? m.transform : undefined))
     }
 
     function apply() {

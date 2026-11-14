@@ -9,6 +9,13 @@
 
 var SCALES = ["1", "1.25", "1.5", "1.75", "2"];
 
+var TRANSFORMS = [
+    { id: "0", label: "Landscape (0°)", icon: "crop_landscape" },
+    { id: "1", label: "Portrait Left (90°)", icon: "stay_current_portrait" },
+    { id: "2", label: "Landscape Flipped (180°)", icon: "flip_camera_android" },
+    { id: "3", label: "Portrait Right (270°)", icon: "stay_current_portrait" }
+];
+
 // ["1920x1080@144.00Hz", ...] (hyprctl's availableModes) -> [{ w, h, hz, id }].
 function parseModes(list) {
     var out = [];
@@ -115,12 +122,15 @@ function positions(items, mainName) {
     return pos;
 }
 
-// The argument displays.sh takes for one screen: "name|on|mode|x|y|scale" or "name|off".
+// The argument displays.sh takes for one screen: "name|on|mode|x|y|scale[|transform]" or "name|off".
 // A screen that is off may carry a parking spot: "name|off|x|y".
-function spec(name, on, modeId, x, y, scale) {
+function spec(name, on, modeId, x, y, scale, transform) {
     if (!on)
         return typeof x === "number" && typeof y === "number" ? name + "|off|" + x + "|" + y : name + "|off";
-    return [name, "on", modeId, x, y, Number(scale).toFixed(2)].join("|");
+    var parts = [name, "on", modeId, x, y, Number(scale).toFixed(2)];
+    if (transform !== undefined && transform !== null)
+        parts.push(transform | 0);
+    return parts.join("|");
 }
 
 // Distinct resolutions of a screen, biggest first, "1920x1080" ... at most `limit`

@@ -1,7 +1,7 @@
 # Displays
 
-Settings > Hyprland > Displays turns screens on and off, and sets their mode, scale and
-place. Issue [#109](https://github.com/Blapples/SekaiPop/issues/109) is why this page exists.
+Settings > Hyprland > Displays turns screens on and off, and sets their mode, scale,
+orientation and place. Issue [#109](https://github.com/Blapples/SekaiPop/issues/109) is why this page exists.
 
 ## How it works
 
@@ -14,7 +14,7 @@ place. Issue [#109](https://github.com/Blapples/SekaiPop/issues/109) is why this
   coming on first and the ones going off after, so there is never no screen on. A screen
   going off is parked past the right edge of the others.
 - `displays.sh save` writes `monitors.lua` in the shape nwg-displays uses, keeping the lines
-  of an existing block it doesn't own (transform, vrr, ...), with the old file as
+  of an existing block it doesn't own (vrr, bitdepth, ...), with the old file as
   `monitors.lua.bak`.
 
 ## The one rule that matters

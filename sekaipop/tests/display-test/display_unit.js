@@ -2,7 +2,7 @@
 const fs = require("fs")
 const locate = require("../lib/locate.js")
 const src = fs.readFileSync(locate("modules/common/functions/DisplayMath.js"), "utf8").replace(".pragma library", "")
-const D = new Function(src + "; return { SCALES, parseModes, matchMode, modeById, logicalSize, placeOf, positions, spec, resolutions, currentRes, rates, modeForRes, overlaps, snap, separate, dock, reflow, normalize, touches, unlinked, view }")()
+const D = new Function(src + "; return { SCALES, TRANSFORMS, parseModes, matchMode, modeById, logicalSize, placeOf, positions, spec, resolutions, currentRes, rates, modeForRes, overlaps, snap, separate, dock, reflow, normalize, touches, unlinked, view }")()
 
 let fails = 0
 function eq(a, b, msg) {
@@ -54,7 +54,9 @@ eq(D.positions([A, { ...B, transform: 1 }], "A").B, [1920, 0], "rotated B still 
 
 // specs
 eq(D.spec("A", true, "1920x1080@144.00", 0, 0, 1), "A|on|1920x1080@144.00|0|0|1.00", "on spec")
+eq(D.spec("A", true, "1920x1080@144.00", 0, 0, 1, 3), "A|on|1920x1080@144.00|0|0|1.00|3", "on spec with transform")
 eq(D.spec("A", false), "A|off", "off spec")
+eq(D.TRANSFORMS.map(t => t.id), ["0", "1", "2", "3"], "4 standard transforms")
 
 // choices
 eq(D.resolutions(modes, "1920x1080@144.00", 10), [{ id: "1920x1080", label: "1920x1080" }, { id: "1280x720", label: "1280x720" }], "resolutions")
