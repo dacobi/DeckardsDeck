@@ -394,7 +394,7 @@ QtObject {
     readonly property string fontFamily: "Google Sans Flex"
     readonly property int fontSize: 16
 
-    FontLoader {
+    readonly property FontLoader roadRageLoader: FontLoader {
         id: roadRageLoader
         source: Qt.resolvedUrl("../../assets/fonts/Road_Rage.otf")
     }

@@ -227,11 +227,20 @@ Item {
             readonly property color gradEnd: (root.fillGradient && root.fillGradient.stops.length > 0)
                 ? root.fillGradient.stops[root.fillGradient.stops.length - 1].color : hudFace.baseFill
 
+            readonly property LinearGradient hudGrad: LinearGradient {
+                x1: 0
+                y1: 0
+                x2: hudFace.width
+                y2: hudFace.height
+                GradientStop { position: 0.0; color: hudFace.gradStart }
+                GradientStop { position: 1.0; color: hudFace.gradEnd }
+            }
+
             ShapePath {
                 strokeWidth: root.isHudCard ? 1.6 : 1.3
                 strokeColor: hudFace.strokeCol
                 fillColor: root.fillGradient ? hudFace.gradStart : hudFace.baseFill
-                fillGradient: root.fillGradient ? hudGrad : null
+                fillGradient: root.fillGradient ? hudFace.hudGrad : null
                 startX: 0
                 startY: 0
                 PathLine { x: Math.max(0, hudFace.width - root.cutTR); y: 0 }
@@ -242,16 +251,6 @@ Item {
                 PathLine { x: root.cutBL; y: hudFace.height - root.notchH }
                 PathLine { x: 0; y: Math.max(0, hudFace.height - root.notchH - root.cutBL) }
                 PathLine { x: 0; y: 0 }
-
-                LinearGradient {
-                    id: hudGrad
-                    x1: 0
-                    y1: 0
-                    x2: hudFace.width
-                    y2: hudFace.height
-                    GradientStop { position: 0.0; color: hudFace.gradStart }
-                    GradientStop { position: 1.0; color: hudFace.gradEnd }
-                }
             }
         }
 
