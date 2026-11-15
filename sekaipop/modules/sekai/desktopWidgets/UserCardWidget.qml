@@ -677,8 +677,8 @@ PanelWindow {
                     width: parent.width
                     horizontalAlignment: Text.AlignHCenter
                     text: sk.label
-                    color: mt.edgy ? mt.accentAmber : (sk.gradientFill ? mt.colBorder : mt.chipInk)
-                    opacity: mt.edgy ? 0.92 : 0.7
+                    color: mt.edgy ? mt.pInkSub : (sk.gradientFill ? mt.colBorder : mt.chipInk)
+                    opacity: mt.edgy ? 0.88 : 0.7
                     font.family: mt.fontFamily
                     font.pixelSize: 9
                     font.weight: Font.ExtraBold
@@ -973,16 +973,16 @@ PanelWindow {
                                 color: Qt.rgba(mt.accentCyan.r, mt.accentCyan.g, mt.accentCyan.b, 0.16)
                             }
 
-                            // Top-left ZONE : SAFE badge (anna-kuzminska-5.jpg)
+                            // Top-left ZONE : SAFE badge
                             Rectangle {
                                 x: 8
                                 y: 8
                                 width: zoneTxt.implicitWidth + 12
                                 height: 15
                                 radius: 1
-                                color: Qt.rgba(mt.accentGreen.r, mt.accentGreen.g, mt.accentGreen.b, 0.18)
+                                color: Qt.rgba(mt.accentCyan.r, mt.accentCyan.g, mt.accentCyan.b, 0.16)
                                 border.width: 1
-                                border.color: mt.accentGreen
+                                border.color: mt.accentCyan
 
                                 Text {
                                     id: zoneTxt
@@ -992,7 +992,7 @@ PanelWindow {
                                     font.pixelSize: 8
                                     font.weight: Font.Bold
                                     font.letterSpacing: 1.1
-                                    color: mt.accentGreen
+                                    color: mt.accentCyan
                                 }
                             }
 
@@ -1006,7 +1006,7 @@ PanelWindow {
                                 barWidth: 4
                                 gap: 4
                                 color: mt.accentFrame
-                                altColor: mt.accentYellow
+                                altColor: mt.accentCyan
                             }
 
                             CyberStripe {
@@ -1019,8 +1019,8 @@ PanelWindow {
                                 gap: 3
                                 progress: 0.78
                                 color: mt.accentCyan
-                                altColor: mt.accentYellow
-                                trackColor: Qt.rgba(mt.accentFrame.r, mt.accentFrame.g, mt.accentFrame.b, 0.30)
+                                altColor: mt.accentMint
+                                trackColor: Qt.rgba(mt.accentFrame.r, mt.accentFrame.g, mt.accentFrame.b, 0.25)
                             }
                         }
                     }
@@ -1035,7 +1035,9 @@ PanelWindow {
                         y: 10
                         cornerRadius: 10
                         ringWidth: mt.borderWidth + mt.whiteLine
-                        fillColor: mt.edgy ? mt.accentYellow : mt.chipFill
+                        fillColor: mt.edgy ? mt.hudSurface : mt.chipFill
+                        ringColorTop: mt.edgy ? mt.accentCyan : mt.ringTop
+                        ringColorBottom: mt.edgy ? mt.accentCyan : mt.ringBottom
                         rotation: 3 * mt.badgeTilt
                         transformOrigin: Item.Center
 
@@ -1043,7 +1045,7 @@ PanelWindow {
                             id: greetText
                             anchors.centerIn: parent
                             text: win.greeting
-                            color: mt.edgy ? "#07080e" : mt.chipInk
+                            color: mt.edgy ? mt.accentCyan : mt.chipInk
                             font.family: mt.fontFamily
                             font.pixelSize: 11
                             font.weight: Font.ExtraBold
@@ -1218,7 +1220,7 @@ PanelWindow {
                             gradientFill: true
                             label: "SHELL"
                             value: win.shellName
-                            hudAccent: mt.accentYellow
+                            hudAccent: mt.accentMint
                         }
 
                         StatKey {
@@ -1226,7 +1228,7 @@ PanelWindow {
                             y: 0
                             label: "DESKTOP"
                             value: win.deskName
-                            hudAccent: mt.accentGreen
+                            hudAccent: mt.accentCyan
                             tilt: card.tilt
                         }
                     }

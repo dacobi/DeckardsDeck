@@ -120,6 +120,19 @@ Singleton {
         root.persist()
     }
 
+    function setColor(i, hex) {
+        if (i < 0 || i >= PM.SLOTS)
+            return false
+        const h = PM.norm(hex)
+        if (h === "")
+            return false
+        const c = root.colors.slice()
+        c[i] = h
+        root.colors = c
+        root.persist()
+        return true
+    }
+
     function saveFavorite() {
         root.favorites = PM.addFavorite(root.favorites, root.colors, root.source, 48)
         root.persist()

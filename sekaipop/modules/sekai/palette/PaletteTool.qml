@@ -50,6 +50,74 @@ Scope {
     // to let "Copy all" say it did something
     property bool copiedAll: false
 
+    // Which of the 5 swatches is currently open in the inline colour picker (-1 = none).
+    property int editingIndex: -1
+    readonly property string editingHex: (root.editingIndex >= 0 && root.editingIndex < 5)
+        ? (PaletteService.colors[root.editingIndex] ?? "#000000") : "#000000"
+    property real pickH: 185
+    property real pickS: 1.0
+    property real pickV: 1.0
+    property bool syncingPicker: false
+
+    function rgbToHsv(hex) {
+        const rgb = PM.toRgb(hex)
+        const r = rgb.r / 255, g = rgb.g / 255, b = rgb.b / 255
+        const max = Math.max(r, g, b), min = Math.min(r, g, b)
+        const d = max - min
+        let h = 0
+        if (d > 0) {
+            if (max === r) h = 60 * (((g - b) / d) % 6)
+            else if (max === g) h = 60 * ((b - r) / d + 2)
+            else h = 60 * ((r - g) / d + 4)
+        }
+        if (h < 0) h += 360
+        return { h: h, s: max === 0 ? 0 : d / max, v: max }
+    }
+
+    function hsvToHex(h, s, v) {
+        const hh = ((h % 360) + 360) % 360
+        const c = v * s
+        const x = c * (1 - Math.abs(((hh / 60) % 2) - 1))
+        const m = v - c
+        let r = 0, g = 0, b = 0
+        if (hh < 60)       { r = c; g = x; b = 0 }
+        else if (hh < 120) { r = x; g = c; b = 0 }
+        else if (hh < 180) { r = 0; g = c; b = x }
+        else if (hh < 240) { r = 0; g = x; b = c }
+        else if (hh < 300) { r = x; g = 0; b = c }
+        else               { r = c; g = 0; b = x }
+        return PM.fromRgb((r + m) * 255, (g + m) * 255, (b + m) * 255)
+    }
+
+    function syncPickerFromEditing() {
+        if (root.editingIndex < 0)
+            return
+        root.syncingPicker = true
+        const hsv = root.rgbToHsv(root.editingHex)
+        if (hsv.s > 0.01)
+            root.pickH = hsv.h
+        root.pickS = hsv.s
+        root.pickV = hsv.v
+        if (!swatchHexInput.activeFocus)
+            swatchHexInput.text = root.editingHex.slice(1).toUpperCase()
+        root.syncingPicker = false
+    }
+
+    onEditingIndexChanged: root.syncPickerFromEditing()
+    onEditingHexChanged: {
+        if (!svPickerMouse.pressed && !huePickerMouse.pressed)
+            root.syncPickerFromEditing()
+    }
+
+    function applyPickedSwatchHsv() {
+        if (root.syncingPicker || root.editingIndex < 0)
+            return
+        const hex = root.hsvToHex(root.pickH, root.pickS, root.pickV)
+        PaletteService.setColor(root.editingIndex, hex)
+        if (!swatchHexInput.activeFocus)
+            swatchHexInput.text = hex.slice(1).toUpperCase()
+    }
+
     function focusedScreen() {
         const name = Hyprland.focusedMonitor ? Hyprland.focusedMonitor.name : ""
         for (const s of Quickshell.screens) {
@@ -401,11 +469,279 @@ Scope {
                                     width: 124
                                     hex: PaletteService.colors[index] ?? "#000000"
                                     locked: PaletteService.locks[index] === true
+                                    editable: true
+                                    selected: root.editingIndex === index
                                     onCopyRequested: {
                                         if (PaletteService.copy(hex))
                                             flashCopied()
                                     }
                                     onLockToggled: PaletteService.toggleLock(index)
+                                    onEditRequested: {
+                                        root.editingIndex = (root.editingIndex === index) ? -1 : index
+                                    }
+                                }
+                            }
+                        }
+
+                        // ===== inline swatch colour picker =====
+                        Rectangle {
+                            id: pickerBar
+                            visible: root.editingIndex >= 0
+                            width: parent.width
+                            height: 92
+                            radius: Theme.edgy ? Theme.radiusInner : 14
+                            color: Theme.surfaceHover
+                            border.width: Theme.borderWidth
+                            border.color: Theme.line
+
+                            Row {
+                                x: 12
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: 12
+
+                                // Swatch badge + label
+                                Column {
+                                    width: 96
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    spacing: 4
+
+                                    Text {
+                                        text: "SWATCH #" + (root.editingIndex + 1)
+                                        color: Theme.ink
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: 11
+                                        font.weight: Font.ExtraBold
+                                        font.styleName: Theme.fontStyleBold
+                                    }
+
+                                    Rectangle {
+                                        width: 92
+                                        height: 28
+                                        radius: Theme.edgy ? 2 : 7
+                                        color: Theme.surface
+                                        border.width: swatchHexInput.activeFocus ? 2 : 1.5
+                                        border.color: Theme.line
+
+                                        Row {
+                                            anchors.centerIn: parent
+                                            spacing: 3
+
+                                            Rectangle {
+                                                width: 14
+                                                height: 14
+                                                radius: 3
+                                                color: root.editingHex
+                                                border.width: 1
+                                                border.color: Theme.line
+                                                anchors.verticalCenter: parent.verticalCenter
+                                            }
+
+                                            Text {
+                                                anchors.verticalCenter: parent.verticalCenter
+                                                text: "#"
+                                                color: Theme.inkSub
+                                                font.family: "JetBrains Mono"
+                                                font.pixelSize: 11
+                                                font.weight: Font.Bold
+                                            }
+
+                                            TextInput {
+                                                id: swatchHexInput
+                                                anchors.verticalCenter: parent.verticalCenter
+                                                width: 52
+                                                color: Theme.ink
+                                                font.family: "JetBrains Mono"
+                                                font.pixelSize: 11
+                                                font.weight: Font.Bold
+                                                maximumLength: 6
+                                                validator: RegularExpressionValidator {
+                                                    regularExpression: /[0-9a-fA-F]{0,6}/
+                                                }
+                                                onTextEdited: {
+                                                    const h = PM.norm(text)
+                                                    if (h !== "" && text.length === 6)
+                                                        PaletteService.setColor(root.editingIndex, h)
+                                                }
+                                                onAccepted: {
+                                                    const h = PM.norm(text)
+                                                    if (h !== "")
+                                                        PaletteService.setColor(root.editingIndex, h)
+                                                    focus = false
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                // 2D Saturation / Value Box
+                                Item {
+                                    id: svPickerBox
+                                    width: 180
+                                    height: 70
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Rectangle {
+                                        anchors.fill: parent
+                                        radius: Theme.edgy ? 2 : 6
+                                        color: root.hsvToHex(root.pickH, 1, 1)
+                                    }
+
+                                    Rectangle {
+                                        anchors.fill: parent
+                                        radius: Theme.edgy ? 2 : 6
+                                        rotation: -90
+                                        width: parent.height
+                                        height: parent.width
+                                        anchors.centerIn: parent
+                                        gradient: Gradient {
+                                            GradientStop { position: 0.0; color: "#ffffffff" }
+                                            GradientStop { position: 1.0; color: "#00ffffff" }
+                                        }
+                                    }
+
+                                    Rectangle {
+                                        anchors.fill: parent
+                                        radius: Theme.edgy ? 2 : 6
+                                        gradient: Gradient {
+                                            GradientStop { position: 0.0; color: "#00000000" }
+                                            GradientStop { position: 1.0; color: "#ff000000" }
+                                        }
+                                        border.width: 1.5
+                                        border.color: Theme.line
+                                    }
+
+                                    Rectangle {
+                                        x: Math.round(root.pickS * (svPickerBox.width - 4)) - 3
+                                        y: Math.round((1 - root.pickV) * (svPickerBox.height - 4)) - 3
+                                        width: 10
+                                        height: 10
+                                        radius: 5
+                                        color: root.editingHex
+                                        border.width: 2
+                                        border.color: root.pickV > 0.55 ? "#000000" : "#ffffff"
+                                    }
+
+                                    MouseArea {
+                                        id: svPickerMouse
+                                        anchors.fill: parent
+                                        cursorShape: Qt.CrossCursor
+                                        function updateSv(mx, my) {
+                                            root.pickS = Math.max(0, Math.min(1, mx / svPickerBox.width))
+                                            root.pickV = Math.max(0, Math.min(1, 1 - (my / svPickerBox.height)))
+                                            root.applyPickedSwatchHsv()
+                                        }
+                                        onPressed: mouse => updateSv(mouse.x, mouse.y)
+                                        onPositionChanged: mouse => {
+                                            if (pressed)
+                                                updateSv(mouse.x, mouse.y)
+                                        }
+                                    }
+                                }
+
+                                // Hue Bar
+                                Item {
+                                    id: huePickerBox
+                                    width: 18
+                                    height: 70
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Rectangle {
+                                        anchors.fill: parent
+                                        radius: Theme.edgy ? 2 : 6
+                                        border.width: 1.5
+                                        border.color: Theme.line
+                                        gradient: Gradient {
+                                            GradientStop { position: 0.00; color: "#ff0000" }
+                                            GradientStop { position: 0.17; color: "#ffff00" }
+                                            GradientStop { position: 0.33; color: "#00ff00" }
+                                            GradientStop { position: 0.50; color: "#00ffff" }
+                                            GradientStop { position: 0.67; color: "#0000ff" }
+                                            GradientStop { position: 0.83; color: "#ff00ff" }
+                                            GradientStop { position: 1.00; color: "#ff0000" }
+                                        }
+                                    }
+
+                                    Rectangle {
+                                        x: -1
+                                        y: Math.round((root.pickH / 360) * (huePickerBox.height - 6))
+                                        width: huePickerBox.width + 2
+                                        height: 6
+                                        radius: 2
+                                        color: "#ffffff"
+                                        border.width: 1.5
+                                        border.color: "#000000"
+                                    }
+
+                                    MouseArea {
+                                        id: huePickerMouse
+                                        anchors.fill: parent
+                                        cursorShape: Qt.PointingHandCursor
+                                        function updateHue(my) {
+                                            root.pickH = Math.max(0, Math.min(359.9, (my / huePickerBox.height) * 360))
+                                            root.applyPickedSwatchHsv()
+                                        }
+                                        onPressed: mouse => updateHue(mouse.y)
+                                        onPositionChanged: mouse => {
+                                            if (pressed)
+                                                updateHue(mouse.y)
+                                        }
+                                    }
+                                }
+
+                                // Quick Cyberpunk Presets
+                                Grid {
+                                    columns: 6
+                                    spacing: 5
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    Repeater {
+                                        model: [
+                                            "#00f0ff", "#ff2a55", "#fcee0a", "#00ff7f", "#38bdf8", "#a855f7",
+                                            "#ff9e2c", "#ff2a85", "#1e3448", "#0b1622", "#070b12", "#e6e6e6"
+                                        ]
+
+                                        Rectangle {
+                                            required property string modelData
+                                            width: 22
+                                            height: 22
+                                            radius: Theme.edgy ? 2 : 6
+                                            color: modelData
+                                            border.width: 1.5
+                                            border.color: Theme.line
+
+                                            MouseArea {
+                                                anchors.fill: parent
+                                                cursorShape: Qt.PointingHandCursor
+                                                onClicked: PaletteService.setColor(root.editingIndex, modelData)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Close inline picker button
+                            Rectangle {
+                                anchors.right: parent.right
+                                anchors.top: parent.top
+                                anchors.margins: 8
+                                width: 22
+                                height: 22
+                                radius: Theme.edgy ? 2 : 7
+                                color: Theme.surface
+                                border.width: 1.5
+                                border.color: Theme.line
+
+                                MaterialIcon {
+                                    anchors.centerIn: parent
+                                    name: "close"
+                                    size: 13
+                                    color: Theme.ink
+                                }
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: root.editingIndex = -1
                                 }
                             }
                         }

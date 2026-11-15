@@ -326,22 +326,24 @@ function toShell(colors) {
     var ha = toHsl(A)
     var hb = toHsl(B)
 
-    // Third, fourth and fifth HUD accent roles (C: structural frame/alert neon,
-    // D: high-voltage callout yellow/gold, E: bio/matrix status green, F: telemetry amber)
+    // Third, fourth and fifth HUD accent roles derived harmoniously from the remaining
+    // swatches (or blended from A and B if fewer distinct swatches exist).
     var ci = -1, cv = -1
     for (var ec = 0; ec < list.length; ec++) {
-        if (ec === ai || ec === bi) continue
+        if (ec === ai || ec === bi || ec === di) continue
         var ev = (dist(list[ec], A) + dist(list[ec], B)) * 0.5 + vivid(list[ec]) * 100 * 0.4
         if (ev > cv) { cv = ev; ci = ec }
     }
-    var C = lift(ci >= 0 ? list[ci] : fromHsl(ha.h + 155, Math.max(ha.s, 0.82), 0.58), border, 4.5)
-    if (dist(C, A) < 18 || dist(C, B) < 18)
-        C = lift(fromHsl(ha.h + 155, Math.max(ha.s, 0.82), 0.58), border, 4.5)
+    var C = lift(ci >= 0 ? list[ci] : mix(A, B, 0.5), border, 4.5)
     var hc = toHsl(C)
-    var D = lift(fromHsl(52 + ((ha.h - 180) * 0.12), Math.max(ha.s, 0.88), 0.56), border, 4.5)
-    var E = lift(fromHsl(142 + ((hb.h - 180) * 0.10), Math.max(ha.s, 0.80), 0.54), border, 4.5)
-    var F = lift(fromHsl(28 + ((hc.h - 340) * 0.10), Math.max(ha.s, 0.85), 0.56), border, 4.5)
-    var hudTint = fromHsl(hc.h, clamp(hc.s, 0.35, 0.65), 0.10)
+    var diSlot = -1
+    for (var ed = 0; ed < list.length; ed++) {
+        if (ed !== ai && ed !== bi && ed !== di && ed !== ci) { diSlot = ed; break }
+    }
+    var D = lift(diSlot >= 0 ? list[diSlot] : fromHsl(ha.h, clamp(ha.s, 0.55, 0.92), 0.72), border, 4.5)
+    var E = lift(mix(A, B, 0.35), border, 4.5)
+    var F = lift(mix(B, D, 0.5), border, 4.5)
+    var hudTint = fromHsl(hc.h, clamp(hc.s, 0.25, 0.55), 0.10)
 
     var deep = fromHsl(bh.h, bh.s * 0.9, clamp(bh.l * 0.45, 0.08, 0.17))
     var dl = toHsl(deep).l

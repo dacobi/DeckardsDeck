@@ -26,11 +26,14 @@ Item {
     property bool mini: false
     // true for a moment after a copy
     property bool copied: false
+    property bool editable: false
+    property bool selected: false
 
     signal copyRequested()
     signal lockToggled()
+    signal editRequested()
 
-    readonly property bool hovered: mouse.containsMouse || lockMouse.containsMouse
+    readonly property bool hovered: mouse.containsMouse || lockMouse.containsMouse || editMouse.containsMouse
     // The label's colour: dark ink or white, whichever reads on the swatch. It glides with
     // the fill, so it never flashes the wrong colour half way through a change.
     property color ink: PM.textOn(root.hex)
@@ -74,13 +77,46 @@ Item {
         radius: root.corner
         antialiasing: true
         color: root.hex
-        border.width: 3
-        border.color: mt.line
+        border.width: root.selected ? 4 : 3
+        border.color: root.selected ? mt.accentCyan : mt.line
         scale: mouse.pressed ? 0.98 : 1
 
         Behavior on color { ColorAnimation { duration: 340; easing.type: Easing.OutCubic } }
         Behavior on y { NumberAnimation { duration: 220; easing.type: Easing.OutBack; easing.overshoot: 2.2 } }
         Behavior on scale { NumberAnimation { duration: 90 } }
+
+        // the colour picker button (top-left, in PaletteTool)
+        Rectangle {
+            id: editBtn
+            visible: root.editable && !root.mini && !root.compact
+            x: 8
+            y: 8
+            width: 30
+            height: 30
+            radius: 15
+            color: root.selected
+                ? Qt.rgba(root.ink.r, root.ink.g, root.ink.b, 0.28)
+                : Qt.rgba(root.ink.r, root.ink.g, root.ink.b, editMouse.containsMouse ? 0.18 : 0.08)
+            opacity: (root.selected || root.hovered) ? 1 : 0
+            antialiasing: true
+
+            Behavior on opacity { NumberAnimation { duration: 140 } }
+
+            MaterialIcon {
+                anchors.centerIn: parent
+                name: "colorize"
+                size: 17
+                color: root.ink
+            }
+
+            MouseArea {
+                id: editMouse
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: root.editRequested()
+            }
+        }
 
         // the padlock: always there when locked, otherwise only while hovering
         Rectangle {

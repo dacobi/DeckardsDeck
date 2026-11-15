@@ -256,6 +256,15 @@ Singleton {
         "matugen.contrast": 0,
         "matugen.pinA": "",
         "matugen.pinB": "",
+        // ===== Custom scheme role pins =====
+        "custom.pinA": "",
+        "custom.pinB": "",
+        "custom.pinC": "",
+        "custom.pinD": "",
+        "custom.pinE": "",
+        "custom.pinBorder": "",
+        "custom.pinDeep": "",
+        "custom.pinHudTint": "",
         // ===== App colours =====
         "appTheme.foot": false,
         "appTheme.vscode": false,

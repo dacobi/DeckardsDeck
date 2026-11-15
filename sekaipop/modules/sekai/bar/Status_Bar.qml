@@ -566,7 +566,8 @@ Item {
                 anchors.leftMargin: 12
                 width: 64
                 height: 2
-                color: mt.accentYellow
+                color: mt.accentCyan
+                opacity: 0.75
             }
 
             Rectangle {

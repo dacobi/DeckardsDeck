@@ -102,13 +102,14 @@ Item {
             color: root.mix(mt.accentCyan, root.deep ? 0.09 : 0.12)
         }
 
-        // Top-left Acid Yellow HUD hero callout strip + Arasaka Red hairline trace
+        // Top-left HUD header trace + frame hairline
         Rectangle {
             x: 0
             y: 0
             width: Math.min(240, parent.width * 0.42)
-            height: 4
-            color: mt.accentYellow
+            height: 3
+            color: mt.accentCyan
+            opacity: 0.85
         }
 
         Rectangle {
@@ -132,8 +133,8 @@ Item {
             gap: 4
             progress: 0.65
             color: root.mix(mt.accentCyan, 0.65)
-            altColor: mt.accentYellow
-            trackColor: root.mix(mt.accentFrame, 0.28)
+            altColor: mt.accentFrame
+            trackColor: root.mix(mt.accentFrame, 0.25)
         }
 
         // Bottom-left >>>> chevrons + BIO MONITOR serial code
@@ -152,7 +153,7 @@ Item {
                 barWidth: 4
                 gap: 4
                 color: root.mix(mt.accentFrame, 0.72)
-                altColor: mt.accentYellow
+                altColor: mt.accentCyan
             }
 
             Text {
@@ -162,7 +163,7 @@ Item {
                 font.pixelSize: 9
                 font.weight: Font.Bold
                 font.letterSpacing: 1.4
-                color: root.mix(mt.accentAmber, 0.68)
+                color: root.mix(mt.accentCyan, 0.65)
             }
         }
     }

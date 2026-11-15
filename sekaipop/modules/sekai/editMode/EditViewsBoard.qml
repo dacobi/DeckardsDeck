@@ -26,11 +26,6 @@ Item {
         { id: "sekaipop", label: "SekaiPop", icon: "auto_awesome" }
     ]
 
-    readonly property var phoneOptions: [
-        { id: "tilted", label: "2.5D", icon: "view_in_ar" },
-        { id: "flat", label: "2D", icon: "crop_portrait" }
-    ]
-
     readonly property var styleOptions: [
         { id: "board", label: "Film strip", icon: "dashboard" },
         { id: "scroll", label: "Scroll (niri)", icon: "view_column" }
@@ -44,11 +39,9 @@ Item {
 
     readonly property bool scroll: SettingsService.get("overview.style") === "scroll"
     readonly property string widgetStyleNow: SettingsService.get("appearance.style") === "sekaipop" ? "sekaipop" : "cyberpunk"
-    readonly property string phoneNow: SettingsService.flag("quick.flat") ? "flat" : "tilted"
     readonly property int count: Math.max(1, Math.min(10, Math.round(Number(SettingsService.get("overview.workspaces")) || 5)))
 
     property string widgetStyleHover: ""
-    property string phoneHover: ""
     property string styleHover: ""
     property string positionHover: ""
 
@@ -106,38 +99,6 @@ Item {
                                 root.widgetStyleHover = modelData.id
                             else if (root.widgetStyleHover === modelData.id)
                                 root.widgetStyleHover = ""
-                        }
-                    }
-                }
-            }
-        }
-
-        Column {
-            spacing: 9
-
-            EditPickHead {
-                title: "PHONE"
-                value: root.phoneHover === "" && GameModeService.enabled ? "Flat in Game Mode"
-                    : root.labelFor(root.phoneOptions, root.phoneHover !== "" ? root.phoneHover : root.phoneNow)
-            }
-
-            Row {
-                spacing: 8
-
-                Repeater {
-                    model: root.phoneOptions
-
-                    EditPickKey {
-                        required property var modelData
-
-                        icon: modelData.icon
-                        on: root.phoneNow === modelData.id
-                        onPicked: SettingsService.set("quick.flat", modelData.id === "flat")
-                        onHoveredChanged: {
-                            if (hovered)
-                                root.phoneHover = modelData.id
-                            else if (root.phoneHover === modelData.id)
-                                root.phoneHover = ""
                         }
                     }
                 }

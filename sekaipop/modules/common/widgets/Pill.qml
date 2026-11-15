@@ -215,11 +215,13 @@ Item {
             visible: mt.edgy && !root.capsule && !root.bare && surface.width > 4 && surface.height > 4
             anchors.fill: parent
 
+            readonly property bool customRing: root.ringColorTop !== (root.classicScope ? mt.pRingTop : mt.ringTop)
             readonly property color baseFill: root.capRim ? mt.capBody
                 : (root.isHudCard && root.fillColor === mt.surface ? mt.hudSurface : root.fillColor)
             readonly property color strokeCol: root.capRim ? mt.capRim
-                : (root.fillGradient !== null ? mt.accentYellow
-                    : (root.isHudCard ? mt.accentFrame : mt.accentCyan))
+                : (hudFace.customRing ? root.ringColorTop
+                    : (root.fillGradient !== null ? mt.accentCyan
+                        : (root.isHudCard ? mt.accentFrame : mt.line)))
             readonly property color gradStart: (root.fillGradient && root.fillGradient.stops.length > 0)
                 ? root.fillGradient.stops[0].color : hudFace.baseFill
             readonly property color gradEnd: (root.fillGradient && root.fillGradient.stops.length > 0)
@@ -273,85 +275,53 @@ Item {
             antialiasing: true
         }
 
-        // Cyberpunk 2077 HUD multi-hue accents, edge bars, reticle grid & telemetry markers.
+        // Cyberpunk 2077 HUD reticle grid & cohesive corner telemetry markers.
         Item {
             id: hudCorners
             anchors.fill: parent
-            visible: mt.edgy && !root.capsule && !root.bare && parent.width >= 28 && parent.height >= 18
+            visible: mt.edgy && !root.capsule && !root.bare && root.isHudCard
 
-            // Left vertical high-voltage callout bar (Acid Yellow on cards & normal keys, Red on gradient keys)
-            Rectangle {
-                x: 0
-                y: 0
-                width: root.isHudCard ? 3.5 : 2.5
-                height: Math.max(6, parent.height - root.cutBL - root.notchH - 2)
-                color: root.fillGradient !== null ? mt.accentFrame
-                    : (root.isHudCard ? mt.accentYellow : (root.isHudKey ? mt.accentYellow : mt.accentCyan))
-                opacity: 0.92
+            CyberStripe {
+                anchors.fill: parent
+                anchors.margins: 8
+                mode: "grid"
+                gridStep: 32
+                crossSize: 2.5
+                color: Qt.rgba(mt.accentCyan.r, mt.accentCyan.g, mt.accentCyan.b, mt.dark ? 0.08 : 0.06)
             }
 
-            // Card-level Anna Kuzminska HUD overlays (+ reticle grid, top cyan trace, bottom >>>> chevrons & serial)
-            Item {
-                anchors.fill: parent
-                visible: root.isHudCard
+            // Top-right corner tick inside the 45° chamfer
+            Rectangle {
+                x: parent.width - root.cutTR - 8
+                y: 4
+                width: 4
+                height: 2
+                color: mt.accentCyan
+                opacity: 0.85
+            }
 
-                CyberStripe {
-                    anchors.fill: parent
-                    anchors.margins: 8
-                    mode: "grid"
-                    gridStep: 32
-                    crossSize: 2.5
-                    color: Qt.rgba(mt.accentCyan.r, mt.accentCyan.g, mt.accentCyan.b, mt.dark ? 0.08 : 0.06)
-                }
+            // Stepped bottom-right notch highlight bar
+            Rectangle {
+                x: Math.max(root.cutBL + 8, parent.width - root.notchW)
+                y: parent.height - 2
+                width: Math.max(0, root.notchW - 6)
+                height: 2
+                color: mt.accentCyan
+                opacity: 0.85
+            }
 
-                // Top-left cyan/yellow stepped telemetry bar
-                Rectangle {
-                    x: 4
-                    y: 0
-                    width: Math.min(52, parent.width * 0.22)
-                    height: 2.5
-                    color: mt.accentCyan
-                }
-
-                // Top-right corner status dot inside the 45° chamfer
-                Rectangle {
-                    x: parent.width - root.cutTR - 8
-                    y: 4
-                    width: 4
-                    height: 4
-                    color: mt.accentYellow
-                }
-
-                // Stepped bottom-right notch highlight bar in Cyan + Green status tick
-                Rectangle {
-                    x: Math.max(root.cutBL + 8, parent.width - root.notchW)
-                    y: parent.height - 2
-                    width: Math.max(0, root.notchW - 14)
-                    height: 2
-                    color: mt.accentCyan
-                }
-
-                Rectangle {
-                    x: parent.width - 10
-                    y: parent.height - 2
-                    width: 6
-                    height: 2
-                    color: mt.accentGreen
-                }
-
-                // Micro-telemetry serial number in bottom-left notch step
-                Text {
-                    x: root.cutBL + 6
-                    anchors.bottom: parent.bottom
-                    anchors.bottomMargin: root.notchH + 1
-                    visible: parent.width >= 220 && parent.height >= 90
-                    text: "382 248 40270274 // HUD"
-                    font.family: "JetBrains Mono"
-                    font.pixelSize: 7
-                    font.weight: Font.Bold
-                    font.letterSpacing: 1.1
-                    color: Qt.rgba(mt.accentAmber.r, mt.accentAmber.g, mt.accentAmber.b, 0.68)
-                }
+            // Micro-telemetry serial number in bottom-left notch step
+            Text {
+                x: root.cutBL + 6
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: root.notchH + 1
+                visible: parent.width >= 220 && parent.height >= 90
+                text: "382 248 40270274 // HUD"
+                font.family: "JetBrains Mono"
+                font.pixelSize: 7
+                font.weight: Font.Bold
+                font.letterSpacing: 1.1
+                color: Qt.rgba(mt.accentCyan.r, mt.accentCyan.g, mt.accentCyan.b, 0.55)
             }
         }
 

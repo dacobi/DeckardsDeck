@@ -410,7 +410,7 @@ PanelWindow {
                             : win.tab === "dock"
                             ? "Its look, where it sits, when it hides."
                             : win.tab === "views"
-                            ? "The phone, the overview, and the bar's workspaces."
+                            ? "Widget style, the overview, and the bar's workspaces."
                             : (EditMode.editTarget !== ""
                             ? "Editing " + win.titleOf(EditMode.editTarget) + " \u2014 click the card to let go"
                             : "Pick it, place it, tweak it.")

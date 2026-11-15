@@ -62,29 +62,6 @@ SettingsPage {
     }
 
     SectionCard {
-        title: "Quick Panel"
-
-        SettingChoice {
-            label: "Phone"
-            sublabel: "Tilted 2.5D, or flat 2D, for this panel and the Settings (always flat in Game Mode)"
-            current: SettingsService.flag("quick.flat") ? "flat" : "tilted"
-            options: [
-                { id: "tilted", label: "2.5D", icon: "view_in_ar" },
-                { id: "flat", label: "2D", icon: "crop_portrait" }
-            ]
-            onPicked: id => SettingsService.set("quick.flat", id === "flat")
-        }
-
-        SettingToggle {
-            icon: "blur_on"
-            label: "Phone shadow"
-            detail: "A soft shadow under the phone (Quick Panel, Apps, Wallpapers, Settings)"
-            checked: SettingsService.flag("quick.phoneShadow")
-            onToggled: SettingsService.toggle("quick.phoneShadow")
-        }
-    }
-
-    SectionCard {
         title: "Shell"
 
         SettingToggle {

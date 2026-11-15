@@ -555,8 +555,8 @@ PanelWindow {
                 font.family: "JetBrains Mono"
                 font.pixelSize: 7
                 font.weight: Font.Bold
-                color: tile.gradientFill ? mt.accentGreen : mt.accentAmber
-                opacity: 0.85
+                color: tile.gradientFill ? mt.accentMint : mt.accentFrame
+                opacity: 0.72
             }
 
             Text {
@@ -565,7 +565,7 @@ PanelWindow {
                 verticalAlignment: Text.AlignVCenter
                 text: tile.digit
                 color: mt.edgy
-                    ? (tile.gradientFill ? mt.accentYellow : mt.accentCyan)
+                    ? (tile.gradientFill ? mt.accentMint : mt.accentCyan)
                     : (tile.gradientFill ? mt.colBorder : mt.chipInk)
                 opacity: tile.ghost ? 0.28 : 1
                 font.family: mt.fontFamily

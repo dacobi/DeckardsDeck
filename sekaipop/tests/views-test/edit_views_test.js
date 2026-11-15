@@ -21,19 +21,17 @@ assert.ok(/win\.tab === "views"\s*\? "[^"]+"/.test(T), 'the heading has a subtit
 assert.ok(/pickTab: win\.tab === "dock" \|\| win\.tab === "views"/.test(T), 'the hint rows read like the dock tab')
 
 // the keys are the very switches Settings uses
-const settingKeys = ['quick.flat', 'overview.style', 'overview.position', 'overview.workspaces']
+const settingKeys = ['appearance.style', 'overview.style', 'overview.position', 'overview.workspaces']
 for (const k of settingKeys) {
     assert.ok(S.includes('"' + k + '"'), k + ' is a real setting')
     assert.ok(B.includes('"' + k + '"'), 'the VIEWS board uses ' + k)
 }
-assert.ok(/set\("quick\.flat", modelData\.id === "flat"\)/.test(B) && /set\("quick\.flat", id === "flat"\)/.test(Q), 'phone: same write as Settings')
 assert.ok(/set\("overview\.style", modelData\.id\)/.test(B) && /set\("overview\.style", id\)/.test(H), 'overview style: same write as Settings')
 assert.ok(/set\("overview\.position", modelData\.id\)/.test(B) && /set\("overview\.position", id\)/.test(H), 'board side: same write as Settings')
 
 // same option ids as Settings
-for (const id of ['tilted', 'flat', 'board', 'scroll', 'left', 'center', 'right'])
+for (const id of ['cyberpunk', 'sekaipop', 'board', 'scroll', 'left', 'center', 'right'])
     assert.ok(B.includes('id: "' + id + '"'), 'option ' + id)
-assert.ok(/id: "tilted"[\s\S]*id: "flat"/.test(Q), 'Settings has the same two phone options')
 
 // the board's own options hide while Scroll is picked, as in Settings
 assert.strictEqual((B.match(/visible: !root\.scroll/g) || []).length, 2, 'board side and size hide under Scroll')

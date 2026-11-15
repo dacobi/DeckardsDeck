@@ -50,17 +50,22 @@ Item {
     signal finished()
 
     readonly property bool matugenOn: ThemeService.themeFor(root.screenName) === "matugen"
+    readonly property bool customOn: ThemeService.themeFor(root.screenName) === "custom"
 
-    // Leaving the tab, or the theme no longer being Matugen, puts the tiles back.
+    // Leaving the tab, or the theme no longer being Matugen/Custom, puts the tiles back.
     onVisibleChanged: {
         if (!visible)
             root.tuning = false
         root.takeRequest()
     }
     onMatugenOnChanged: {
-        if (!matugenOn)
+        if (!matugenOn && !customOn)
             root.tuning = false
         root.takeRequest()
+    }
+    onCustomOnChanged: {
+        if (!matugenOn && !customOn)
+            root.tuning = false
     }
 
     // `ipc call desktopedit matugen` (EditMode.openMatugen): the controls, once this tab
@@ -93,6 +98,8 @@ Item {
         readonly property var c: group.c
         readonly property bool selected: ThemeService.themeFor(root.screenName) === group.id
         readonly property bool isMatugen: group.id === "matugen"
+        readonly property bool isCustom: group.id === "custom"
+        readonly property bool canTune: (tile.isMatugen && !tile.missing) || tile.isCustom
         readonly property bool missing: tile.isMatugen && !ThemeService.matugenInstalled
         readonly property bool dark: ThemeService.dark
 
@@ -397,10 +404,10 @@ Item {
                     font.styleName: mt.fontStyleBold
                 }
 
-                // Matugen has options (shown while it isn't the theme on).
+                // Matugen / Custom have options (shown while not the theme on).
                 MaterialIcon {
                     id: tuneMark
-                    visible: tile.isMatugen && !tile.selected && !tile.missing
+                    visible: tile.canTune && !tile.selected
                     anchors.verticalCenter: parent.verticalCenter
                     name: "tune"
                     size: 12
@@ -447,18 +454,21 @@ Item {
             hoverEnabled: true
             acceptedButtons: Qt.LeftButton
             cursorShape: Qt.PointingHandCursor
-            // Matugen, clicked again while it is on: its controls.
+            // Matugen or Custom, clicked again while it is on: its controls.
             onClicked: {
-                if (tile.isMatugen && tile.selected)
+                if (tile.canTune && tile.selected)
                     root.tuning = true
-                else
+                else {
                     ThemeService.pickTheme(root.screenName, tile.group.id)
+                    if (tile.isCustom)
+                        root.tuning = true
+                }
             }
         }
 
-        // Matugen is on: the round tune key on its corner opens the controls.
+        // Matugen or Custom is on: the round tune key on its corner opens the controls.
         Item {
-            visible: tile.isMatugen && tile.selected && !tile.missing
+            visible: tile.canTune && tile.selected
             x: tile.width - 34 + 10
             y: tile.height - 34 + 10 - 3
             width: 34
@@ -493,10 +503,18 @@ Item {
         }
     }
 
-    // The Matugen controls, in the row's place while tuning.
+    // The Matugen controls, in the row's place while tuning Matugen.
     EditMatugenControls {
         anchors.fill: parent
-        visible: root.tuning
+        visible: root.tuning && root.matugenOn
+        onBack: root.tuning = false
+        onFinished: root.finished()
+    }
+
+    // The Custom palette controls & colour picker, in the row's place while tuning Custom.
+    EditCustomControls {
+        anchors.fill: parent
+        visible: root.tuning && root.customOn
         onBack: root.tuning = false
         onFinished: root.finished()
     }

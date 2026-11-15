@@ -121,16 +121,17 @@ Item {
                     color: Qt.rgba(mt.accentCyan.r, mt.accentCyan.g, mt.accentCyan.b, 0.14)
                 }
 
-                // Top-left high-voltage Acid Yellow telemetry header strip
+                // Top-left HUD telemetry header strip
                 Rectangle {
                     x: 0
                     y: 0
                     width: Math.min(88, parent.width * 0.34)
-                    height: 3
-                    color: mt.accentYellow
+                    height: 2
+                    color: mt.accentCyan
+                    opacity: 0.8
                 }
 
-                // Top-right >>>> chevron cluster in Arasaka Red + Acid Yellow
+                // Top-right >>>> chevron cluster
                 CyberStripe {
                     anchors.top: parent.top
                     anchors.topMargin: 5
@@ -142,10 +143,10 @@ Item {
                     barWidth: 4
                     gap: 4
                     color: Qt.rgba(mt.accentFrame.r, mt.accentFrame.g, mt.accentFrame.b, 0.72)
-                    altColor: mt.accentYellow
+                    altColor: mt.accentCyan
                 }
 
-                // Bottom-edge diagonal //////// HUD hazard/telemetry stripe bar
+                // Bottom-edge diagonal //////// HUD telemetry stripe bar
                 CyberStripe {
                     anchors.left: parent.left
                     anchors.leftMargin: 8
@@ -159,8 +160,8 @@ Item {
                     gap: 3
                     progress: 0.72
                     color: Qt.rgba(mt.accentCyan.r, mt.accentCyan.g, mt.accentCyan.b, 0.55)
-                    altColor: mt.accentYellow
-                    trackColor: Qt.rgba(mt.accentFrame.r, mt.accentFrame.g, mt.accentFrame.b, 0.28)
+                    altColor: mt.accentFrame
+                    trackColor: Qt.rgba(mt.accentFrame.r, mt.accentFrame.g, mt.accentFrame.b, 0.22)
                 }
 
                 // Right-edge Bio-Green status marker
