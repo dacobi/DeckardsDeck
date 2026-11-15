@@ -13,6 +13,20 @@ SettingsPage {
     // The monitor this Settings Panel is on (the one "Reset" below means when
     // the bars are separate).
     readonly property string screenName: page.host ? page.host.screenName : ""
+    property string secondLayoutDraft: ""
+
+    readonly property var secondLanguageOptions: {
+        const primary = KeyboardLayoutService.primaryLayout
+        const second = KeyboardLayoutService.secondLayout
+        const out = [{ id: "", label: "None (English only)", icon: "block" }]
+        for (const l of KeyboardLayoutService.commonLayouts) {
+            if (l.id !== primary)
+                out.push({ id: l.id, label: l.label + " (" + l.id.toUpperCase() + ")", icon: "language" })
+        }
+        if (second !== "" && !out.some(o => o.id === second))
+            out.push({ id: second, label: second.toUpperCase(), icon: "language" })
+        return out
+    }
 
     readonly property var modules: [
         { key: "bar.workspaces", icon: "grid_view", label: "Workspaces" },
@@ -182,6 +196,65 @@ SettingsPage {
             step: 1
             value: SettingsService.get("bar.workspaceCount")
             onMoved: v => SettingsService.set("bar.workspaceCount", Math.round(v))
+        }
+
+        SettingToggle {
+            visible: SettingsService.flag("bar.workspaces")
+            icon: "desktop_windows"
+            label: "Combine all screens into 1 workspace"
+            detail: SettingsService.flag("workspaces.combineScreens") ? "All screens switch 1–N together" : "Independent per screen"
+            checked: SettingsService.flag("workspaces.combineScreens")
+            onToggled: SettingsService.toggle("workspaces.combineScreens")
+        }
+    }
+
+    SectionCard {
+        visible: SettingsService.flag("bar.keyboardLayout")
+        height: visible ? implicitHeight : 0
+        title: "Keyboard language"
+        icon: "keyboard_alt"
+
+        SettingAction {
+            icon: "translate"
+            label: "Active language: " + KeyboardLayoutService.code
+            detail: (KeyboardLayoutService.layoutName !== "" ? KeyboardLayoutService.layoutName : "English (US)")
+                    + (KeyboardLayoutService.configuredLayouts.length > 1 ? " · Click to switch" : " · Default (English)")
+            onActivated: KeyboardLayoutService.cycle()
+        }
+
+        SettingChoice {
+            label: "Default language"
+            sublabel: "Primary keyboard layout (English is default)"
+            current: KeyboardLayoutService.primaryLayout
+            options: KeyboardLayoutService.commonLayouts.map(l => ({
+                id: l.id,
+                label: l.label + " (" + l.id.toUpperCase() + ")",
+                icon: "keyboard"
+            }))
+            onPicked: id => KeyboardLayoutService.setPrimaryLayout(id)
+        }
+
+        SettingChoice {
+            label: "Second language"
+            sublabel: "Add a second language so clicking the bar module switches active language"
+            current: KeyboardLayoutService.secondLayout
+            options: page.secondLanguageOptions
+            onPicked: id => KeyboardLayoutService.setSecondLayout(id)
+        }
+
+        SettingText {
+            label: "Custom second language code"
+            sublabel: "Enter an XKB layout code (e.g. dk, se, de, fr, jp) and press Enter"
+            value: page.secondLayoutDraft
+            placeholder: "type a code, press Enter"
+            clearable: false
+            onSubmitted: text => {
+                const code = text.trim().toLowerCase()
+                if (/^[a-z0-9_-]{2,12}$/.test(code)) {
+                    KeyboardLayoutService.setSecondLayout(code)
+                    page.secondLayoutDraft = ""
+                }
+            }
         }
     }
 

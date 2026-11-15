@@ -19,15 +19,15 @@ const gacha = read("modules/sekai/lock/LockSurface.qml");
 const calendar = read("modules/sekai/lock/LockCalendar.qml");
 const bar = read("modules/sekai/bar/Bar.qml");
 
-// ---- the code: two letters, upper case, and only with more than one layout ----
+// ---- the code: two letters, upper case, defaults to EN ----
 const m = /readonly property string code: ([^\n]+\n[^\n]+)/.exec(service);
 ok(m, "KeyboardLayoutService.code is declared");
 const code = (layoutName, layoutCount) => new Function("root", "return " + m[1])({ layoutName, layoutCount });
 ok(code("English (US)", 2) === "EN", "English (US) shows EN");
 ok(code("Russian", 3) === "RU", "Russian shows RU");
-ok(code("English (US)", 1) === "", "one layout: nothing to show");
-ok(code("English (US)", 0) === "", "no layouts read yet: nothing to show");
-ok(code("", 2) === "", "no active keymap read yet: nothing to show");
+ok(code("Danish", 2) === "DA", "Danish shows DA");
+ok(code("English (US)", 1) === "EN", "one layout defaults to EN");
+ok(code("", 0) === "EN", "no active keymap read yet defaults to EN");
 
 // ---- the service keeps what the bar used to keep for itself ----
 ok(/^pragma Singleton/.test(service), "the service is a singleton");
@@ -69,7 +69,7 @@ ok(/root\.layoutIds = ids/.test(service), "the codes come from kb_layout");
 const settingsPage = read("modules/sekai/settings/SettingsPageHyprland.qml");
 ok(/commonLayouts: KeyboardLayoutService\.commonLayouts/.test(settingsPage), "the Hyprland page and the list share one catalogue of layout names");
 const names = [...service.matchAll(/\{ id: "(\w+)", label: "([^"]+)" \}/g)];
-ok(names.length === 15 && names[0][1] === "us" && names[0][2] === "English (US)", "the catalogue is the Hyprland page's fifteen");
+ok(names.length >= 15 && names[0][1] === "us" && names[0][2] === "English (US)", "the catalogue starts with English (US) and includes common layouts");
 
 // ---- both lock looks carry it, on the password plate, and make room for it ----
 for (const [name, src, id] of [["LockSurface", gacha, "layoutTag"], ["LockCalendar", calendar, "calLayoutTag"]]) {

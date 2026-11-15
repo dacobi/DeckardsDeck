@@ -153,6 +153,7 @@ Singleton {
         "region.previewSeconds": 6,     // how long the preview card stays (not while the pointer is on it)
         // ===== Bar and tray =====
         "bar.workspaceCount": 5,        // how many workspace badges the bar shows, 1-10
+        "workspaces.combineScreens": false, // switch all monitors together between workspaces 1-N
         "bar.scrollHints": true,        // a small marker on modules that react to the scroll wheel
         "tray.scroll": true,            // the wheel over a tray icon is sent to the app
         // ===== Weather =====

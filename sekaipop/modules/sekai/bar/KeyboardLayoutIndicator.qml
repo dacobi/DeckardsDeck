@@ -1,26 +1,26 @@
 import QtQuick
 import Quickshell
+import qs.services
 import qs.modules.common
 import qs.modules.common.widgets
 
-// Pure UI, same shape as the Weather/Clock pills. Only worth showing
-// when there's more than one layout configured — on a one-layout
-// system this would just permanently say "EN" and take up space for
-// no reason, so Bar.qml only reports a nonempty layoutCode when there's
-// something to switch between. Click cycles to the next layout.
+// Keyboard language bar module: shows the active language code ("EN" by default)
+// and cycles to the next configured language when clicked.
 Item {
     id: root
 
     // This monitor's theme: Theme.of() gives the shell's own unless the monitor has one.
     readonly property var mt: Theme.of(QsWindow.window)
 
-    property string layoutCode: ""
+    property string layoutCode: "EN"
 
     // Which edge the bar is on, so the hover tag opens towards the screen.
     property string barPosition: "top"
 
     // What the hover tag says.
-    readonly property string tipText: "Keyboard layout: " + root.layoutCode.toUpperCase() + " (click to switch)"
+    readonly property string tipText: KeyboardLayoutService.configuredLayouts.length > 1
+        ? "Keyboard language: " + (KeyboardLayoutService.layoutName || root.layoutCode.toUpperCase()) + " (click to switch)"
+        : "Keyboard language: " + (KeyboardLayoutService.layoutName || root.layoutCode.toUpperCase()) + " (add a 2nd language in Settings > Bar)"
 
     signal clicked()
 

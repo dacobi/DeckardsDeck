@@ -76,6 +76,32 @@ function placeOf(x, y, lw, lh, mainLw, mainLh) {
     return "right";
 }
 
+// Which alignment along the shared edge a screen at (x, y) relative to the main
+// screen has: "start" (top / left), "center" (vertically / horizontally centered),
+// "end" (bottom / right), or "" when dragged to a custom offset.
+function alignOf(x, y, lw, lh, mainLw, mainLh, place) {
+    if (place === "above" || place === "below") {
+        if (Math.abs(lw - mainLw) <= 2 && Math.abs(x) <= 4)
+            return "center";
+        if (Math.abs(x - (mainLw - lw) / 2) <= 4)
+            return "center";
+        if (Math.abs(x) <= 4)
+            return "start";
+        if (Math.abs(x - (mainLw - lw)) <= 4)
+            return "end";
+        return "";
+    }
+    if (Math.abs(lh - mainLh) <= 2 && Math.abs(y) <= 4)
+        return "center";
+    if (Math.abs(y - (mainLh - lh) / 2) <= 4)
+        return "center";
+    if (Math.abs(y) <= 4)
+        return "start";
+    if (Math.abs(y - (mainLh - lh)) <= 4)
+        return "end";
+    return "";
+}
+
 // The layout of the screens that are on. `items`: [{ name, on, w, h, scale,
 // transform, place }]; `mainName` sits at the origin and the rest are stacked
 // outwards on their side of it (two on the right go side by side). Everything is then
@@ -190,15 +216,27 @@ function overlaps(a, b) {
 }
 
 // Snap a dragged rectangle to the others: its left edge to their right edge, its right
-// edge to their left edge, and flush lefts / rights / tops / bottoms, each way within
-// `threshold` px. Returns { x, y }.
+// edge to their left edge, flush lefts / rights / tops / bottoms, and horizontal / vertical
+// centers, each way within `threshold` px. Returns { x, y }.
 function snap(r, others, threshold) {
     var bestDx = null, bestDy = null;
     for (var i = 0; i < others.length; i++) {
         var o = others[i];
-        var xs = [o.x + o.w - r.x, o.x - (r.x + r.w), o.x - r.x, o.x + o.w - (r.x + r.w)];
-        var ys = [o.y + o.h - r.y, o.y - (r.y + r.h), o.y - r.y, o.y + o.h - (r.y + r.h)];
-        for (var a = 0; a < 4; a++) {
+        var xs = [
+            o.x + o.w - r.x,
+            o.x - (r.x + r.w),
+            o.x - r.x,
+            o.x + o.w - (r.x + r.w),
+            Math.round((o.x + o.w / 2) - (r.x + r.w / 2))
+        ];
+        var ys = [
+            o.y + o.h - r.y,
+            o.y - (r.y + r.h),
+            o.y - r.y,
+            o.y + o.h - (r.y + r.h),
+            Math.round((o.y + o.h / 2) - (r.y + r.h / 2))
+        ];
+        for (var a = 0; a < xs.length; a++) {
             if (Math.abs(xs[a]) <= threshold && (bestDx === null || Math.abs(xs[a]) < Math.abs(bestDx)))
                 bestDx = xs[a];
             if (Math.abs(ys[a]) <= threshold && (bestDy === null || Math.abs(ys[a]) < Math.abs(bestDy)))
@@ -247,17 +285,22 @@ function separate(r, others) {
 }
 
 // Put a rectangle flush against `main` on one side ("right", "left", "above", "below"),
-// its top (or left) edge level with main's, and further out if another screen is there.
-function dock(r, main, place, others) {
+// aligned by `align` ("start" = top/left, "center" = centered, "end" = bottom/right;
+// defaults to "start"), and further out if another screen is there.
+function dock(r, main, place, others, align) {
     var x, y;
+    var ax = align === "center" ? Math.round(main.x + (main.w - r.w) / 2)
+        : (align === "end" ? main.x + main.w - r.w : main.x);
+    var ay = align === "center" ? Math.round(main.y + (main.h - r.h) / 2)
+        : (align === "end" ? main.y + main.h - r.h : main.y);
     if (place === "left") {
-        x = main.x - r.w; y = main.y;
+        x = main.x - r.w; y = ay;
     } else if (place === "above") {
-        x = main.x; y = main.y - r.h;
+        x = ax; y = main.y - r.h;
     } else if (place === "below") {
-        x = main.x; y = main.y + main.h;
+        x = ax; y = main.y + main.h;
     } else {
-        x = main.x + main.w; y = main.y;
+        x = main.x + main.w; y = ay;
     }
     for (var pass = 0; pass < 8; pass++) {
         var moved = false;

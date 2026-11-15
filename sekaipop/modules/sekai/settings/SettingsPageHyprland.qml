@@ -353,6 +353,14 @@ SettingsPage {
         }
 
         SettingToggle {
+            icon: "desktop_windows"
+            label: "Combine all screens into 1 workspace"
+            detail: SettingsService.flag("workspaces.combineScreens") ? "All screens switch 1–N together" : "Independent per screen"
+            checked: SettingsService.flag("workspaces.combineScreens")
+            onToggled: SettingsService.toggle("workspaces.combineScreens")
+        }
+
+        SettingToggle {
             icon: "swap_horiz"
             label: "Back and forth"
             detail: HyprlandSettings.bool("binds.workspace_back_and_forth") ? "Same key returns" : "OFF"
@@ -748,6 +756,23 @@ SettingsPage {
                         { id: "below", label: "Below", icon: "south" }
                     ]
                     onPicked: id => DisplayService.setPlace(scr.modelData, id)
+                }
+
+                SettingChoice {
+                    visible: scr.d !== null && scr.d.on && scr.modelData !== DisplayService.mainName
+                    label: "Align"
+                    sublabel: "Snap along " + DisplayService.mainName
+                    current: scr.d ? DisplayService.alignOf(scr.d) : "start"
+                    options: (scr.d && (scr.d.place === "above" || scr.d.place === "below")) ? [
+                        { id: "start", label: "Left", icon: "align_horizontal_left" },
+                        { id: "center", label: "Center", icon: "align_horizontal_center" },
+                        { id: "end", label: "Right", icon: "align_horizontal_right" }
+                    ] : [
+                        { id: "start", label: "Top", icon: "align_vertical_top" },
+                        { id: "center", label: "Center", icon: "align_vertical_center" },
+                        { id: "end", label: "Bottom", icon: "align_vertical_bottom" }
+                    ]
+                    onPicked: id => DisplayService.setAlign(scr.modelData, id)
                 }
             }
         }

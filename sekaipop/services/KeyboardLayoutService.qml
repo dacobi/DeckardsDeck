@@ -34,14 +34,49 @@ Singleton {
     // active one, so a row would change its writing as you pick.
     readonly property var commonLayouts: [
         { id: "us", label: "English (US)" }, { id: "gb", label: "English (UK)" },
-        { id: "ph", label: "Filipino" }, { id: "es", label: "Spanish" },
-        { id: "fr", label: "French" }, { id: "de", label: "German" },
-        { id: "it", label: "Italian" }, { id: "pt", label: "Portuguese" },
-        { id: "br", label: "Brazilian" }, { id: "ru", label: "Russian" },
-        { id: "ua", label: "Ukrainian" }, { id: "tr", label: "Turkish" },
-        { id: "jp", label: "Japanese" }, { id: "kr", label: "Korean" },
-        { id: "ara", label: "Arabic" }
+        { id: "dk", label: "Danish" }, { id: "se", label: "Swedish" },
+        { id: "no", label: "Norwegian" }, { id: "fi", label: "Finnish" },
+        { id: "de", label: "German" }, { id: "fr", label: "French" },
+        { id: "es", label: "Spanish" }, { id: "it", label: "Italian" },
+        { id: "pt", label: "Portuguese" }, { id: "br", label: "Brazilian" },
+        { id: "nl", label: "Dutch" }, { id: "pl", label: "Polish" },
+        { id: "cz", label: "Czech" }, { id: "ph", label: "Filipino" },
+        { id: "ru", label: "Russian" }, { id: "ua", label: "Ukrainian" },
+        { id: "tr", label: "Turkish" }, { id: "jp", label: "Japanese" },
+        { id: "kr", label: "Korean" }, { id: "ara", label: "Arabic" }
     ]
+
+    // Configured layouts from HyprlandSettings ("us" by default), and helpers to manage
+    // primary + second language from Settings > Bar or Settings > Hyprland.
+    readonly property var configuredLayouts: HyprlandSettings.str("input.kb_layout", "us")
+        .split(",").map(c => c.trim()).filter(c => c.length > 0)
+    readonly property string primaryLayout: root.configuredLayouts.length > 0 ? root.configuredLayouts[0] : "us"
+    readonly property string secondLayout: root.configuredLayouts.length > 1 ? root.configuredLayouts[1] : ""
+
+    function setConfiguredLayouts(list) {
+        if (!list || list.length === 0)
+            return
+        if (HyprlandSettings.str("input.kb_variant") !== "")
+            HyprlandSettings.set("input.kb_variant", "str", "")
+        HyprlandSettings.set("input.kb_layout", "str", list.join(","))
+    }
+
+    function setPrimaryLayout(id) {
+        if (!id)
+            return
+        const rest = root.configuredLayouts.slice(1).filter(c => c !== id)
+        root.setConfiguredLayouts([id].concat(rest))
+    }
+
+    function setSecondLayout(id) {
+        const first = root.primaryLayout || "us"
+        if (!id || id === "" || id === first) {
+            root.setConfiguredLayouts([first])
+            return
+        }
+        const extra = root.configuredLayouts.slice(2).filter(c => c !== first && c !== id)
+        root.setConfiguredLayouts([first, id].concat(extra))
+    }
 
     // What a list of layouts shows: [{ index, id, label }].
     readonly property var layouts: root.layoutIds.map((id, i) => {
@@ -53,20 +88,22 @@ Singleton {
         }
     })
 
-    readonly property string code: root.layoutCount > 1 && root.layoutName !== ""
-        ? root.layoutName.slice(0, 2).toUpperCase() : ""
+    readonly property string code: root.layoutName !== ""
+        ? root.layoutName.slice(0, 2).toUpperCase() : "EN"
 
     // `hyprctl switchxkblayout` is its own hyprctl command, not a dispatcher, so it is the
     // same on a Lua-mode and a hyprlang config. "all" moves every keyboard together, so the
     // code shown is always the one you are typing with.
     function cycle() {
         Quickshell.execDetached(["hyprctl", "switchxkblayout", "all", "next"])
+        refetch.restart()
     }
 
     // Straight to one layout, on every keyboard.
     function select(index) {
         root.activeIndex = index
         Quickshell.execDetached(["hyprctl", "switchxkblayout", "all", String(index)])
+        refetch.restart()
     }
 
     // Ask again. A read already under way is let finish and then run once more, not killed:
@@ -125,7 +162,7 @@ Singleton {
         target: Hyprland
         function onRawEvent(event) {
             // Hyprland sends "activelayout" as "<device>,<layout name>"
-            if (event.name === "activelayout" && root.layoutCount > 1) {
+            if (event.name === "activelayout") {
                 root.layoutName = event.data.substring(event.data.indexOf(",") + 1)
                 // The event gives the name, not the place in the list.
                 root.refresh()

@@ -2,7 +2,7 @@
 const fs = require("fs")
 const locate = require("../lib/locate.js")
 const src = fs.readFileSync(locate("modules/common/functions/DisplayMath.js"), "utf8").replace(".pragma library", "")
-const D = new Function(src + "; return { SCALES, TRANSFORMS, parseModes, matchMode, modeById, logicalSize, placeOf, positions, spec, resolutions, currentRes, rates, modeForRes, overlaps, snap, separate, dock, reflow, normalize, touches, unlinked, view }")()
+const D = new Function(src + "; return { SCALES, TRANSFORMS, parseModes, matchMode, modeById, logicalSize, placeOf, alignOf, positions, spec, resolutions, currentRes, rates, modeForRes, overlaps, snap, separate, dock, reflow, normalize, touches, unlinked, view }")()
 
 let fails = 0
 function eq(a, b, msg) {
@@ -77,6 +77,10 @@ eq(D.snap(rc("S", 1990, 60, 1280, 720), [M], 20), { x: 1990, y: 60 }, "out of re
 eq(D.snap(rc("S", -1290, 1070, 1280, 720), [M], 20), { x: -1280, y: 1080 }, "snaps to the left edge (right to left) and below")
 eq(D.snap(rc("S", 100, 1085, 1280, 720), [M], 20), { x: 100, y: 1080 }, "below: only y snaps")
 eq(D.snap(rc("S", 1500, 1085, 1280, 720), [M], 20).x, 1500, "x free while y snaps")
+// portrait screen (1080x1920) next to main (1920x1080) snaps to vertical center (-420)
+eq(D.snap(rc("P", 1925, -412, 1080, 1920), [M], 20), { x: 1920, y: -420 }, "portrait screen snaps to main's right edge and vertical center")
+// landscape screen below main snaps to horizontal center ((1920 - 1280) / 2 = 320)
+eq(D.snap(rc("S", 328, 1085, 1280, 720), [M], 20), { x: 320, y: 1080 }, "screen below snaps to main's horizontal center")
 // overlap
 eq(D.overlaps(M, rc("S", 1920, 0, 100, 100)), false, "touching is not overlapping")
 eq(D.overlaps(M, rc("S", 1900, 0, 100, 100)), true, "20 px in is overlapping")
@@ -95,6 +99,11 @@ eq(D.dock({ w: 1280, h: 720 }, M, "right", []), { x: 1920, y: 0 }, "dock right")
 eq(D.dock({ w: 1280, h: 720 }, M, "left", []), { x: -1280, y: 0 }, "dock left")
 eq(D.dock({ w: 1280, h: 720 }, M, "above", []), { x: 0, y: -720 }, "dock above")
 eq(D.dock({ w: 1280, h: 720 }, M, "below", []), { x: 0, y: 1080 }, "dock below")
+eq(D.dock({ w: 1080, h: 1920 }, M, "right", [], "center"), { x: 1920, y: -420 }, "dock portrait right centered vertically")
+eq(D.dock({ w: 1080, h: 1920 }, M, "left", [], "end"), { x: -1080, y: -840 }, "dock portrait left bottom-aligned")
+eq(D.alignOf(1920, -420, 1080, 1920, 1920, 1080, "right"), "center", "alignOf detects vertical center")
+eq(D.alignOf(1920, 0, 1080, 1920, 1920, 1080, "right"), "start", "alignOf detects top alignment")
+eq(D.alignOf(1920, -840, 1080, 1920, 1920, 1080, "right"), "end", "alignOf detects bottom alignment")
 eq(D.dock({ w: 1280, h: 720 }, M, "right", [rc("T", 1920, 0, 1000, 800)]), { x: 2920, y: 0 }, "dock right, past a screen already there")
 // reflow: a screen grows, the ones past it move
 const R = [rc("A", 0, 0, 1920, 1080), rc("B", 1920, 0, 1280, 720), rc("C", 0, 1080, 1280, 720)]

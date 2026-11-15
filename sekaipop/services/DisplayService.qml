@@ -278,6 +278,30 @@ Singleton {
         root.settle()
     }
 
+    function alignOf(d) {
+        if (!d || !d.on || d.name === root.mainName)
+            return "start"
+        const main = root.rects().find(r => r.name === root.mainName)
+        if (!main)
+            return "start"
+        const sz = root.sizeOf(d)
+        return DM.alignOf(d.x - main.x, d.y - main.y, sz.w, sz.h, main.w, main.h, d.place)
+    }
+
+    // Align a non-main screen along the shared edge of the main screen ("start" = top/left,
+    // "center" = centered vertically/horizontally, "end" = bottom/right).
+    function setAlign(name, align) {
+        const d = root.item(name)
+        const main = root.rects().find(r => r.name === root.mainName)
+        if (!d || !d.on || !main || name === root.mainName)
+            return
+        const sz = root.sizeOf(d)
+        const others = root.rects().filter(r => r.name !== name && r.name !== root.mainName)
+        const at = DM.dock({ w: sz.w, h: sz.h }, main, d.place, others, align)
+        root.edit(name, { x: Math.round(at.x), y: Math.round(at.y) })
+        root.settle()
+    }
+
     // Screens the pointer cannot get to from the main screen (a gap in the layout).
     function unlinkedNames() {
         const rs = root.rects()

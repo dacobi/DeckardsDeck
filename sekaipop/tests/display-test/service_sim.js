@@ -4,7 +4,7 @@
 const fs = require("fs")
 const locate = require("../lib/locate.js")
 const dmSrc = fs.readFileSync(locate("modules/common/functions/DisplayMath.js"), "utf8").replace(".pragma library", "")
-const DM = new Function(dmSrc + "; return { SCALES, TRANSFORMS, parseModes, matchMode, modeById, logicalSize, placeOf, positions, spec, resolutions, currentRes, rates, modeForRes, overlaps, snap, separate, dock, reflow, normalize, touches, unlinked, view }")()
+const DM = new Function(dmSrc + "; return { SCALES, TRANSFORMS, parseModes, matchMode, modeById, logicalSize, placeOf, alignOf, positions, spec, resolutions, currentRes, rates, modeForRes, overlaps, snap, separate, dock, reflow, normalize, touches, unlinked, view }")()
 const qml = fs.readFileSync(locate("services/DisplayService.qml"), "utf8")
 
 function grab(name) {
@@ -27,7 +27,7 @@ const runner = { exec: c => calls.push(c) }
 const countdown = { restart() {}, stop() {} }
 const readAgain = { restart() {} }
 root.script = "displays.sh"
-const names = ["resetDraft", "item", "edit", "sizeOf", "rects", "settle", "resized", "setOn", "setMain", "setResolution", "setMode", "setScale", "setTransform", "setPosition", "setPlace", "unlinkedNames", "draftSpecs", "liveSpecs", "apply", "keep", "revert", "discard"]
+const names = ["resetDraft", "item", "edit", "sizeOf", "rects", "settle", "resized", "setOn", "setMain", "setResolution", "setMode", "setScale", "setTransform", "setPosition", "setPlace", "alignOf", "setAlign", "unlinkedNames", "draftSpecs", "liveSpecs", "apply", "keep", "revert", "discard"]
 const body = names.map(grab).join("\n")
 // the methods are written as "name(args) {...}", so an object literal takes them as they are
 const methods = new Function("root", "DM", "runner", "countdown", "readAgain",
@@ -183,6 +183,16 @@ eq(root.sizeOf(root.item("A")), { w: 1098, h: 618 }, "175 % rounds up")
 root.setPlace("B", "below")
 root.setPlace("B", "right")
 eq(root.draftSpecs()[1].split("|").slice(3, 5), ["1098", "0"], "flush right of a fractional screen lands past its edge")
+
+// portrait screen next to main screen: vertical center alignment (setAlign & drag)
+root.setScale("A", "1")
+root.setTransform("B", "1")
+root.setPlace("B", "right")
+eq(root.alignOf(root.item("B")), "start", "initially top-aligned")
+root.setAlign("B", "center")
+eq(root.alignOf(root.item("B")), "center", "portrait screen centered vertically next to main")
+eq([root.item("A").x, root.item("A").y], [0, 420], "main screen shifted down to 420 so portrait top is 0")
+eq([root.item("B").x, root.item("B").y], [1920, 0], "portrait screen at 1920, 0")
 
 console.log(fails === 0 ? "service simulation: all passed" : fails + " failed")
 process.exit(fails ? 1 : 0)

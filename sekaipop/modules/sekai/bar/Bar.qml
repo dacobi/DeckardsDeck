@@ -805,13 +805,11 @@ PanelWindow {
 
     // This monitor's own workspace, falling back to the focused one
     readonly property var monitor: Hyprland.monitorFor(screen)
-    readonly property int activeWorkspace: NiriWorkspaces.running ? NiriWorkspaces.activeOn(screen?.name ?? "") : monitor?.activeWorkspace?.id ?? Hyprland.focusedWorkspace?.id ?? 1
+    readonly property int activeWorkspace: NiriWorkspaces.running ? NiriWorkspaces.activeOn(screen?.name ?? "") : WorkspaceSyncService.activeWorkspaceFor(monitor)
 
     // Ids of workspaces that currently have windows. Lets the badges show the
     // ones above the configured count only while they are in use.
-    readonly property var occupiedWorkspaces: NiriWorkspaces.running ? NiriWorkspaces.occupiedOn(screen?.name ?? "") : Hyprland.workspaces.values
-    .filter(w => w.id > 0 && w.toplevels.values.length > 0)
-    .map(w => w.id)
+    readonly property var occupiedWorkspaces: NiriWorkspaces.running ? NiriWorkspaces.occupiedOn(screen?.name ?? "") : WorkspaceSyncService.occupiedWorkspaces()
 
     // Hyprland.usingLua is documented as a real property, but on some
     // Quickshell builds it comes back as plain `undefined` rather than
@@ -827,7 +825,7 @@ PanelWindow {
     // Hyprland.activeToplevel is global — the same value on every
     // monitor's bar — so only treat it as *this* bar's window if it's
     // actually on this monitor's active workspace.
-    readonly property var focusedWindow: Hyprland.activeToplevel?.workspace?.id === activeWorkspace
+    readonly property var focusedWindow: Hyprland.activeToplevel?.workspace?.id === (monitor?.activeWorkspace?.id ?? activeWorkspace)
     ? Hyprland.activeToplevel
     : null
 
@@ -1143,20 +1141,7 @@ PanelWindow {
                 // this pre-focus step is skipped rather than sent, and only the
                 // workspace switch itself is dispatched.)
                 onWorkspaceRequested: workspace => {
-                    if (NiriWorkspaces.running) {
-                        NiriWorkspaces.focus(win.screen.name, workspace)
-                        return
-                    }
-
-                    if (win.monitor && !win.monitor.focused) {
-                        if (win.usingLua)
-                            console.warn("Bar.qml: no Lua dispatcher for focusmonitor yet — skipping pre-focus on " + win.monitor.name)
-                            else
-                                Hyprland.dispatch("focusmonitor " + win.monitor.name)
-                    }
-                    Hyprland.dispatch(win.usingLua
-                    ? "hl.dsp.focus({ workspace = " + workspace + " })"
-                    : "workspace " + workspace)
+                    WorkspaceSyncService.requestWorkspace(win.screen, win.monitor, workspace)
                 }
             }
         }

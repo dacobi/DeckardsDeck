@@ -223,7 +223,7 @@ Scope {
         const d = root.dataFor(t)
         if (!d || d.mapped === false || d.hidden === true)
             return false
-        const ws = d.workspace ? d.workspace.id : -1
+        const ws = d.workspace ? WorkspaceSyncService.logicalId(d.workspace.id) : -1
         return ws >= 1 && ws <= root.workspaceCount
     }
 
@@ -233,7 +233,7 @@ Scope {
             if (!root.shown(t))
                 continue
             const d = root.dataFor(t)
-            if (d.workspace.id === ws)
+            if (WorkspaceSyncService.logicalId(d.workspace.id) === ws)
                 n++
         }
         return n
@@ -281,7 +281,7 @@ Scope {
     // The workspace showing on this monitor right now.
     readonly property int activeWs: {
         const m = root.targetScreen ? Hyprland.monitorFor(root.targetScreen) : null
-        return (m && m.activeWorkspace) ? m.activeWorkspace.id : 1
+        return (m && m.activeWorkspace) ? WorkspaceSyncService.logicalId(m.activeWorkspace.id) : 1
     }
 
     // ===== card geometry: one column of cards =====
@@ -379,7 +379,7 @@ Scope {
     function rectFor(d) {
         if (!d || !d.at || !d.size)
             return null
-        const ws = d.workspace ? d.workspace.id : -1
+        const ws = d.workspace ? WorkspaceSyncService.logicalId(d.workspace.id) : -1
         if (ws < 1 || ws > root.workspaceCount)
             return null
         const g = root.monGeom(HyprlandData.monitors.find(m => m.id == d.monitor))
@@ -430,9 +430,11 @@ Scope {
 
     function switchToWorkspace(id) {
         root.close()
-        Hyprland.dispatch(root.usingLua
-            ? "hl.dsp.focus({ workspace = " + id + " })"
-            : "workspace " + id)
+        WorkspaceSyncService.requestWorkspace(
+            root.targetScreen,
+            root.targetScreen ? Hyprland.monitorFor(root.targetScreen) : null,
+            id
+        )
     }
 
     function moveWindowToWorkspace(address, workspaceId) {
@@ -460,9 +462,11 @@ Scope {
         if (!d || target === -1)
             return
 
-        const ws = d.workspace ? d.workspace.id : -1
+        const rawWs = d.workspace ? d.workspace.id : -1
+        const ws = WorkspaceSyncService.logicalId(rawWs)
         if (target !== ws) {
-            root.moveWindowToWorkspace(d.address, target)
+            const targetPhys = WorkspaceSyncService.physicalIdFor(d.monitor, target)
+            root.moveWindowToWorkspace(d.address, targetPhys)
             return
         }
 

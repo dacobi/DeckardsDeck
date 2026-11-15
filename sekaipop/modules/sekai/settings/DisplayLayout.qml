@@ -24,8 +24,14 @@ Item {
     readonly property var screens: DisplayService.rects()
     readonly property real pad: 14
     readonly property var vw: DM.view(screens, width - pad * 2, height - pad * 2)
-    // How near an edge has to be (on screen) before it snaps.
-    readonly property real snapPx: 14
+    // How near an edge or center has to be (on screen) before it snaps.
+    readonly property real snapPx: 9
+
+    // Center-snap guide lines shown while dragging when aligned with another screen's center.
+    property bool snapGuideH: false
+    property real snapGuideY: 0
+    property bool snapGuideV: false
+    property real snapGuideX: 0
 
     // The whole drawing sits on a soft floor.
     Rectangle {
@@ -134,6 +140,7 @@ Item {
                 anchors.fill: parent
                 enabled: !DisplayService.confirming
                 hoverEnabled: true
+                preventStealing: true
                 cursorShape: pressed ? Qt.ClosedHandCursor : Qt.OpenHandCursor
 
                 // Where the press landed, in the card's own coordinates (the tile
@@ -145,6 +152,27 @@ Item {
                     return root.screens.filter(o => o.name !== tile.r.name)
                 }
 
+                function updateGuides(rx, ry, rw, rh, list) {
+                    let hMatch = false, vMatch = false, gy = 0, gx = 0
+                    const cy = ry + rh / 2
+                    const cx = rx + rw / 2
+                    for (let i = 0; i < list.length; i++) {
+                        const o = list[i]
+                        if (Math.abs((o.y + o.h / 2) - cy) <= 1.5) {
+                            hMatch = true
+                            gy = o.y + o.h / 2
+                        }
+                        if (Math.abs((o.x + o.w / 2) - cx) <= 1.5) {
+                            vMatch = true
+                            gx = o.x + o.w / 2
+                        }
+                    }
+                    root.snapGuideH = hMatch
+                    root.snapGuideY = gy
+                    root.snapGuideV = vMatch
+                    root.snapGuideX = gx
+                }
+
                 onPressed: mouse => {
                     const p = mapToItem(root, mouse.x, mouse.y)
                     sx = p.x
@@ -152,6 +180,7 @@ Item {
                     tile.lx = tile.r.x
                     tile.ly = tile.r.y
                     tile.dragging = true
+                    updateGuides(tile.lx, tile.ly, tile.r.w, tile.r.h, others())
                 }
 
                 onPositionChanged: mouse => {
@@ -159,27 +188,58 @@ Item {
                         return
                     const p = mapToItem(root, mouse.x, mouse.y)
                     const s = root.vw.scale
+                    const list = others()
                     const snapped = DM.snap({
                         x: tile.r.x + (p.x - sx) / s,
                         y: tile.r.y + (p.y - sy) / s,
                         w: tile.r.w,
                         h: tile.r.h
-                    }, others(), root.snapPx / s)
+                    }, list, root.snapPx / s)
                     tile.lx = snapped.x
                     tile.ly = snapped.y
+                    updateGuides(tile.lx, tile.ly, tile.r.w, tile.r.h, list)
                 }
 
                 onReleased: {
                     if (!tile.dragging)
                         return
+                    root.snapGuideH = false
+                    root.snapGuideV = false
                     const moved = Math.abs(tile.lx - tile.r.x) >= 1 || Math.abs(tile.ly - tile.r.y) >= 1
                     if (moved)
                         DisplayService.setPosition(tile.r.name, tile.lx, tile.ly)
                     tile.dragging = false
                 }
 
-                onCanceled: tile.dragging = false
+                onCanceled: {
+                    root.snapGuideH = false
+                    root.snapGuideV = false
+                    tile.dragging = false
+                }
             }
         }
+    }
+
+    // Visual center-alignment snap guides (vertical & horizontal center lines).
+    Rectangle {
+        visible: root.snapGuideH
+        x: root.pad
+        y: Math.round(root.pad + root.vw.oy + root.snapGuideY * root.vw.scale) - 1
+        width: root.width - root.pad * 2
+        height: 2
+        z: 20
+        color: mt.accentCyan
+        opacity: 0.85
+    }
+
+    Rectangle {
+        visible: root.snapGuideV
+        x: Math.round(root.pad + root.vw.ox + root.snapGuideX * root.vw.scale) - 1
+        y: root.pad
+        width: 2
+        height: root.height - root.pad * 2
+        z: 20
+        color: mt.accentCyan
+        opacity: 0.85
     }
 }
