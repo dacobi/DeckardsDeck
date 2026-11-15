@@ -16,7 +16,7 @@ Item {
     property real shown: 1
 
     // The lettering is sized by the page's width, but never taller than the screen.
-    readonly property real fontPx: Math.min(root.width * 0.26, root.height * 0.68)
+    readonly property real fontPx: Math.min(root.width * 0.23, root.height * 0.68)
     readonly property real rimPx: root.fontPx * 0.022
     readonly property var axes: ({})
 
@@ -43,7 +43,7 @@ Item {
             Text {
                 x: lines.dx
                 y: lines.dy
-                text: "DECKARD"
+                text: "DECKARDS"
                 color: lines.ink
                 font.family: Theme.displayFontFamily
                 font.pixelSize: root.fontPx

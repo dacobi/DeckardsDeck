@@ -666,41 +666,10 @@ PanelWindow {
             easing.overshoot: 2.4
         }
 
-        // Sleek dark HUD telemetry backing plate in Cyberpunk (edgy) mode
-        Rectangle {
-            visible: mt.edgy
-            anchors.fill: parent
-            anchors.margins: 2
-            radius: 3
-            color: Qt.rgba(0.03, 0.04, 0.08, 0.82)
-            border.width: 1.5
-            border.color: sd.ghost ? mt.colOuterRing : Qt.rgba(sd.fillColor.r, sd.fillColor.g, sd.fillColor.b, 0.65)
-
-            Rectangle {
-                x: 4
-                y: 4
-                width: 8
-                height: 2
-                color: sd.fillColor
-                opacity: 0.85
-            }
-        }
-
         GlyphRing { anchors.fill: parent; value: sd.value; ink: mt.edgy ? "#04060b" : mt.colBorder; radius: mt.edgy ? 3.5 : 6; dx: 3; dy: 4 }
         GlyphRing { anchors.fill: parent; value: sd.value; ink: mt.edgy ? "#04060b" : mt.colBorder; radius: mt.edgy ? 3.5 : 6 }
         GlyphRing { anchors.fill: parent; value: sd.value; ink: mt.edgy ? mt.accentFrame : "#ffffff"; radius: mt.edgy ? 1.4 : 3.2 }
         GlyphRing { anchors.fill: parent; value: sd.value; ink: sd.ghost ? mt.colOuterRing : sd.fillColor; radius: 0; steps: 1 }
-
-        // Horizontal laser scanline cut across the numeral in edgy mode
-        Rectangle {
-            visible: mt.edgy
-            x: 5
-            y: Math.round(parent.height * 0.52)
-            width: parent.width - 10
-            height: 1.5
-            color: "#04060b"
-            opacity: 0.72
-        }
     }
 
     // A diamond of the beat: lit on its turn, and it pops when it lights.

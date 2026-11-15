@@ -22,13 +22,26 @@ Singleton {
     readonly property bool usingLua: Hyprland.usingLua !== false
 
     property bool _syncing: false
+    property bool _wasCombined: false
     property int currentLogicalWorkspace: 1
+    property string lastFocusedMonitorName: ""
 
     Timer {
         id: unlockSyncTimer
-        interval: 260
+        interval: 280
         repeat: false
         onTriggered: root._syncing = false
+    }
+
+    function dispatch(lua, classic) {
+        Hyprland.dispatch(root.usingLua ? lua : classic)
+    }
+
+    function addrKey(t) {
+        const a = t ? String(t.address ?? "") : ""
+        if (a === "")
+            return ""
+        return a.startsWith("0x") ? a : "0x" + a
     }
 
     function sortedMonitors() {
@@ -80,6 +93,8 @@ Singleton {
 
     function activeWorkspaceFor(monitor) {
         const raw = monitor?.activeWorkspace?.id ?? Hyprland.focusedWorkspace?.id ?? 1
+        if (root.combineScreens)
+            return root.currentLogicalWorkspace
         return root.logicalId(raw)
     }
 
@@ -91,7 +106,7 @@ Singleton {
         return Array.from(new Set(ids))
     }
 
-    function syncAllToLogical(logicalWs, keepFocusedMonitorName) {
+    function syncAllToLogical(logicalWs, keepFocusedMonitorName, migrateSecondaryWindows) {
         const k = ((Math.max(1, Math.round(Number(logicalWs) || 1)) - 1) % 10) + 1
         root.currentLogicalWorkspace = k
 
@@ -113,19 +128,44 @@ Singleton {
             if ((mons[0].activeWorkspace?.id ?? -1) !== k) {
                 root._syncing = true
                 unlockSyncTimer.restart()
-                Hyprland.dispatch(root.usingLua
-                    ? "hl.dsp.focus({ workspace = " + k + " })"
-                    : "workspace " + k)
+                root.dispatch(
+                    "hl.dsp.focus({ workspace = " + k + " })",
+                    "workspace " + k
+                )
             }
             return
         }
 
-        let needsSync = false
-        for (let i = 0; i < mons.length; i++) {
-            const targetPhys = i * 10 + k
-            if ((mons[i].activeWorkspace?.id ?? -1) !== targetPhys) {
-                needsSync = true
-                break
+        if (migrateSecondaryWindows === true) {
+            const tls = Hyprland.toplevels?.values ?? []
+            for (let i = 1; i < mons.length; i++) {
+                const curWs = mons[i].activeWorkspace?.id ?? -1
+                const targetPhys = i * 10 + k
+                if (curWs > 0 && curWs !== targetPhys) {
+                    for (let j = 0; j < tls.length; j++) {
+                        const t = tls[j]
+                        if (!t || !t.workspace || t.workspace.id !== curWs)
+                            continue
+                        const addr = root.addrKey(t)
+                        if (addr !== "") {
+                            root.dispatch(
+                                "hl.dsp.window.move({ workspace = " + targetPhys + ", follow = false, window = \"address:" + addr + "\" })",
+                                "movetoworkspacesilent " + targetPhys + ",address:" + addr
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        let needsSync = migrateSecondaryWindows === true
+        if (!needsSync) {
+            for (let i = 0; i < mons.length; i++) {
+                const targetPhys = i * 10 + k
+                if ((mons[i].activeWorkspace?.id ?? -1) !== targetPhys) {
+                    needsSync = true
+                    break
+                }
             }
         }
         if (!needsSync)
@@ -133,13 +173,13 @@ Singleton {
 
         const focusTarget = keepFocusedMonitorName
             || (Hyprland.focusedMonitor ? Hyprland.focusedMonitor.name : "")
+            || root.lastFocusedMonitorName
             || mons[0].name
 
         root._syncing = true
         unlockSyncTimer.restart()
 
-        const cmds = []
-        // Switch secondary monitors first (highest index down to 1) so if a
+        // Switch secondary monitors first (highest index down to 0) so if a
         // secondary monitor temporarily held workspace `k` (1..10) after a
         // keybind press, it vacates `k` before monitor 0 claims it.
         for (let i = mons.length - 1; i >= 0; i--) {
@@ -147,14 +187,72 @@ Singleton {
             if (!m || !m.name)
                 continue
             const phys = i * 10 + k
-            cmds.push("dispatch focusmonitor " + m.name)
-            cmds.push("dispatch workspace " + phys)
-            cmds.push("dispatch moveworkspacetomonitor " + phys + " " + m.name)
+            root.dispatch("hl.dsp.focus({ monitor = \"" + m.name + "\" })", "focusmonitor " + m.name)
+            root.dispatch("hl.dsp.workspace.move({ workspace = " + phys + ", monitor = \"" + m.name + "\" })", "moveworkspacetomonitor " + phys + " " + m.name)
+            root.dispatch("hl.dsp.focus({ monitor = \"" + m.name + "\" })", "focusmonitor " + m.name)
+            root.dispatch("hl.dsp.focus({ workspace = " + phys + " })", "workspace " + phys)
         }
         if (focusTarget)
-            cmds.push("dispatch focusmonitor " + focusTarget)
+            root.dispatch("hl.dsp.focus({ monitor = \"" + focusTarget + "\" })", "focusmonitor " + focusTarget)
+    }
 
-        Quickshell.execDetached(["hyprctl", "--batch", cmds.join(" ; ")])
+    function separateScreens() {
+        if (NiriWorkspaces.running)
+            return
+        const mons = root.sortedMonitors()
+        if (mons.length <= 1)
+            return
+
+        const focusTarget = (Hyprland.focusedMonitor ? Hyprland.focusedMonitor.name : "")
+            || root.lastFocusedMonitorName
+            || mons[0].name
+
+        const used = new Set([mons[0].activeWorkspace?.id ?? 1])
+        const tls = Hyprland.toplevels?.values ?? []
+
+        root._syncing = true
+        unlockSyncTimer.restart()
+
+        for (let i = 1; i < mons.length; i++) {
+            const m = mons[i]
+            if (!m || !m.name)
+                continue
+            let targetWs = i + 1
+            while (used.has(targetWs) && targetWs <= 10)
+                targetWs++
+            used.add(targetWs)
+
+            const curWs = m.activeWorkspace?.id ?? -1
+            for (let j = 0; j < tls.length; j++) {
+                const t = tls[j]
+                if (!t || !t.workspace)
+                    continue
+                const wId = t.workspace.id
+                if (wId <= 10)
+                    continue
+                const sliceIdx = Math.floor((wId - 1) / 10)
+                if (sliceIdx !== i)
+                    continue
+                const destWs = (wId === curWs) ? targetWs : (((wId - 1) % 10) + 1)
+                const addr = root.addrKey(t)
+                if (addr !== "") {
+                    root.dispatch(
+                        "hl.dsp.window.move({ workspace = " + destWs + ", follow = false, window = \"address:" + addr + "\" })",
+                        "movetoworkspacesilent " + destWs + ",address:" + addr
+                    )
+                }
+            }
+
+            if (curWs > 10) {
+                root.dispatch("hl.dsp.focus({ monitor = \"" + m.name + "\" })", "focusmonitor " + m.name)
+                root.dispatch("hl.dsp.workspace.move({ workspace = " + targetWs + ", monitor = \"" + m.name + "\" })", "moveworkspacetomonitor " + targetWs + " " + m.name)
+                root.dispatch("hl.dsp.focus({ monitor = \"" + m.name + "\" })", "focusmonitor " + m.name)
+                root.dispatch("hl.dsp.focus({ workspace = " + targetWs + " })", "workspace " + targetWs)
+            }
+        }
+
+        if (focusTarget)
+            root.dispatch("hl.dsp.focus({ monitor = \"" + focusTarget + "\" })", "focusmonitor " + focusTarget)
     }
 
     function requestWorkspace(screen, monitor, workspace) {
@@ -163,7 +261,7 @@ Singleton {
 
         if (NiriWorkspaces.running) {
             if (root.combineScreens) {
-                root.syncAllToLogical(ws, monName)
+                root.syncAllToLogical(ws, monName, false)
             } else if (screen?.name) {
                 NiriWorkspaces.focus(screen.name, ws)
             }
@@ -171,28 +269,42 @@ Singleton {
         }
 
         if (root.combineScreens) {
-            root.syncAllToLogical(ws, monName)
+            root.syncAllToLogical(ws, monName, false)
             return
         }
 
         if (monitor && !monitor.focused && monitor.name) {
-            Quickshell.execDetached([
-                "hyprctl",
-                "--batch",
-                "dispatch focusmonitor " + monitor.name + " ; dispatch workspace " + ws
-            ])
+            root.dispatch("hl.dsp.focus({ monitor = \"" + monitor.name + "\" })", "focusmonitor " + monitor.name)
+            root.dispatch("hl.dsp.focus({ workspace = " + ws + " })", "workspace " + ws)
             return
         }
 
-        Hyprland.dispatch(root.usingLua
-            ? "hl.dsp.focus({ workspace = " + ws + " })"
-            : "workspace " + ws)
+        root.dispatch(
+            "hl.dsp.focus({ workspace = " + ws + " })",
+            "workspace " + ws
+        )
     }
 
     onCombineScreensChanged: {
         if (root.combineScreens) {
+            root._wasCombined = true
             const activeRaw = Hyprland.focusedWorkspace?.id ?? 1
-            root.syncAllToLogical(root.logicalId(activeRaw), Hyprland.focusedMonitor?.name ?? "")
+            const k = ((Math.max(1, activeRaw) - 1) % 10) + 1
+            root.syncAllToLogical(k, Hyprland.focusedMonitor?.name ?? "", true)
+        } else if (root._wasCombined) {
+            root._wasCombined = false
+            root.separateScreens()
+        }
+    }
+
+    Connections {
+        target: Hyprland.monitors
+        function onValuesChanged() {
+            if (root.combineScreens && !root._syncing) {
+                const activeRaw = Hyprland.focusedWorkspace?.id ?? root.currentLogicalWorkspace
+                const k = ((Math.max(1, activeRaw) - 1) % 10) + 1
+                root.syncAllToLogical(k, Hyprland.focusedMonitor?.name ?? "", false)
+            }
         }
     }
 
@@ -200,6 +312,12 @@ Singleton {
         target: Hyprland
 
         function onRawEvent(event) {
+            if (event.name === "focusedmon" || event.name === "focusedmonv2") {
+                const monName = String(event.data ?? "").split(",")[0].trim()
+                if (monName !== "")
+                    root.lastFocusedMonitorName = monName
+                return
+            }
             if (!root.combineScreens || root._syncing)
                 return
             if (event.name !== "workspace" && event.name !== "workspacev2")
@@ -209,7 +327,22 @@ Singleton {
             if (!Number.isFinite(rawId) || rawId <= 0)
                 return
             const k = root.logicalId(rawId)
-            root.syncAllToLogical(k, Hyprland.focusedMonitor?.name ?? "")
+            root.syncAllToLogical(k, Hyprland.focusedMonitor?.name ?? root.lastFocusedMonitorName, false)
+        }
+    }
+
+    IpcHandler {
+        target: "workspaces"
+
+        function focus(ws: string): void {
+            const n = parseInt(ws, 10)
+            if (!Number.isFinite(n) || n <= 0)
+                return
+            if (root.combineScreens) {
+                root.syncAllToLogical(n, Hyprland.focusedMonitor?.name ?? "", false)
+            } else {
+                root.dispatch("hl.dsp.focus({ workspace = " + n + " })", "workspace " + n)
+            }
         }
     }
 }

@@ -36,6 +36,10 @@ ShellRoot {
     // update finishes, UpdateService does one hard reload from the new files.
     settings.watchFiles: !UpdateService.updating
 
+    Component.onCompleted: {
+        void WorkspaceSyncService.combineScreens
+    }
+
     // The Wayland background itself — one per screen, owning
     // WlrLayer.Background directly (see WallpaperLayer.qml's header
     // comment for why it destroy()s texture slots instead of reusing

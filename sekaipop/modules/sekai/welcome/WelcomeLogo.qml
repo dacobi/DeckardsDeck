@@ -71,7 +71,7 @@ Item {
     // Sized so the whole mark (kana, reticles and stroke included) is about 60% of
     // the page width and 32% of its height.
     readonly property real size: 114 * root.unit
-    readonly property real l1Size: Math.round(root.size * 0.72)
+    readonly property real l1Size: Math.round(root.size * 0.65)
     readonly property real l2Size: Math.round(root.size * 0.86)
     readonly property var axes: ({ "wght": 1000, "ROND": 0, "wdth": 90 })
     // The margin round the word. The stroke, its shadow and the sparkles are drawn
@@ -671,7 +671,7 @@ Item {
                 height: comp.height
             }
 
-            // ---- first line, "DECKARD": the backs, then the faces, then the textures ----
+            // ---- first line, "DECKARDS": the backs, then the faces, then the textures ----
             Item {
                 width: comp.width
                 height: comp.height
@@ -682,7 +682,7 @@ Item {
 
                     x: root.l1X
                     y: root.l1Y
-                    chars: ["D", "E", "C", "K", "A", "R", "D"]
+                    chars: ["D", "E", "C", "K", "A", "R", "D", "S"]
                     slotBase: 0
                     pixelSize: root.l1Size
                     part: "back"
@@ -699,7 +699,7 @@ Item {
                 Line {
                     x: root.l1X
                     y: root.l1Y
-                    chars: ["D", "E", "C", "K", "A", "R", "D"]
+                    chars: ["D", "E", "C", "K", "A", "R", "D", "S"]
                     slotBase: 0
                     pixelSize: root.l1Size
                     part: "face"
@@ -741,7 +741,7 @@ Item {
                     x: root.pad + root.width - line2Back.implicitWidth - 4 * root.unit
                     y: root.l2Y
                     chars: ["D", "E", "C", "K"]
-                    slotBase: 7
+                    slotBase: 8
                     pixelSize: root.l2Size
                     part: "back"
                 }
@@ -758,7 +758,7 @@ Item {
                     x: line2Back.x
                     y: root.l2Y
                     chars: ["D", "E", "C", "K"]
-                    slotBase: 7
+                    slotBase: 8
                     pixelSize: root.l2Size
                     part: "face"
                 }
@@ -800,7 +800,7 @@ Item {
                     model: root.kana
 
                     Cell {
-                        slotBase: 11
+                        slotBase: 12
                         lineX: kanaRow.x
                         lineY: kanaRow.y
                         pixelSize: Math.round(root.size * 0.27)
