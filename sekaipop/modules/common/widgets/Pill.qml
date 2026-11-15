@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Shapes
 import Quickshell
 import qs.modules.common
 
@@ -98,10 +99,18 @@ Item {
 
     implicitHeight: mt.pillHeight + shadowDy
 
+    // Cyberpunk HUD polygon geometry parameters (used when mt.edgy is true).
+    readonly property bool isHudCard: root.width >= 160 && root.height >= 54
+    readonly property bool isHudKey: !root.isHudCard && (root.width >= 44 || root.height >= 26)
+    readonly property real cutTR: root.isHudCard ? 14 : (root.isHudKey ? 6 : 3.5)
+    readonly property real cutBL: root.isHudCard ? 12 : (root.isHudKey ? 5 : 3)
+    readonly property real notchW: root.isHudCard ? Math.min(64, Math.round(root.capWidth * 0.24)) : 0
+    readonly property real notchH: root.isHudCard ? 4 : 0
+
     // Fixed hard shadow — never moves. It's what the cap below either
     // reveals (raised) or fully covers (pressed).
     Rectangle {
-        visible: !root.capsule && !root.bare && !root.flat
+        visible: !mt.edgy && !root.capsule && !root.bare && !root.flat
         x: root.shadowDx
         y: root.shadowDy
         width: root.capWidth
@@ -110,6 +119,33 @@ Item {
         color: root.capRim ? mt.capShade
             : (root.classicScope ? mt.pLineShadow : mt.lineShadow)
         antialiasing: true
+    }
+
+    // Cyberpunk 2077 chamfered wireframe ghost shadow (when mt.edgy is true).
+    Shape {
+        id: hudShadow
+        visible: mt.edgy && !root.capsule && !root.bare && !root.flat && root.capWidth > 4 && root.capHeight > 4
+        x: root.shadowDx
+        y: root.shadowDy
+        width: root.capWidth
+        height: root.capHeight
+
+        ShapePath {
+            strokeWidth: 1.2
+            strokeColor: root.capRim ? mt.capShade
+                : Qt.rgba(mt.accentFrame.r, mt.accentFrame.g, mt.accentFrame.b, mt.dark ? 0.52 : 0.38)
+            fillColor: Qt.rgba(0.02, 0.02, 0.05, mt.dark ? 0.78 : 0.28)
+            startX: 0
+            startY: 0
+            PathLine { x: Math.max(0, hudShadow.width - root.cutTR); y: 0 }
+            PathLine { x: hudShadow.width; y: Math.min(hudShadow.height, root.cutTR) }
+            PathLine { x: hudShadow.width; y: hudShadow.height }
+            PathLine { x: Math.max(root.cutBL, hudShadow.width - root.notchW); y: hudShadow.height }
+            PathLine { x: Math.max(root.cutBL, hudShadow.width - root.notchW - root.notchH); y: hudShadow.height - root.notchH }
+            PathLine { x: root.cutBL; y: hudShadow.height - root.notchH }
+            PathLine { x: 0; y: Math.max(0, hudShadow.height - root.notchH - root.cutBL) }
+            PathLine { x: 0; y: 0 }
+        }
     }
 
     // The "cap" — outline, white ring, colored fill, and anything a
@@ -138,20 +174,6 @@ Item {
                 duration: root.pressed ? 80 : 260
                 easing.type: root.pressed ? Easing.OutQuad : Easing.OutBack
                 easing.overshoot: root.pressed ? 0 : 2.2
-                // Every pill in the Quick Panel's phone -- toggles,
-                // sliders -- presses in and springs back through this
-                // same Behavior. It used to call PanelActivity.touch()
-                // here, which meant every click or hover dropped the
-                // whole phone to reduced quality for the ~300ms of the
-                // bounce -- visible as a blur on click/hover since this
-                // Behavior runs on essentially every interaction. A
-                // one-shot ~300ms animation isn't the expensive case
-                // PanelActivity exists for (that's sustained per-frame
-                // redraw -- a drag, a hold, a scroll); it's cheap enough
-                // to just let it render at full quality. See
-                // PanelActivity and the *actually* continuous touch()
-                // calls (drag/scroll/hold) for the ones that still
-                // matter.
             }
         }
 
@@ -165,7 +187,7 @@ Item {
 
         Rectangle {
             id: face
-            visible: !root.capsule && !root.bare
+            visible: !mt.edgy && !root.capsule && !root.bare
             anchors.fill: parent
             radius: root.effectiveRadius
             border.width: root.borderWidth
@@ -187,17 +209,61 @@ Item {
             }
         }
 
+        // Cyberpunk 2077 45° chamfered HUD polygon body (when mt.edgy is true).
+        Shape {
+            id: hudFace
+            visible: mt.edgy && !root.capsule && !root.bare && surface.width > 4 && surface.height > 4
+            anchors.fill: parent
+
+            readonly property color baseFill: root.capRim ? mt.capBody
+                : (root.isHudCard && root.fillColor === mt.surface ? mt.hudSurface : root.fillColor)
+            readonly property color strokeCol: root.capRim ? mt.capRim
+                : (root.fillGradient !== null ? mt.accentYellow
+                    : (root.isHudCard ? mt.accentFrame : mt.accentCyan))
+            readonly property color gradStart: (root.fillGradient && root.fillGradient.stops.length > 0)
+                ? root.fillGradient.stops[0].color : hudFace.baseFill
+            readonly property color gradEnd: (root.fillGradient && root.fillGradient.stops.length > 0)
+                ? root.fillGradient.stops[root.fillGradient.stops.length - 1].color : hudFace.baseFill
+
+            ShapePath {
+                strokeWidth: root.isHudCard ? 1.6 : 1.3
+                strokeColor: hudFace.strokeCol
+                fillColor: root.fillGradient ? "transparent" : hudFace.baseFill
+                fillGradient: root.fillGradient ? hudGrad : null
+                startX: 0
+                startY: 0
+                PathLine { x: Math.max(0, hudFace.width - root.cutTR); y: 0 }
+                PathLine { x: hudFace.width; y: Math.min(hudFace.height, root.cutTR) }
+                PathLine { x: hudFace.width; y: hudFace.height }
+                PathLine { x: Math.max(root.cutBL, hudFace.width - root.notchW); y: hudFace.height }
+                PathLine { x: Math.max(root.cutBL, hudFace.width - root.notchW - root.notchH); y: hudFace.height - root.notchH }
+                PathLine { x: root.cutBL; y: hudFace.height - root.notchH }
+                PathLine { x: 0; y: Math.max(0, hudFace.height - root.notchH - root.cutBL) }
+                PathLine { x: 0; y: 0 }
+            }
+
+            LinearGradient {
+                id: hudGrad
+                x1: 0
+                y1: 0
+                x2: hudFace.width
+                y2: hudFace.height
+                GradientStop { position: 0.0; color: hudFace.gradStart }
+                GradientStop { position: 1.0; color: hudFace.gradEnd }
+            }
+        }
+
         Rectangle {
             id: fill
             anchors.fill: face
             anchors.margins: root.capsule ? 0 : root.ringWidth
             radius: root.capsule ? (mt.edgy ? mt.radiusInner : Math.min(width, height) / 2) : Math.max(0, root.effectiveRadius - root.ringWidth)
-            color: root.bare ? "transparent"
+            color: (root.bare || (mt.edgy && !root.capsule)) ? "transparent"
                 : (root.capsule
                     ? (root.capKeepsFill ? root.fillColor : mt.capChip)
                     : (root.capRim ? mt.capBody
                         : (root.fillGradient ? "transparent" : root.fillColor)))
-            gradient: (root.capsule || root.capRim || root.bare) ? null : root.fillGradient
+            gradient: (root.capsule || root.capRim || root.bare || mt.edgy) ? null : root.fillGradient
 
             Behavior on color {
                 ColorAnimation {
@@ -207,20 +273,86 @@ Item {
             antialiasing: true
         }
 
-        // Cyberpunk HUD corner brackets on card-sized surfaces.
+        // Cyberpunk 2077 HUD multi-hue accents, edge bars, reticle grid & telemetry markers.
         Item {
             id: hudCorners
-            anchors.fill: fill
-            visible: mt.edgy && !root.capsule && !root.bare && root.width >= 180 && root.height >= 60
-            readonly property color bracketColor: Qt.rgba(mt.accentMint.r, mt.accentMint.g, mt.accentMint.b, mt.dark ? 0.55 : 0.40)
+            anchors.fill: parent
+            visible: mt.edgy && !root.capsule && !root.bare && parent.width >= 28 && parent.height >= 18
 
-            // Top-left L-bracket
-            Rectangle { x: 3; y: 3; width: 10; height: 2; color: hudCorners.bracketColor }
-            Rectangle { x: 3; y: 5; width: 2;  height: 8; color: hudCorners.bracketColor }
+            // Left vertical high-voltage callout bar (Acid Yellow on cards & normal keys, Red on gradient keys)
+            Rectangle {
+                x: 0
+                y: 0
+                width: root.isHudCard ? 3.5 : 2.5
+                height: Math.max(6, parent.height - root.cutBL - root.notchH - 2)
+                color: root.fillGradient !== null ? mt.accentFrame
+                    : (root.isHudCard ? mt.accentYellow : (root.isHudKey ? mt.accentYellow : mt.accentCyan))
+                opacity: 0.92
+            }
 
-            // Bottom-right L-bracket
-            Rectangle { x: parent.width - 13; y: parent.height - 5; width: 10; height: 2; color: hudCorners.bracketColor }
-            Rectangle { x: parent.width - 5;  y: parent.height - 13; width: 2; height: 8; color: hudCorners.bracketColor }
+            // Card-level Anna Kuzminska HUD overlays (+ reticle grid, top cyan trace, bottom >>>> chevrons & serial)
+            Item {
+                anchors.fill: parent
+                visible: root.isHudCard
+
+                CyberStripe {
+                    anchors.fill: parent
+                    anchors.margins: 8
+                    mode: "grid"
+                    gridStep: 32
+                    crossSize: 2.5
+                    color: Qt.rgba(mt.accentCyan.r, mt.accentCyan.g, mt.accentCyan.b, mt.dark ? 0.08 : 0.06)
+                }
+
+                // Top-left cyan/yellow stepped telemetry bar
+                Rectangle {
+                    x: 4
+                    y: 0
+                    width: Math.min(52, parent.width * 0.22)
+                    height: 2.5
+                    color: mt.accentCyan
+                }
+
+                // Top-right corner status dot inside the 45° chamfer
+                Rectangle {
+                    x: parent.width - root.cutTR - 8
+                    y: 4
+                    width: 4
+                    height: 4
+                    color: mt.accentYellow
+                }
+
+                // Stepped bottom-right notch highlight bar in Cyan + Green status tick
+                Rectangle {
+                    x: Math.max(root.cutBL + 8, parent.width - root.notchW)
+                    y: parent.height - 2
+                    width: Math.max(0, root.notchW - 14)
+                    height: 2
+                    color: mt.accentCyan
+                }
+
+                Rectangle {
+                    x: parent.width - 10
+                    y: parent.height - 2
+                    width: 6
+                    height: 2
+                    color: mt.accentGreen
+                }
+
+                // Micro-telemetry serial number in bottom-left notch step
+                Text {
+                    x: root.cutBL + 6
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin: root.notchH + 1
+                    visible: parent.width >= 220 && parent.height >= 90
+                    text: "382 248 40270274 // HUD"
+                    font.family: "JetBrains Mono"
+                    font.pixelSize: 7
+                    font.weight: Font.Bold
+                    font.letterSpacing: 1.1
+                    color: Qt.rgba(mt.accentAmber.r, mt.accentAmber.g, mt.accentAmber.b, 0.68)
+                }
+            }
         }
 
         // Above the fill and everything declared inside the Pill.
@@ -230,7 +362,7 @@ Item {
             color: "transparent"
             border.width: root.innerRing
             border.color: root.capRim ? mt.capBody : root.ringColorTop
-            visible: root.innerRing > 0 && !root.capsule && !root.bare
+            visible: !mt.edgy && root.innerRing > 0 && !root.capsule && !root.bare
             antialiasing: true
         }
     }

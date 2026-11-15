@@ -611,14 +611,14 @@ PanelWindow {
                             height: 36
                             radius: mt.edgy ? mt.radiusInner : 11
                             border.width: mt.borderWidth
-                            border.color: mt.pLine
+                            border.color: mt.edgy ? mt.accentYellow : mt.pLine
                             gradient: Gradient {
-                                GradientStop { position: 0.0; color: mt.accentMint }
-                                GradientStop { position: 1.0; color: mt.accentCyan }
+                                GradientStop { position: 0.0; color: mt.edgy ? mt.accentYellow : mt.accentMint }
+                                GradientStop { position: 1.0; color: mt.edgy ? mt.accentAmber : mt.accentCyan }
                             }
 
                             MaterialIcon {
-                                color: mt.colBorder
+                                color: mt.edgy ? "#07080e" : mt.colBorder
                                 anchors.centerIn: parent
                                 name: "checklist"
                                 size: 22
@@ -634,7 +634,7 @@ PanelWindow {
 
                             Text {
                                 text: "To-Do"
-                                color: mt.pInk
+                                color: mt.edgy ? mt.accentCyan : mt.pInk
                                 font.family: mt.fontFamily
                                 font.pixelSize: 18
                                 font.weight: Font.ExtraBold
@@ -645,7 +645,7 @@ PanelWindow {
                                 text: TodoService.total === 0 ? "nothing yet"
                                     : TodoService.doneCount === TodoService.total ? "all done!"
                                     : (TodoService.total - TodoService.doneCount) + " left"
-                                color: mt.pInkSub
+                                color: mt.edgy ? (TodoService.doneCount === TodoService.total && TodoService.total > 0 ? mt.accentGreen : mt.accentAmber) : mt.pInkSub
                                 font.family: mt.fontFamily
                                 font.pixelSize: 11
                                 font.weight: Font.DemiBold
@@ -660,9 +660,9 @@ PanelWindow {
                             width: clearTextSmall.implicitWidth + 22
                             height: 26
                             radius: mt.edgy ? mt.radiusInner : 13
-                            border.width: 2
-                            border.color: mt.pLine
-                            color: clearAreaSmall.containsMouse ? mt.irisColorPink : mt.pSurface
+                            border.width: mt.edgy ? 1.5 : 2
+                            border.color: mt.edgy ? mt.accentFrame : mt.pLine
+                            color: clearAreaSmall.containsMouse ? (mt.edgy ? mt.accentFrame : mt.irisColorPink) : mt.pSurface
 
                             Behavior on color {
                                 ColorAnimation { duration: 120 }
@@ -672,7 +672,7 @@ PanelWindow {
                                 id: clearTextSmall
                                 anchors.centerIn: parent
                                 text: "clear done (" + TodoService.doneCount + ")"
-                                color: clearAreaSmall.containsMouse ? mt.colBorder : mt.pInk
+                                color: clearAreaSmall.containsMouse ? "#07080e" : (mt.edgy ? mt.accentFrame : mt.pInk)
                                 font.family: mt.fontFamily
                                 font.pixelSize: 11
                                 font.weight: Font.ExtraBold
@@ -691,10 +691,24 @@ PanelWindow {
                     }
 
                     Rectangle {
+                        visible: !mt.edgy
                         width: col.width
                         height: 2
                         radius: 1
                         color: mt.pSurfaceDivider
+                    }
+
+                    CyberStripe {
+                        visible: mt.edgy
+                        width: col.width
+                        height: 6
+                        mode: "stripes"
+                        barWidth: 4
+                        gap: 3
+                        progress: TodoService.total > 0 ? TodoService.doneCount / TodoService.total : 1.0
+                        color: mt.accentGreen
+                        altColor: mt.accentYellow
+                        trackColor: Qt.rgba(mt.accentFrame.r, mt.accentFrame.g, mt.accentFrame.b, 0.28)
                     }
 
                     // ===== empty state =====
@@ -1262,10 +1276,10 @@ PanelWindow {
                         id: addBox
                         width: col.width
                         height: 40
-                        radius: 12
-                        color: addInput.activeFocus ? mt.pSurface : mt.pSurfaceHover
-                        border.width: 2.5
-                        border.color: mt.pLine
+                        radius: mt.edgy ? mt.radiusInner : 12
+                        color: addInput.activeFocus ? mt.pSurface : (mt.edgy ? mt.hudSurface : mt.pSurfaceHover)
+                        border.width: mt.edgy ? 1.5 : 2.5
+                        border.color: mt.edgy ? (addInput.activeFocus ? mt.accentYellow : mt.accentCyan) : mt.pLine
 
                         Behavior on color {
                             ColorAnimation { duration: 120 }
@@ -1317,13 +1331,13 @@ PanelWindow {
                             anchors.verticalCenter: parent.verticalCenter
                             width: 30
                             height: 30
-                            radius: 9
-                            border.width: 2.5
-                            border.color: mt.pLine
+                            radius: mt.edgy ? mt.radiusInner : 9
+                            border.width: mt.edgy ? 1.5 : 2.5
+                            border.color: mt.edgy ? mt.accentYellow : mt.pLine
                             scale: addArea.pressed ? 0.9 : 1
                             gradient: Gradient {
-                                GradientStop { position: 0.0; color: mt.accentMint }
-                                GradientStop { position: 1.0; color: mt.accentCyan }
+                                GradientStop { position: 0.0; color: mt.edgy ? mt.accentYellow : mt.accentMint }
+                                GradientStop { position: 1.0; color: mt.edgy ? mt.accentAmber : mt.accentCyan }
                             }
 
                             Behavior on scale {
@@ -1339,7 +1353,7 @@ PanelWindow {
                             }
 
                             MaterialIcon {
-                                color: mt.colBorder
+                                color: mt.edgy ? "#07080e" : mt.colBorder
                                 anchors.centerIn: parent
                                 name: "add"
                                 size: 20

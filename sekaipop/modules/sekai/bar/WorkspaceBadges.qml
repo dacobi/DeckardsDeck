@@ -221,9 +221,11 @@ Item {
 
                     cornerRadius: mt.radiusBadge
                     ringWidth: 8
+                    ringColorTop: mt.edgy ? (wrap.isActive ? mt.accentYellow : mt.accentFrame) : mt.ringWhite
+                    ringColorBottom: ringColorTop
                     fillColor: wrap.isActive
                     ? root.activeColors[(wrap.number - 1) % root.activeColors.length]
-                    : mt.accentCyan
+                    : (mt.edgy ? mt.hudSurface : mt.accentCyan)
 
                     // Always the original 36px box — the "grows to
                     // 42px when selected" look comes entirely from
@@ -258,7 +260,7 @@ Item {
                     Text {
                         anchors.centerIn: parent
                         anchors.verticalCenterOffset: -mt.shadowOffset / 2 + root.numberNudge
-                        color: mt.colBorder
+                        color: mt.edgy ? (wrap.isActive ? Qt.color("#07080e") : mt.accentCyan) : mt.colBorder
                         font.family: mt.fontFamily
                         font.pixelSize: 16
                         font.weight: Font.ExtraBold

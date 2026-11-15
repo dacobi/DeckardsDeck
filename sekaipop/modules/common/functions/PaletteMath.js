@@ -324,6 +324,24 @@ function toShell(colors) {
         B = lift(fromHsl(ah.h + 38, ah.s, ah.l), border, 4.5)
     }
     var ha = toHsl(A)
+    var hb = toHsl(B)
+
+    // Third, fourth and fifth HUD accent roles (C: structural frame/alert neon,
+    // D: high-voltage callout yellow/gold, E: bio/matrix status green, F: telemetry amber)
+    var ci = -1, cv = -1
+    for (var ec = 0; ec < list.length; ec++) {
+        if (ec === ai || ec === bi) continue
+        var ev = (dist(list[ec], A) + dist(list[ec], B)) * 0.5 + vivid(list[ec]) * 100 * 0.4
+        if (ev > cv) { cv = ev; ci = ec }
+    }
+    var C = lift(ci >= 0 ? list[ci] : fromHsl(ha.h + 155, Math.max(ha.s, 0.82), 0.58), border, 4.5)
+    if (dist(C, A) < 18 || dist(C, B) < 18)
+        C = lift(fromHsl(ha.h + 155, Math.max(ha.s, 0.82), 0.58), border, 4.5)
+    var hc = toHsl(C)
+    var D = lift(fromHsl(52 + ((ha.h - 180) * 0.12), Math.max(ha.s, 0.88), 0.56), border, 4.5)
+    var E = lift(fromHsl(142 + ((hb.h - 180) * 0.10), Math.max(ha.s, 0.80), 0.54), border, 4.5)
+    var F = lift(fromHsl(28 + ((hc.h - 340) * 0.10), Math.max(ha.s, 0.85), 0.56), border, 4.5)
+    var hudTint = fromHsl(hc.h, clamp(hc.s, 0.35, 0.65), 0.10)
 
     var deep = fromHsl(bh.h, bh.s * 0.9, clamp(bh.l * 0.45, 0.08, 0.17))
     var dl = toHsl(deep).l
@@ -331,6 +349,11 @@ function toShell(colors) {
         border: border,
         A: A,
         B: B,
+        C: C,
+        D: D,
+        E: E,
+        F: F,
+        hudTint: hudTint,
         deep: deep,
         hoverTint: mix(A, "#ffffff", 0.88),
         divider: mix(border, "#ffffff", 0.9),

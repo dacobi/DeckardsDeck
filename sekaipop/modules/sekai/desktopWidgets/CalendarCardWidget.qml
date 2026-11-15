@@ -735,7 +735,7 @@ PanelWindow {
                                     y: 9
                                     width: 190
                                     elide: Text.ElideRight
-                                    color: Qt.rgba(mt.colBorder.r, mt.colBorder.g, mt.colBorder.b, 0.82)
+                                    color: mt.edgy ? mt.accentYellow : Qt.rgba(mt.colBorder.r, mt.colBorder.g, mt.colBorder.b, 0.82)
                                     font.family: mt.fontFamily
                                     font.pixelSize: Math.round(10.5)
                                     font.weight: Font.ExtraBold
@@ -877,10 +877,10 @@ PanelWindow {
                                 width: Math.min(tallyProbe.implicitWidth + 44 + height * skew, 188)
                                 height: 26
                                 skew: 0.2
-                                radius: 9
-                                color: win.summary.late > 0 ? win.alertInk : mt.chipFill
-                                borderColor: mt.pLine
-                                borderWidth: 3
+                                radius: mt.edgy ? 2 : 9
+                                color: win.summary.late > 0 ? win.alertInk : (mt.edgy ? mt.hudSurface : mt.chipFill)
+                                borderColor: mt.edgy ? mt.accentFrame : mt.pLine
+                                borderWidth: mt.edgy ? 1.5 : 3
                             }
 
                             // Text goes NEXT to the Slant (a child would lean with it).
@@ -896,14 +896,14 @@ PanelWindow {
                                     fill: win.summary.late > 0 ? 1 : 0
                                     size: 15
                                     weight: 700
-                                    color: win.summary.late > 0 ? win.alertText : (mt.dark ? mt.accentMint : mt.colBorder)
+                                    color: win.summary.late > 0 ? win.alertText : (mt.edgy ? mt.accentYellow : (mt.dark ? mt.accentMint : mt.colBorder))
                                 }
                                 Text {
                                     anchors.verticalCenter: parent.verticalCenter
                                     width: Math.max(0, tab.width - tab.lean - 36)
                                     elide: Text.ElideRight
                                     text: tab.label
-                                    color: win.summary.late > 0 ? win.alertText : mt.chipInk
+                                    color: win.summary.late > 0 ? win.alertText : (mt.edgy ? mt.accentCyan : mt.chipInk)
                                     font.family: mt.fontFamily
                                     font.pixelSize: 11
                                     font.weight: Font.ExtraBold
@@ -1021,16 +1021,20 @@ PanelWindow {
                                         height: parent.height - (cell.raised ? 2 : 0)
                                         radius: mt.edgy ? mt.radiusInner : 9
                                         antialiasing: true
-                                        border.width: cell.raised ? 2.5 : 0
-                                        border.color: mt.pLine
+                                        border.width: cell.raised ? (mt.edgy ? 1.5 : 2.5) : (mt.edgy && cell.c.inMonth ? 1 : 0)
+                                        border.color: mt.edgy
+                                            ? (cell.c.isToday ? mt.accentYellow : (cell.selected ? mt.accentCyan : Qt.rgba(mt.accentFrame.r, mt.accentFrame.g, mt.accentFrame.b, 0.35)))
+                                            : mt.pLine
                                         color: {
-                                            const base = cell.hovered ? mt.pSurfaceHover : (cell.c.inMonth ? mt.pSurfaceHover : "transparent")
+                                            if (mt.edgy && cell.c.isToday)
+                                                return mt.accentYellow
+                                            const base = cell.hovered ? mt.pSurfaceHover : (cell.c.inMonth ? (mt.edgy ? mt.hudSurface : mt.pSurfaceHover) : "transparent")
                                             if (cell.marks.count > 0)
                                                 return win.wash(cell.c.inMonth ? mt.pSurfaceHover : mt.pSurface,
                                                                 win.attr(cell.marks.colors[0]), cell.c.inMonth ? 0.55 : 0.22)
                                             return base
                                         }
-                                        gradient: cell.c.isToday ? accentGradient : null
+                                        gradient: (!mt.edgy && cell.c.isToday) ? accentGradient : null
                                     }
 
                                     Text {
@@ -1040,7 +1044,7 @@ PanelWindow {
                                         horizontalAlignment: Text.AlignHCenter
                                         text: String(cell.c.d)
                                         opacity: cell.c.inMonth ? 1 : 0.42
-                                        color: cell.c.isToday ? mt.colBorder : (cell.c.isWeekend ? win.weekendInk : mt.pInk)
+                                        color: cell.c.isToday ? (mt.edgy ? "#07080e" : mt.colBorder) : (cell.c.isWeekend ? (mt.edgy ? mt.accentFrame : win.weekendInk) : mt.pInk)
                                         font.family: mt.fontFamily
                                         font.pixelSize: 13
                                         font.weight: Font.ExtraBold

@@ -546,17 +546,39 @@ Item {
             anchors.leftMargin: status_Bar.vertical ? 0 : -status_Bar.bgBleed
             anchors.rightMargin: status_Bar.vertical ? 0 : -status_Bar.bgBleed
             radius: status_Bar.bgRadius
-            color: status_Bar.bgRingColor
-            border.width: mt.borderWidth
-            border.color: mt.line
+            color: mt.edgy ? mt.hudSurface : status_Bar.bgRingColor
+            border.width: mt.edgy ? 1.5 : mt.borderWidth
+            border.color: mt.edgy ? mt.accentFrame : mt.line
         }
 
         Rectangle {
             id: bgFill
             anchors.fill: bgFace
-            anchors.margins: mt.borderWidth + status_Bar.bgRingWidth
+            anchors.margins: mt.edgy ? 2 : (mt.borderWidth + status_Bar.bgRingWidth)
             radius: Math.max(0, status_Bar.bgRadius - mt.borderWidth - status_Bar.bgRingWidth)
-            color: mt.surface
+            color: mt.edgy ? mt.hudSurface : mt.surface
+
+            // Cyberpunk top HUD trace + left callout strip
+            Rectangle {
+                visible: mt.edgy && !status_Bar.vertical
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.leftMargin: 12
+                width: 64
+                height: 2
+                color: mt.accentYellow
+            }
+
+            Rectangle {
+                visible: mt.edgy && !status_Bar.vertical
+                anchors.bottom: parent.bottom
+                anchors.right: parent.right
+                anchors.rightMargin: 16
+                width: 84
+                height: 2
+                color: mt.accentCyan
+                opacity: 0.75
+            }
         }
     }
 

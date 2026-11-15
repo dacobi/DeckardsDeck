@@ -533,8 +533,8 @@ PanelWindow {
 
         Gradient {
             id: minuteFill
-            GradientStop { position: 0.0; color: mt.accentMint }
-            GradientStop { position: 1.0; color: mt.accentCyan }
+            GradientStop { position: 0.0; color: mt.edgy ? mt.hudTint : mt.accentMint }
+            GradientStop { position: 1.0; color: mt.edgy ? Qt.color("#07080e") : mt.accentCyan }
         }
 
         Pill {
@@ -544,15 +544,29 @@ PanelWindow {
             ringWidth: mt.borderWidth + mt.whiteLine
             shadowDx: 3
             shadowDy: 4
-            fillColor: mt.chipFill
+            fillColor: mt.edgy ? mt.hudSurface : mt.chipFill
             fillGradient: tile.gradientFill ? minuteFill : null
+
+            Text {
+                x: 5
+                y: 3
+                visible: mt.edgy
+                text: tile.gradientFill ? "MN" : "HR"
+                font.family: "JetBrains Mono"
+                font.pixelSize: 7
+                font.weight: Font.Bold
+                color: tile.gradientFill ? mt.accentGreen : mt.accentAmber
+                opacity: 0.85
+            }
 
             Text {
                 anchors.fill: parent
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 text: tile.digit
-                color: tile.gradientFill ? mt.colBorder : mt.chipInk
+                color: mt.edgy
+                    ? (tile.gradientFill ? mt.accentYellow : mt.accentCyan)
+                    : (tile.gradientFill ? mt.colBorder : mt.chipInk)
                 opacity: tile.ghost ? 0.28 : 1
                 font.family: mt.fontFamily
                 font.pixelSize: 50
@@ -640,9 +654,9 @@ PanelWindow {
             easing.overshoot: 2.4
         }
 
-        GlyphRing { anchors.fill: parent; value: sd.value; ink: mt.colBorder; radius: 6; dx: 3; dy: 4 }
-        GlyphRing { anchors.fill: parent; value: sd.value; ink: mt.colBorder; radius: 6 }
-        GlyphRing { anchors.fill: parent; value: sd.value; ink: "#ffffff"; radius: 3.2 }
+        GlyphRing { anchors.fill: parent; value: sd.value; ink: mt.edgy ? mt.accentFrame : mt.colBorder; radius: mt.edgy ? 4.5 : 6; dx: 3; dy: 4 }
+        GlyphRing { anchors.fill: parent; value: sd.value; ink: mt.edgy ? "#06070c" : mt.colBorder; radius: mt.edgy ? 5 : 6 }
+        GlyphRing { anchors.fill: parent; value: sd.value; ink: mt.edgy ? mt.accentFrame : "#ffffff"; radius: mt.edgy ? 2.2 : 3.2 }
         GlyphRing { anchors.fill: parent; value: sd.value; ink: sd.ghost ? mt.colOuterRing : sd.fillColor; radius: 0; steps: 1 }
     }
 
@@ -661,12 +675,12 @@ PanelWindow {
 
         width: 12
         height: 12
-        radius: 3
+        radius: mt.edgy ? 1 : 3
         rotation: 45
         scale: bd.pop
         color: bd.lit ? bd.litColor : bd.offColor
-        border.width: 2
-        border.color: bd.lineColor
+        border.width: mt.edgy ? 1.5 : 2
+        border.color: mt.edgy ? (bd.lit ? mt.accentYellow : mt.accentFrame) : bd.lineColor
 
         onLitChanged: {
             if (bd.lit)
@@ -698,8 +712,8 @@ PanelWindow {
         rotation: -5 * mt.badgeTilt
         transformOrigin: Item.Center
         fillGradient: Gradient {
-            GradientStop { position: 0.0; color: mt.accentMint }
-            GradientStop { position: 1.0; color: mt.accentCyan }
+            GradientStop { position: 0.0; color: mt.edgy ? mt.accentYellow : mt.accentMint }
+            GradientStop { position: 1.0; color: mt.edgy ? mt.accentAmber : mt.accentCyan }
         }
 
         Text {
@@ -707,7 +721,7 @@ PanelWindow {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             text: ds.day
-            color: mt.colBorder
+            color: mt.edgy ? "#07080e" : mt.colBorder
             font.family: mt.fontFamily
             font.pixelSize: 20
             font.weight: Font.ExtraBold
@@ -882,24 +896,33 @@ PanelWindow {
             height: db.height - (db.today ? 6 : 8)
             y: db.today ? 1 : 3
             radius: mt.edgy ? mt.radiusInner : 9
-            color: db.today ? "transparent" : mt.pSurfaceHover
+            color: db.today ? "transparent" : (mt.edgy ? mt.hudSurface : mt.pSurfaceHover)
             opacity: db.past ? 0.55 : 1
             rotation: db.today ? -3 * mt.badgeTilt : 0
             transformOrigin: Item.Center
-            border.width: db.today ? mt.borderWidth : 0
-            border.color: mt.pLine
+            border.width: db.today ? mt.borderWidth : (mt.edgy ? 1 : 0)
+            border.color: mt.edgy ? (db.today ? mt.accentYellow : Qt.rgba(mt.accentFrame.r, mt.accentFrame.g, mt.accentFrame.b, 0.45)) : mt.pLine
             gradient: db.today ? todayFill : null
 
             Gradient {
                 id: todayFill
-                GradientStop { position: 0.0; color: mt.accentMint }
-                GradientStop { position: 1.0; color: mt.accentCyan }
+                GradientStop { position: 0.0; color: mt.edgy ? mt.accentYellow : mt.accentMint }
+                GradientStop { position: 1.0; color: mt.edgy ? mt.accentAmber : mt.accentCyan }
+            }
+
+            Rectangle {
+                x: 0
+                y: 0
+                width: parent.width
+                height: 2
+                visible: mt.edgy && db.today
+                color: mt.accentGreen
             }
 
             Text {
                 anchors.centerIn: parent
                 text: Qt.locale().dayName(db.dow, Locale.ShortFormat).toUpperCase()
-                color: db.today ? mt.colBorder : mt.pInkSub
+                color: db.today ? (mt.edgy ? "#07080e" : mt.colBorder) : (mt.edgy ? mt.accentCyan : mt.pInkSub)
                 font.family: mt.fontFamily
                 font.pixelSize: 10
                 font.weight: Font.ExtraBold
@@ -1391,6 +1414,7 @@ PanelWindow {
                                     readonly property real headX: Math.min(ktrack.width - ktrack.headSize, Math.max(0, ktrack.pos - ktrack.headSize / 2))
 
                                     Rectangle {
+                                        visible: !mt.edgy
                                         anchors.verticalCenter: parent.verticalCenter
                                         width: parent.width
                                         height: 12
@@ -1400,8 +1424,9 @@ PanelWindow {
                                         border.color: mt.pLine
                                     }
 
-                                    // What has played this minute.
+                                    // What has played this minute (classic mode).
                                     Rectangle {
+                                        visible: !mt.edgy
                                         x: 2
                                         anchors.verticalCenter: parent.verticalCenter
                                         height: 8
@@ -1421,12 +1446,28 @@ PanelWindow {
                                         }
                                     }
 
+                                    // Cyberpunk 2077 diagonal //////// telemetry seconds bar (when mt.edgy is true)
+                                    CyberStripe {
+                                        visible: mt.edgy
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        width: parent.width
+                                        height: 12
+                                        mode: "stripes"
+                                        barWidth: 5
+                                        gap: 3
+                                        progress: Math.min(60, win.secs + 1) / 60
+                                        color: mt.accentCyan
+                                        altColor: mt.accentYellow
+                                        trackColor: Qt.rgba(mt.accentFrame.r, mt.accentFrame.g, mt.accentFrame.b, 0.28)
+                                    }
+
                                     // Gates at 15 / 30 / 45 s.
                                     Repeater {
                                         model: 3
 
                                         Rectangle {
                                             required property int index
+                                            visible: !mt.edgy
                                             x: ktrack.width * (index + 1) / 4 - 1.5
                                             anchors.verticalCenter: parent.verticalCenter
                                             width: 3
@@ -1439,6 +1480,7 @@ PanelWindow {
 
                                     // The playhead: a diamond note.
                                     Rectangle {
+                                        visible: !mt.edgy
                                         anchors.verticalCenter: parent.verticalCenter
                                         width: ktrack.headSize
                                         height: ktrack.headSize

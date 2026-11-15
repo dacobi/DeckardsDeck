@@ -54,12 +54,12 @@ Singleton {
     id: root
 
     readonly property var baseGroups: [
-        { id: "vs", name: "LAPD 2019 Spinner", c: { border: "#243b52", A: "#00e5ff", B: "#00b8d4", deep: "#0a0e16", rimHi: "#4a7491", bezel: "#111924", wallLight: "#34546e", wallMid: "#1e3346", wallDark: "#101b26", hardware: "#06090e", divider: "#d6eef8", lens: "#0091ea", glint: "#84ffff", hoverTint: "#162b3b", boardBg: "#0b1018", boardDot: "#1d3142", lockMint: "#00e5ff", lockPink: "#ff9e2c" } },
-        { id: "leoneed", name: "Tyrell Corp Amber", c: { border: "#3d291a", A: "#ff9e2c", B: "#ff6b1a", deep: "#120c08", rimHi: "#8c5e38", bezel: "#1c130c", wallLight: "#6b472a", wallMid: "#422b19", wallDark: "#24170d", hardware: "#0a0604", divider: "#f7e6d4", lens: "#ff6d00", glint: "#ffd180", hoverTint: "#2c1e13", boardBg: "#110c08", boardDot: "#362417", lockMint: "#ff9e2c", lockPink: "#00e5ff" } },
-        { id: "mmj", name: "Voight-Kampff Phosphor", c: { border: "#1c3d2d", A: "#00e676", B: "#1de9b6", deep: "#08120d", rimHi: "#3f8261", bezel: "#0d1c15", wallLight: "#2e6349", wallMid: "#1c3f2e", wallDark: "#10241a", hardware: "#050a07", divider: "#d4f5e4", lens: "#00c853", glint: "#b9f6ca", hoverTint: "#142b20", boardBg: "#09110d", boardDot: "#1b3829", lockMint: "#00e676", lockPink: "#ffab00" } },
-        { id: "vbs", name: "Joi // Wallace Neon", c: { border: "#3f1c35", A: "#ff2a6d", B: "#d500f9", deep: "#130811", rimHi: "#8f3d78", bezel: "#1e0d1a", wallLight: "#6e2b5c", wallMid: "#451a3a", wallDark: "#260f20", hardware: "#0b0409", divider: "#f7d8ec", lens: "#c51162", glint: "#ff80ab", hoverTint: "#2e1427", boardBg: "#120910", boardDot: "#3b1a32", lockMint: "#00e5ff", lockPink: "#ff2a6d" } },
-        { id: "wxs", name: "Bradbury Acid Rain", c: { border: "#3d341c", A: "#ffd600", B: "#ff9100", deep: "#120f08", rimHi: "#8a7740", bezel: "#1c180d", wallLight: "#66582f", wallMid: "#40371d", wallDark: "#241f10", hardware: "#0a0804", divider: "#f7efd6", lens: "#ffab00", glint: "#ffff8d", hoverTint: "#2b2514", boardBg: "#110f09", boardDot: "#362f1b", lockMint: "#ffd600", lockPink: "#ff6d00" } },
-        { id: "nightcord", name: "Off-World Colony", c: { border: "#28204d", A: "#7c4dff", B: "#40c4ff", deep: "#0b0917", rimHi: "#5c4ba6", bezel: "#120f24", wallLight: "#44377d", wallMid: "#2a224f", wallDark: "#17122e", hardware: "#06050d", divider: "#e2dcf7", lens: "#651fff", glint: "#b388ff", hoverTint: "#1c1736", boardBg: "#0a0914", boardDot: "#241e42", lockMint: "#40c4ff", lockPink: "#7c4dff" } }
+        { id: "vs", name: "LAPD 2019 // Night City HUD", c: { border: "#243b52", A: "#00f0ff", B: "#ff2a55", C: "#ff2a55", D: "#fcee0a", E: "#00ff66", F: "#ff8800", hudTint: "#1c0912", deep: "#070910", rimHi: "#4a7491", bezel: "#111924", wallLight: "#34546e", wallMid: "#1e3346", wallDark: "#101b26", hardware: "#06090e", divider: "#d6eef8", lens: "#0091ea", glint: "#84ffff", hoverTint: "#162b3b", boardBg: "#0b1018", boardDot: "#1d3142", lockMint: "#00f0ff", lockPink: "#ff2a55" } },
+        { id: "leoneed", name: "2049 Vegas // Wallace Corp", c: { border: "#3d291a", A: "#ff9e2c", B: "#00f0ff", C: "#ff3b30", D: "#fcee0a", E: "#00ff88", F: "#ff5500", hudTint: "#1f0f08", deep: "#0c0805", rimHi: "#8c5e38", bezel: "#1c130c", wallLight: "#6b472a", wallMid: "#422b19", wallDark: "#24170d", hardware: "#0a0604", divider: "#f7e6d4", lens: "#ff6d00", glint: "#ffd180", hoverTint: "#2c1e13", boardBg: "#110c08", boardDot: "#362417", lockMint: "#ff9e2c", lockPink: "#00f0ff" } },
+        { id: "mmj", name: "Voight-Kampff // Bio Matrix", c: { border: "#1c3d2d", A: "#00ff66", B: "#00f0ff", C: "#ff2a55", D: "#fcee0a", E: "#1de9b6", F: "#ff9100", hudTint: "#081c14", deep: "#060e0a", rimHi: "#3f8261", bezel: "#0d1c15", wallLight: "#2e6349", wallMid: "#1c3f2e", wallDark: "#10241a", hardware: "#050a07", divider: "#d4f5e4", lens: "#00c853", glint: "#b9f6ca", hoverTint: "#142b20", boardBg: "#09110d", boardDot: "#1b3829", lockMint: "#00ff66", lockPink: "#fcee0a" } },
+        { id: "vbs", name: "Joi // Holo Magenta", c: { border: "#3f1c35", A: "#ff2a85", B: "#00f0ff", C: "#b829ff", D: "#fcee0a", E: "#00ff9d", F: "#ff7700", hudTint: "#20091a", deep: "#0d060b", rimHi: "#8f3d78", bezel: "#1e0d1a", wallLight: "#6e2b5c", wallMid: "#451a3a", wallDark: "#260f20", hardware: "#0b0409", divider: "#f7d8ec", lens: "#c51162", glint: "#ff80ab", hoverTint: "#2e1427", boardBg: "#120910", boardDot: "#3b1a32", lockMint: "#00f0ff", lockPink: "#ff2a85" } },
+        { id: "wxs", name: "Tyrell // Acid Yellow", c: { border: "#3d341c", A: "#fcee0a", B: "#00f0ff", C: "#ff2a55", D: "#ff9e2c", E: "#00ff66", F: "#ff5533", hudTint: "#1c1707", deep: "#0c0a05", rimHi: "#8a7740", bezel: "#1c180d", wallLight: "#66582f", wallMid: "#40371d", wallDark: "#241f10", hardware: "#0a0804", divider: "#f7efd6", lens: "#ffab00", glint: "#ffff8d", hoverTint: "#2b2514", boardBg: "#110f09", boardDot: "#362f1b", lockMint: "#fcee0a", lockPink: "#ff2a55" } },
+        { id: "nightcord", name: "Off-World // Arasaka Net", c: { border: "#28204d", A: "#00f0ff", B: "#a855f7", C: "#ff2a55", D: "#fcee0a", E: "#39ff14", F: "#ff6600", hudTint: "#160a24", deep: "#080612", rimHi: "#5c4ba6", bezel: "#120f24", wallLight: "#44377d", wallMid: "#2a224f", wallDark: "#17122e", hardware: "#06050d", divider: "#e2dcf7", lens: "#651fff", glint: "#b388ff", hoverTint: "#1c1736", boardBg: "#0a0914", boardDot: "#241e42", lockMint: "#00f0ff", lockPink: "#a855f7" } }
     ]
 
     // Themes that are not one of the six base sectors. They show up in the
@@ -72,7 +72,7 @@ Singleton {
     // a hue (the lockscreen, the attribute icons, the system scheme, Discord)
     // to stay grey as well.
     readonly property var extraGroups: [
-        { id: "mono", name: "Esper Monochrome", c: { mono: true, border: "#383838", A: "#e6e6e6", B: "#a8a8a8", deep: "#0c0c0c", rimHi: "#787878", bezel: "#1c1c1c", wallLight: "#545454", wallMid: "#343434", wallDark: "#1e1e1e", hardware: "#080808", divider: "#e8e8e8", lens: "#5a5a5a", glint: "#d4d4d4", hoverTint: "#222222", boardBg: "#0e0e0e", boardDot: "#292929", lockMint: "#d8d8d8", lockPink: "#888888" } }
+        { id: "mono", name: "Esper Monochrome", c: { mono: true, border: "#383838", A: "#e6e6e6", B: "#a8a8a8", C: "#c8c8c8", D: "#f2f2f2", E: "#b8b8b8", F: "#969696", hudTint: "#141414", deep: "#0c0c0c", rimHi: "#787878", bezel: "#1c1c1c", wallLight: "#545454", wallMid: "#343434", wallDark: "#1e1e1e", hardware: "#080808", divider: "#e8e8e8", lens: "#5a5a5a", glint: "#d4d4d4", hoverTint: "#222222", boardBg: "#0e0e0e", boardDot: "#292929", lockMint: "#d8d8d8", lockPink: "#888888" } }
     ]
 
     // The base groups plus the wallpaper theme. The matugen row carries the
@@ -610,6 +610,11 @@ Singleton {
             border: dk.primary_container,                          // outlines, shadows, dark text
             A: dk.primary,
             B: dk.tertiary,
+            C: dk.secondary,
+            D: "#fcee0a",
+            E: "#00ff66",
+            F: "#ff8800",
+            hudTint: Qt.darker(Qt.color(dk.secondary_container), 2.1),
             deep: Qt.darker(Qt.color(dk.on_primary), 1.45),
             hoverTint: Qt.darker(Qt.color(dk.primary_container), 1.35),
             divider: lt.surface_variant,

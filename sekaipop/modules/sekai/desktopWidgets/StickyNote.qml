@@ -56,10 +56,24 @@ Item {
     property bool mine: true
 
     // Keeps the classic (light) look in the first dark mode; see Theme.classicFor.
-    readonly property bool classicPanel: true
+    readonly property bool classicPanel: !mt.edgy
 
-    readonly property color paper: NM.paperOf(note.tint)
-    readonly property color ink: mt.colBorder
+    readonly property color shardAccent: {
+        if (!mt.edgy) return NM.paperOf(note.tint)
+        switch (note.tint) {
+        case "yellow": return Qt.color("#fcee0a")
+        case "pink": return Qt.color("#ff2a55")
+        case "mint": return Qt.color("#00ff66")
+        case "sky": return Qt.color("#00f0ff")
+        case "lavender": return Qt.color("#b829ff")
+        case "peach": return Qt.color("#ff8800")
+        default: return mt.accentYellow
+        }
+    }
+    readonly property color paper: mt.edgy && mt.dark
+        ? Qt.tint(Qt.color("#090a12"), Qt.rgba(note.shardAccent.r, note.shardAccent.g, note.shardAccent.b, 0.14))
+        : NM.paperOf(note.tint)
+    readonly property color ink: mt.edgy && mt.dark ? Qt.color("#e2eef8") : mt.colBorder
 
     property bool moving: false
     property bool resizing: false
@@ -118,8 +132,10 @@ Item {
         width: 26
         height: 26
         radius: mt.edgy ? mt.radiusInner : 9
-        color: btn.danger ? mt.irisColorPink
-             : (btnArea.containsMouse ? Qt.rgba(1, 1, 1, 0.7) : (btn.lit ? Qt.rgba(1, 1, 1, 0.45) : "transparent"))
+        color: btn.danger ? (mt.edgy ? mt.accentFrame : mt.irisColorPink)
+             : (btnArea.containsMouse
+                ? (mt.edgy && mt.dark ? Qt.rgba(note.shardAccent.r, note.shardAccent.g, note.shardAccent.b, 0.25) : Qt.rgba(1, 1, 1, 0.7))
+                : (btn.lit ? (mt.edgy && mt.dark ? Qt.rgba(note.shardAccent.r, note.shardAccent.g, note.shardAccent.b, 0.16) : Qt.rgba(1, 1, 1, 0.45)) : "transparent"))
 
         Behavior on color {
             ColorAnimation { duration: 120 }
@@ -131,7 +147,7 @@ Item {
             size: 18
             weight: 600
             fill: btn.iconFill
-            color: mt.colBorder
+            color: mt.edgy && mt.dark ? note.shardAccent : mt.colBorder
         }
 
         MouseArea {
@@ -205,7 +221,7 @@ Item {
                 anchors.fill: parent
                 cornerRadius: mt.edgy ? 3 : 14
                 ringWidth: mt.borderWidth + 3
-                ringColorTop: Qt.lighter(note.paper, 1.12)
+                ringColorTop: mt.edgy ? note.shardAccent : Qt.lighter(note.paper, 1.12)
                 ringColorBottom: ringColorTop
                 fillColor: note.paper
             }
@@ -277,7 +293,18 @@ Item {
                         name: "drag_indicator"
                         size: 18
                         weight: 600
-                        color: note.ink
+                        color: mt.edgy ? note.shardAccent : note.ink
+                    }
+
+                    Text {
+                        visible: mt.edgy
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "SHARD // " + note.tint.toUpperCase()
+                        color: note.shardAccent
+                        font.family: mt.fontFamily
+                        font.pixelSize: 9
+                        font.weight: Font.Black
+                        font.letterSpacing: 1.2
                     }
 
                     MaterialIcon {
@@ -286,7 +313,7 @@ Item {
                         size: 16
                         fill: 1
                         weight: 600
-                        color: note.ink
+                        color: mt.edgy ? mt.accentYellow : note.ink
                     }
                 }
 

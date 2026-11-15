@@ -28,6 +28,12 @@ QtObject {
     readonly property color colBg: "#0d1118"
     readonly property color accentCyan: pal.A
     readonly property color accentMint: pal.B
+    readonly property color accentFrame: Qt.color(pal.C || "#ff2a55")
+    readonly property color accentRed: accentFrame
+    readonly property color accentYellow: Qt.color(pal.D || "#fcee0a")
+    readonly property color accentGreen: Qt.color(pal.E || "#00ff66")
+    readonly property color accentAmber: Qt.color(pal.F || "#ff8800")
+    readonly property color hudTint: Qt.color(pal.hudTint || "#1c0912")
     readonly property color textWhite: "#ffffff"
 
     // ===== Modes =====
@@ -83,6 +89,10 @@ QtObject {
     readonly property color surface: darker
         ? Qt.darker(Qt.color(pal.deep), darkerFactor)
         : (dark ? Qt.lighter(Qt.color(pal.deep), 1.18) : "#111620")
+    readonly property color hudSurface: edgy && dark
+        ? Qt.tint(Qt.color("#07080e"), Qt.rgba(hudTint.r, hudTint.g, hudTint.b, 0.52))
+        : surface
+    readonly property color hudLine: edgy ? accentFrame : line
     readonly property color surfaceHover: dark ? Qt.lighter(surface, 1.35) : "#1a2230"
     readonly property color surfaceDivider: dark ? Qt.lighter(surface, 1.75) : "#222e40"
     // The INNER rings. Dark: metallic rim. Darker: a dim grey.
@@ -195,7 +205,7 @@ QtObject {
     // neighbours (the workspace badges, the lock dots) still read as different.
     readonly property var attributeColors: mono
         ? ["#e4e4e4", "#b0b0b0", "#f6f6f6", "#8c8c8c", "#cecece"]
-        : ["#00E5FF", "#FF2A6D", "#FF9E2C", "#7C4DFF", "#00E676"]
+        : [String(pal.A || "#00F0FF"), String(pal.C || "#FF2A55"), String(pal.D || "#FCEE0A"), String(pal.E || "#00FF66"), String(pal.F || "#FF8800")]
 
     readonly property int pillHeight: 36
     readonly property int radiusOuter: edgy ? 3 : 13

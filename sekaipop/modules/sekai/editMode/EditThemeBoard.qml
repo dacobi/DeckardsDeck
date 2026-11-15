@@ -166,22 +166,22 @@ Item {
                     id: card
                     width: parent.width
                     height: parent.height - 3
-                    radius: 10
+                    radius: mt.edgy ? 2 : 10
                     color: tile.bg
-                    border.width: 3
-                    border.color: tile.c.border
+                    border.width: mt.edgy ? 1.5 : 3
+                    border.color: mt.edgy ? (tile.c.C || tile.c.border) : tile.c.border
                     antialiasing: true
 
-                    // The bar: a gradient key on the left, two dots on the right.
+                    // The bar: a gradient key on the left, multi-hue HUD dots on the right.
                     Rectangle {
                         x: 8
                         y: 8
                         width: card.width - 16
                         height: 15
-                        radius: 7.5
+                        radius: mt.edgy ? 2 : 7.5
                         color: tile.surf
-                        border.width: 2
-                        border.color: tile.c.border
+                        border.width: mt.edgy ? 1 : 2
+                        border.color: mt.edgy ? (tile.c.C || tile.c.border) : tile.c.border
                         antialiasing: true
 
                         Rectangle {
@@ -189,29 +189,32 @@ Item {
                             y: 3.5
                             width: 24
                             height: 8
-                            radius: 4
+                            radius: mt.edgy ? 1 : 4
                             gradient: accent
                             antialiasing: true
                         }
 
-                        Rectangle {
-                            x: parent.width - 24
-                            y: 4
-                            width: 7
-                            height: 7
-                            radius: 3.5
-                            color: tile.c.border
-                            antialiasing: true
-                        }
+                        Row {
+                            anchors.right: parent.right
+                            anchors.rightMargin: 5
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2.5
 
-                        Rectangle {
-                            x: parent.width - 14
-                            y: 4
-                            width: 7
-                            height: 7
-                            radius: 3.5
-                            color: tile.c.A
-                            antialiasing: true
+                            Repeater {
+                                model: [
+                                    tile.c.A,
+                                    tile.c.B,
+                                    tile.c.C || "#ff2a55",
+                                    tile.c.D || "#fcee0a",
+                                    tile.c.E || "#00ff66"
+                                ]
+                                delegate: Rectangle {
+                                    width: 5.5
+                                    height: 5.5
+                                    radius: mt.edgy ? 1 : 2.75
+                                    color: modelData
+                                }
+                            }
                         }
                     }
 
@@ -221,18 +224,27 @@ Item {
                         y: 30
                         width: 58
                         height: card.height - 38
-                        radius: 7
+                        radius: mt.edgy ? 2 : 7
                         color: tile.surf
-                        border.width: 2
-                        border.color: tile.c.border
+                        border.width: mt.edgy ? 1 : 2
+                        border.color: mt.edgy ? tile.c.A : tile.c.border
                         antialiasing: true
+
+                        Rectangle {
+                            x: 0
+                            y: 0
+                            width: 3
+                            height: parent.height
+                            visible: mt.edgy
+                            color: tile.c.D || "#fcee0a"
+                        }
 
                         Rectangle {
                             x: 6
                             y: 6
                             width: 30
                             height: 8
-                            radius: 4
+                            radius: mt.edgy ? 1 : 4
                             gradient: accent
                             antialiasing: true
                         }
@@ -242,7 +254,7 @@ Item {
                             y: 19
                             width: 44
                             height: 4
-                            radius: 2
+                            radius: mt.edgy ? 1 : 2
                             color: tile.skeleton
                         }
 
@@ -251,7 +263,7 @@ Item {
                             y: 27
                             width: 32
                             height: 4
-                            radius: 2
+                            radius: mt.edgy ? 1 : 2
                             color: tile.skeleton
                         }
 
@@ -260,8 +272,8 @@ Item {
                             y: parent.height - 16
                             width: 24
                             height: 8
-                            radius: 4
-                            color: tile.c.border
+                            radius: mt.edgy ? 1 : 4
+                            color: mt.edgy ? (tile.c.D || "#fcee0a") : tile.c.border
                             antialiasing: true
                         }
                     }
@@ -272,10 +284,10 @@ Item {
                         y: 30
                         width: card.width - 72 - 8
                         height: (card.height - 38 - 4) / 2
-                        radius: 8
+                        radius: mt.edgy ? 2 : 8
                         gradient: accent
-                        border.width: 2
-                        border.color: tile.c.border
+                        border.width: mt.edgy ? 1 : 2
+                        border.color: mt.edgy ? (tile.c.C || tile.c.border) : tile.c.border
                         antialiasing: true
 
                         Rectangle {
@@ -283,8 +295,8 @@ Item {
                             y: (parent.height - 8) / 2
                             width: 8
                             height: 8
-                            radius: 4
-                            color: tile.c.border
+                            radius: mt.edgy ? 1 : 4
+                            color: mt.edgy ? (tile.c.D || "#fcee0a") : tile.c.border
                             antialiasing: true
                         }
                     }
@@ -294,10 +306,10 @@ Item {
                         y: 30 + (card.height - 38 - 4) / 2 + 4
                         width: card.width - 72 - 8
                         height: (card.height - 38 - 4) / 2
-                        radius: 8
+                        radius: mt.edgy ? 2 : 8
                         color: tile.surf
-                        border.width: 2
-                        border.color: tile.c.border
+                        border.width: mt.edgy ? 1 : 2
+                        border.color: mt.edgy ? (tile.c.E || "#00ff66") : tile.c.border
                         antialiasing: true
 
                         Rectangle {
@@ -305,8 +317,8 @@ Item {
                             y: (parent.height - 8) / 2
                             width: 8
                             height: 8
-                            radius: 4
-                            color: tile.c.A
+                            radius: mt.edgy ? 1 : 4
+                            color: mt.edgy ? (tile.c.E || "#00ff66") : tile.c.A
                             antialiasing: true
                         }
                     }

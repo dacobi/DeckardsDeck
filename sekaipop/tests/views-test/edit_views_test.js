@@ -79,5 +79,10 @@ console.log('bar pills checks passed')
         assert.ok(D.includes('id: "' + id + '"'), 'Settings Desktop has option ' + id)
         assert.ok(B.includes('id: "' + id + '"'), 'Edit Desktop VIEWS has option ' + id)
     }
+    // Multi-hue Cyberpunk HUD roles & chamfered Shape geometry
+    for (const role of ['accentFrame', 'accentYellow', 'accentGreen', 'accentAmber', 'hudSurface', 'hudTint'])
+        assert.ok(TS.includes(role), 'ThemeSet exposes HUD role ' + role)
+    assert.ok(fs.existsSync(root + 'modules/common/widgets/CyberStripe.qml'), 'CyberStripe HUD primitive exists')
+    assert.ok(/id:\s*hudFace/.test(P) && /id:\s*hudShadow/.test(P), 'Pill renders 45-degree chamfered HUD Shape and wireframe shadow when edgy')
 }
 console.log('widget style switcher checks passed')

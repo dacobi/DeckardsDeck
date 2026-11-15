@@ -33,19 +33,26 @@ Item {
     property color cBorder: root.pal.border
     property color cA: root.pal.A
     property color cB: root.pal.B
+    property color cC: root.pal.C || root.pal.A
+    property color cD: root.pal.D || root.pal.B
+    property color cE: root.pal.E || root.pal.A
+    property color cHudTint: root.pal.hudTint || root.pal.deep
     property color cWall1: root.pal.wallMid
     property color cWall2: root.pal.wallDark
     property color cLight: root.pal.wallLight
     property color cGlint: root.pal.glint
     property color cTint: root.pal.hoverTint
 
-    property color cSurface: root.darker
-        ? Qt.darker(Qt.color(root.pal.deep), mt.darkerFactor)
-        : (root.dark ? Qt.lighter(Qt.color(root.pal.deep), 1.18) : Qt.color("#ffffff"))
-    property color cLine: root.darker
-        ? Qt.darker(root.cBorder, mt.darkerLineFactor)
-        : (root.dark ? root.cBorder
-            : Qt.tint(Qt.color("#ffffff"), Qt.rgba(root.cBorder.r, root.cBorder.g, root.cBorder.b, mt.lightLineAlpha)))
+    property color cSurface: mt.edgy && root.dark
+        ? Qt.tint(Qt.color("#090a12"), Qt.rgba(root.cHudTint.r, root.cHudTint.g, root.cHudTint.b, 0.42))
+        : (root.darker
+            ? Qt.darker(Qt.color(root.pal.deep), mt.darkerFactor)
+            : (root.dark ? Qt.lighter(Qt.color(root.pal.deep), 1.18) : Qt.color("#ffffff")))
+    property color cLine: mt.edgy ? root.cC
+        : (root.darker
+            ? Qt.darker(root.cBorder, mt.darkerLineFactor)
+            : (root.dark ? root.cBorder
+                : Qt.tint(Qt.color("#ffffff"), Qt.rgba(root.cBorder.r, root.cBorder.g, root.cBorder.b, mt.lightLineAlpha))))
     property color cShadow: root.darker
         ? Qt.darker(root.cBorder, mt.darkerShadowFactor)
         : (root.dark ? Qt.darker(root.cBorder, mt.darkShadowFactor)
@@ -60,6 +67,10 @@ Item {
     Behavior on cBorder { ColorAnimation { duration: 320; easing.type: Easing.OutCubic } }
     Behavior on cA { ColorAnimation { duration: 320; easing.type: Easing.OutCubic } }
     Behavior on cB { ColorAnimation { duration: 320; easing.type: Easing.OutCubic } }
+    Behavior on cC { ColorAnimation { duration: 320; easing.type: Easing.OutCubic } }
+    Behavior on cD { ColorAnimation { duration: 320; easing.type: Easing.OutCubic } }
+    Behavior on cE { ColorAnimation { duration: 320; easing.type: Easing.OutCubic } }
+    Behavior on cHudTint { ColorAnimation { duration: 320; easing.type: Easing.OutCubic } }
     Behavior on cWall1 { ColorAnimation { duration: 320; easing.type: Easing.OutCubic } }
     Behavior on cWall2 { ColorAnimation { duration: 320; easing.type: Easing.OutCubic } }
     Behavior on cLight { ColorAnimation { duration: 320; easing.type: Easing.OutCubic } }
@@ -108,9 +119,9 @@ Item {
 
         Rectangle {
             anchors.fill: parent
-            radius: 18
+            radius: mt.edgy ? 3 : 18
             color: root.cSurface
-            border.width: 3
+            border.width: mt.edgy ? 1.5 : 3
             border.color: root.cLine
             antialiasing: true
 
@@ -126,12 +137,13 @@ Item {
                         required property int modelData
                         width: modelData === 0 ? 34 : 18
                         height: 18
-                        radius: 9
+                        radius: mt.edgy ? 2 : 9
                         antialiasing: true
-                        border.width: 2
-                        border.color: root.cBorder
-                        color: modelData === 0 ? root.cA
-                            : (modelData === 1 ? root.cB : (modelData === 2 ? root.cLight : (modelData === 3 ? root.cGlint : root.cTint)))
+                        border.width: mt.edgy ? 1.5 : 2
+                        border.color: mt.edgy ? root.cC : root.cBorder
+                        color: mt.edgy
+                            ? (modelData === 0 ? root.cA : (modelData === 1 ? root.cC : (modelData === 2 ? root.cD : (modelData === 3 ? root.cE : root.cB))))
+                            : (modelData === 0 ? root.cA : (modelData === 1 ? root.cB : (modelData === 2 ? root.cLight : (modelData === 3 ? root.cGlint : root.cTint))))
                     }
                 }
             }
@@ -143,15 +155,15 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 width: clockText.implicitWidth + 18
                 height: 22
-                radius: 11
-                color: root.cChip
+                radius: mt.edgy ? 2 : 11
+                color: mt.edgy ? root.cD : root.cChip
                 antialiasing: true
 
                 Text {
                     id: clockText
                     anchors.centerIn: parent
                     text: "12:34"
-                    color: root.cChipInk
+                    color: mt.edgy ? Qt.color("#07080e") : root.cChipInk
                     font.family: mt.fontFamily
                     font.pixelSize: 12
                     font.weight: Font.ExtraBold
@@ -173,26 +185,35 @@ Item {
             y: 4
             width: parent.width
             height: parent.height
-            radius: 14
+            radius: mt.edgy ? 3 : 14
             color: root.cShadow
             antialiasing: true
         }
 
         Rectangle {
             anchors.fill: parent
-            radius: 14
+            radius: mt.edgy ? 3 : 14
             color: root.cSurface
-            border.width: 3
+            border.width: mt.edgy ? 1.5 : 3
             border.color: root.cLine
             antialiasing: true
+
+            Rectangle {
+                visible: mt.edgy
+                x: 0
+                y: 8
+                width: 3
+                height: 20
+                color: root.cD
+            }
 
             Text {
                 x: 14
                 y: 10
-                text: "Live preview"
-                color: root.cInk
+                text: mt.edgy ? "HUD // LIVE PREVIEW" : "Live preview"
+                color: mt.edgy ? root.cA : root.cInk
                 font.family: mt.fontFamily
-                font.pixelSize: 15
+                font.pixelSize: mt.edgy ? 13 : 15
                 font.weight: Font.ExtraBold
                 font.styleName: mt.fontStyleBold
             }

@@ -106,11 +106,11 @@ PanelWindow {
     readonly property real keyRing: dockWindow.capKeys ? mt.capDotRing : 7
     function ringTop(on) {
         return dockWindow.capKeys ? (on ? mt.capLit : mt.capRim)
-                                  : (on ? mt.accentMint : mt.ringWhite)
+                                  : (on ? (mt.edgy ? mt.accentYellow : mt.accentMint) : (mt.edgy ? mt.hudSurface : mt.ringWhite))
     }
     function ringBottom(on) {
         return dockWindow.capKeys ? (on ? mt.capLit : mt.capRim)
-                                  : (on ? mt.accentCyan : mt.ringWhite)
+                                  : (on ? mt.accentCyan : (mt.edgy ? mt.hudSurface : mt.ringWhite))
     }
     readonly property bool perMonitor: modelData.perMonitor === true
     // +1 / -1: which way is "toward the middle of the screen" along the axis across the dock.
@@ -1832,9 +1832,9 @@ PanelWindow {
                 // border — so it takes borderWidth on top to land on the same band.
                 ringWidth: dockWindow.look === "capsule" ? mt.capRimWidth
                     : mt.borderWidth + mt.outerRingWidth
-                ringColorTop: mt.surfaceRing
-                ringColorBottom: mt.surfaceRing
-                fillColor: mt.surface
+                ringColorTop: mt.edgy ? mt.accentFrame : mt.surfaceRing
+                ringColorBottom: mt.edgy ? mt.accentCyan : mt.surfaceRing
+                fillColor: mt.edgy ? mt.hudSurface : mt.surface
 
                 // The row: every item placed by `rowPos` along it (this file does
                 // the layout, see the header).

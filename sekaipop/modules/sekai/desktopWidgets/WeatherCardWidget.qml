@@ -803,7 +803,7 @@ PanelWindow {
                                         y: 9
                                         width: 188
                                         text: win.readout !== "" ? win.readout : condLabel.toUpperCase()
-                                        color: Qt.rgba(mt.colBorder.r, mt.colBorder.g, mt.colBorder.b, 0.82)
+                                        color: mt.edgy ? mt.accentYellow : Qt.rgba(mt.colBorder.r, mt.colBorder.g, mt.colBorder.b, 0.82)
                                         font.pixelSize: 10
                                         font.letterSpacing: win.readout !== "" ? 0.3 : 1.3
 
@@ -828,7 +828,7 @@ PanelWindow {
                                         y: 19
                                         text: win.hasData ? win.temp.unit : ""
                                         pixelSize: 17
-                                        fillColor: plate.numberFill
+                                        fillColor: mt.edgy ? mt.accentYellow : plate.numberFill
                                         ringColor: plate.numberRing
                                     }
 
@@ -841,11 +841,11 @@ PanelWindow {
 
                                         Row {
                                             spacing: 0
-                                            MaterialIcon { anchors.verticalCenter: parent.verticalCenter; name: "arrow_upward"; size: 13; weight: 700; color: mt.colBorder; fill: 0 }
+                                            MaterialIcon { anchors.verticalCenter: parent.verticalCenter; name: "arrow_upward"; size: 13; weight: 700; color: mt.edgy ? mt.accentFrame : mt.colBorder; fill: 0 }
                                             Text {
                                                 anchors.verticalCenter: parent.verticalCenter
                                                 text: win.today ? win.today.high : ""
-                                                color: mt.colBorder
+                                                color: mt.edgy ? mt.accentFrame : mt.colBorder
                                                 font.family: mt.fontFamily
                                                 font.pixelSize: 12
                                                 font.weight: Font.ExtraBold
@@ -854,12 +854,12 @@ PanelWindow {
                                         }
                                         Row {
                                             spacing: 0
-                                            MaterialIcon { anchors.verticalCenter: parent.verticalCenter; name: "arrow_downward"; size: 13; weight: 700; color: mt.colBorder; fill: 0 }
+                                            MaterialIcon { anchors.verticalCenter: parent.verticalCenter; name: "arrow_downward"; size: 13; weight: 700; color: mt.edgy ? mt.accentCyan : mt.colBorder; fill: 0 }
                                             Text {
                                                 anchors.verticalCenter: parent.verticalCenter
                                                 text: win.today ? win.today.low : ""
-                                                color: mt.colBorder
-                                                opacity: 0.8
+                                                color: mt.edgy ? mt.accentCyan : mt.colBorder
+                                                opacity: 0.88
                                                 font.family: mt.fontFamily
                                                 font.pixelSize: 12
                                                 font.weight: Font.ExtraBold
@@ -956,10 +956,10 @@ PanelWindow {
                                     width: Math.min(placeProbe.implicitWidth + 44 + height * skew, 204)
                                     height: 26
                                     skew: 0.2
-                                    radius: 9
-                                    color: mt.chipFill
-                                    borderColor: mt.pLine
-                                    borderWidth: 3
+                                    radius: mt.edgy ? 2 : 9
+                                    color: mt.edgy ? mt.hudSurface : mt.chipFill
+                                    borderColor: mt.edgy ? mt.accentFrame : mt.pLine
+                                    borderWidth: mt.edgy ? 1.5 : 3
                                 }
 
                                 // Text goes NEXT to the Slant (a child would lean with it).
@@ -975,14 +975,14 @@ PanelWindow {
                                         fill: 0
                                         size: 15
                                         weight: 700
-                                        color: mt.dark ? mt.accentMint : mt.colBorder
+                                        color: mt.edgy ? mt.accentYellow : (mt.dark ? mt.accentMint : mt.colBorder)
                                     }
                                     Text {
                                         anchors.verticalCenter: parent.verticalCenter
                                         width: Math.max(0, placeTab.width - placeTab.lean - 36)
                                         elide: Text.ElideRight
                                         text: placeTab.label
-                                        color: mt.chipInk
+                                        color: mt.edgy ? mt.accentCyan : mt.chipInk
                                         font.family: mt.fontFamily
                                         font.pixelSize: 11
                                         font.weight: Font.ExtraBold
@@ -1114,7 +1114,7 @@ PanelWindow {
                                                 width: parent.width - 12
                                                 elide: Text.ElideRight
                                                 text: win.hasData ? wx.humidityText : ""
-                                                color: mt.pInk
+                                                color: mt.edgy ? mt.accentCyan : mt.pInk
                                                 font.family: mt.fontFamily
                                                 font.pixelSize: 19
                                                 font.weight: Font.ExtraBold
@@ -1161,7 +1161,7 @@ PanelWindow {
                                                 Text {
                                                     id: windBig
                                                     text: win.hasData ? String(win.windNum) : ""
-                                                    color: mt.pInk
+                                                    color: mt.edgy ? mt.accentGreen : mt.pInk
                                                     font.family: mt.fontFamily
                                                     font.pixelSize: 19
                                                     font.weight: Font.ExtraBold
@@ -1170,7 +1170,7 @@ PanelWindow {
                                                 Text {
                                                     anchors.baseline: windBig.baseline
                                                     text: win.windUnit
-                                                    color: mt.pInkSub
+                                                    color: mt.edgy ? mt.accentAmber : mt.pInkSub
                                                     font.family: mt.fontFamily
                                                     font.pixelSize: 9
                                                     font.weight: Font.Bold
@@ -1187,10 +1187,10 @@ PanelWindow {
 
                                                 Rectangle {
                                                     anchors.fill: parent
-                                                    radius: width / 2
+                                                    radius: mt.edgy ? 2 : width / 2
                                                     color: Qt.rgba(mt.colBorder.r, mt.colBorder.g, mt.colBorder.b, 0.35)
-                                                    border.width: 2
-                                                    border.color: mt.pLine
+                                                    border.width: mt.edgy ? 1.5 : 2
+                                                    border.color: mt.edgy ? mt.accentGreen : mt.pLine
                                                     antialiasing: true
                                                 }
                                                 DiamondDot {
@@ -1198,7 +1198,7 @@ PanelWindow {
                                                     y: -3
                                                     size: 6
                                                     lit: true
-                                                    litColor: mt.accentMint
+                                                    litColor: mt.edgy ? mt.accentYellow : mt.accentMint
                                                     lineColor: mt.pLine
                                                 }
                                                 MaterialIcon {
@@ -1207,7 +1207,7 @@ PanelWindow {
                                                     fill: 0
                                                     size: 18
                                                     weight: 700
-                                                    color: win.iconInk
+                                                    color: mt.edgy ? mt.accentGreen : win.iconInk
                                                     rotation: win.windArrow !== null ? win.windArrow * WM.outBack(windTile.t, 2.4) : 0
                                                 }
                                             }
@@ -1243,7 +1243,7 @@ PanelWindow {
                                                 x: 8
                                                 y: 13
                                                 text: win.hasData ? wx.uvText : ""
-                                                color: mt.pInk
+                                                color: mt.edgy ? mt.accentYellow : mt.pInk
                                                 font.family: mt.fontFamily
                                                 font.pixelSize: 19
                                                 font.weight: Font.ExtraBold
@@ -1260,7 +1260,7 @@ PanelWindow {
                                                         size: 6
                                                         offColor: Qt.rgba(mt.pInk.r, mt.pInk.g, mt.pInk.b, 0.2)
                                                         lit: index < WM.uvLit(win.uv)
-                                                        litColor: index < 2 ? mt.accentMint : (index < 4 ? "#FFE066" : "#ff6f78")
+                                                        litColor: index < 2 ? (mt.edgy ? mt.accentGreen : mt.accentMint) : (index < 4 ? (mt.edgy ? mt.accentYellow : "#FFE066") : (mt.edgy ? mt.accentFrame : "#ff6f78"))
                                                     }
                                                 }
                                             }
@@ -1636,7 +1636,7 @@ PanelWindow {
                                     y: 9
                                     width: 176
                                     text: condLabel.toUpperCase()
-                                    color: Qt.rgba(mt.colBorder.r, mt.colBorder.g, mt.colBorder.b, 0.82)
+                                    color: mt.edgy ? mt.accentYellow : Qt.rgba(mt.colBorder.r, mt.colBorder.g, mt.colBorder.b, 0.82)
                                     font.pixelSize: 10
                                     font.letterSpacing: 1.3
 
@@ -1661,7 +1661,7 @@ PanelWindow {
                                     y: 27
                                     text: win.hasData ? win.temp.unit : ""
                                     pixelSize: 28
-                                    fillColor: mplate.numberFill
+                                    fillColor: mt.edgy ? mt.accentYellow : mplate.numberFill
                                     ringColor: mplate.numberRing
                                 }
 
@@ -1742,11 +1742,11 @@ PanelWindow {
 
                                     Row {
                                         spacing: 0
-                                        MaterialIcon { anchors.verticalCenter: parent.verticalCenter; name: "arrow_upward"; size: 14; weight: 700; color: mt.colBorder; fill: 0 }
+                                        MaterialIcon { anchors.verticalCenter: parent.verticalCenter; name: "arrow_upward"; size: 14; weight: 700; color: mt.edgy ? mt.accentFrame : mt.colBorder; fill: 0 }
                                         Text {
                                             anchors.verticalCenter: parent.verticalCenter
                                             text: win.today ? win.today.high : ""
-                                            color: mt.colBorder
+                                            color: mt.edgy ? mt.accentFrame : mt.colBorder
                                             font.family: mt.fontFamily
                                             font.pixelSize: 13
                                             font.weight: Font.ExtraBold
@@ -1755,12 +1755,12 @@ PanelWindow {
                                     }
                                     Row {
                                         spacing: 0
-                                        MaterialIcon { anchors.verticalCenter: parent.verticalCenter; name: "arrow_downward"; size: 14; weight: 700; color: mt.colBorder; fill: 0 }
+                                        MaterialIcon { anchors.verticalCenter: parent.verticalCenter; name: "arrow_downward"; size: 14; weight: 700; color: mt.edgy ? mt.accentCyan : mt.colBorder; fill: 0 }
                                         Text {
                                             anchors.verticalCenter: parent.verticalCenter
                                             text: win.today ? win.today.low : ""
-                                            color: mt.colBorder
-                                            opacity: 0.8
+                                            color: mt.edgy ? mt.accentCyan : mt.colBorder
+                                            opacity: 0.88
                                             font.family: mt.fontFamily
                                             font.pixelSize: 13
                                             font.weight: Font.ExtraBold
@@ -1789,10 +1789,10 @@ PanelWindow {
                                 width: Math.min(mplaceProbe.implicitWidth + 44 + height * skew, 204)
                                 height: 26
                                 skew: 0.2
-                                radius: 9
-                                color: mt.chipFill
-                                borderColor: mt.pLine
-                                borderWidth: 3
+                                radius: mt.edgy ? 2 : 9
+                                color: mt.edgy ? mt.hudSurface : mt.chipFill
+                                borderColor: mt.edgy ? mt.accentFrame : mt.pLine
+                                borderWidth: mt.edgy ? 1.5 : 3
                             }
 
                             // Text goes NEXT to the Slant (a child would lean with it).
@@ -1808,14 +1808,14 @@ PanelWindow {
                                     fill: 0
                                     size: 15
                                     weight: 700
-                                    color: mt.dark ? mt.accentMint : mt.colBorder
+                                    color: mt.edgy ? mt.accentYellow : (mt.dark ? mt.accentMint : mt.colBorder)
                                 }
                                 Text {
                                     anchors.verticalCenter: parent.verticalCenter
                                     width: Math.max(0, mplaceTab.width - mplaceTab.lean - 36)
                                     elide: Text.ElideRight
                                     text: mplaceTab.label
-                                    color: mt.chipInk
+                                    color: mt.edgy ? mt.accentCyan : mt.chipInk
                                     font.family: mt.fontFamily
                                     font.pixelSize: 11
                                     font.weight: Font.ExtraBold
@@ -1879,10 +1879,10 @@ PanelWindow {
 
                                 Rectangle {
                                     anchors.fill: parent
-                                    radius: 13
-                                    color: mt.classic ? mt.pSurfaceHover : Qt.rgba(mt.colBorder.r, mt.colBorder.g, mt.colBorder.b, 0.28)
-                                    border.width: 2
-                                    border.color: mt.pLine
+                                    radius: mt.edgy ? 2 : 13
+                                    color: mt.edgy ? mt.hudSurface : (mt.classic ? mt.pSurfaceHover : Qt.rgba(mt.colBorder.r, mt.colBorder.g, mt.colBorder.b, 0.28))
+                                    border.width: mt.edgy ? 1.5 : 2
+                                    border.color: mt.edgy ? mt.accentFrame : mt.pLine
                                     antialiasing: true
                                 }
 
@@ -1920,11 +1920,12 @@ PanelWindow {
                                         Rectangle {
                                             anchors.fill: parent
                                             anchors.margins: 1
-                                            radius: 10
-                                            color: col.index === 0 ? Qt.rgba(mt.accentMint.r, mt.accentMint.g, mt.accentMint.b, 0.26)
+                                            radius: mt.edgy ? 2 : 10
+                                            color: col.index === 0
+                                                ? (mt.edgy ? Qt.rgba(mt.accentYellow.r, mt.accentYellow.g, mt.accentYellow.b, 0.16) : Qt.rgba(mt.accentMint.r, mt.accentMint.g, mt.accentMint.b, 0.26))
                                                 : mt.pSurfaceHover
-                                            border.width: col.index === 0 ? 2 : 0
-                                            border.color: mt.pLine
+                                            border.width: col.index === 0 ? (mt.edgy ? 1.5 : 2) : 0
+                                            border.color: mt.edgy ? mt.accentYellow : mt.pLine
                                             opacity: col.index === 0 ? 1 : (col.hovered ? 1 : 0)
                                             antialiasing: true
                                             Behavior on opacity {
@@ -1936,7 +1937,7 @@ PanelWindow {
                                             anchors.horizontalCenter: parent.horizontalCenter
                                             y: 8
                                             text: col.modelData.label
-                                            color: mt.pInkSub
+                                            color: mt.edgy ? (col.index === 0 ? mt.accentYellow : mt.accentAmber) : mt.pInkSub
                                             font.family: mt.fontFamily
                                             font.pixelSize: 11
                                             font.weight: Font.DemiBold
@@ -1957,7 +1958,7 @@ PanelWindow {
                                             anchors.horizontalCenter: parent.horizontalCenter
                                             y: 55
                                             text: col.modelData.temp
-                                            color: mt.pInk
+                                            color: mt.edgy ? (col.index === 0 ? mt.accentYellow : mt.accentCyan) : mt.pInk
                                             font.family: mt.fontFamily
                                             font.pixelSize: 16
                                             font.weight: Font.ExtraBold

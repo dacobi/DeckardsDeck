@@ -633,6 +633,7 @@ PanelWindow {
         property string label: ""
         property string value: ""
         property bool gradientFill: false
+        property color hudAccent: mt.accentCyan
         property real tilt: 0
 
         width: 90                              // 87 cap + 3 shadow
@@ -653,8 +654,8 @@ PanelWindow {
 
         Gradient {
             id: keyFill
-            GradientStop { position: 0.0; color: mt.accentMint }
-            GradientStop { position: 1.0; color: mt.accentCyan }
+            GradientStop { position: 0.0; color: mt.edgy ? mt.hudTint : mt.accentMint }
+            GradientStop { position: 1.0; color: mt.edgy ? Qt.color("#07080e") : mt.accentCyan }
         }
 
         Pill {
@@ -664,7 +665,7 @@ PanelWindow {
             ringWidth: mt.borderWidth + mt.whiteLine
             shadowDx: 3
             shadowDy: 4
-            fillColor: mt.chipFill
+            fillColor: mt.edgy ? mt.hudSurface : mt.chipFill
             fillGradient: sk.gradientFill ? keyFill : null
 
             Column {
@@ -676,8 +677,8 @@ PanelWindow {
                     width: parent.width
                     horizontalAlignment: Text.AlignHCenter
                     text: sk.label
-                    color: sk.gradientFill ? mt.colBorder : mt.chipInk
-                    opacity: 0.7
+                    color: mt.edgy ? mt.accentAmber : (sk.gradientFill ? mt.colBorder : mt.chipInk)
+                    opacity: mt.edgy ? 0.92 : 0.7
                     font.family: mt.fontFamily
                     font.pixelSize: 9
                     font.weight: Font.ExtraBold
@@ -691,7 +692,7 @@ PanelWindow {
                     width: parent.width
                     horizontalAlignment: Text.AlignHCenter
                     text: sk.value
-                    color: sk.gradientFill ? mt.colBorder : mt.chipInk
+                    color: mt.edgy ? sk.hudAccent : (sk.gradientFill ? mt.colBorder : mt.chipInk)
                     fontSizeMode: Text.HorizontalFit
                     minimumPixelSize: 10
                     font.family: mt.fontFamily
@@ -927,8 +928,8 @@ PanelWindow {
                         ringWidth: mt.borderWidth   // no white ring: the picture meets the outline
                         fillGradient: Gradient {
                             orientation: Gradient.Horizontal
-                            GradientStop { position: 0.0; color: mt.accentMint }
-                            GradientStop { position: 1.0; color: mt.accentCyan }
+                            GradientStop { position: 0.0; color: mt.edgy ? mt.hudTint : mt.accentMint }
+                            GradientStop { position: 1.0; color: mt.edgy ? Qt.color("#07080e") : mt.accentCyan }
                         }
 
                         // The Quick Panel's banner picture, when one is picked.
@@ -943,11 +944,10 @@ PanelWindow {
                             frameColor: banner.classicScope ? mt.pLine : mt.line
                         }
 
-                        // Otherwise: diamonds, kept clear of the avatar (bottom
-                        // left) and mostly of the greeting chip (top right).
+                        // Otherwise: diamonds in classic mode, or Cyberpunk 2077 HUD telemetry in edgy mode.
                         Item {
                             anchors.fill: parent
-                            visible: !bannerPhoto.ready
+                            visible: !bannerPhoto.ready && !mt.edgy
 
                             SparkDiamond { order: 0; size: 14; x: 118; y: 44 }
                             SparkDiamond { order: 1; size: 9;  x: 146; y: 56; solid: true }
@@ -958,6 +958,70 @@ PanelWindow {
                             SparkDiamond { order: 6; size: 10; x: 28;  y: 14 }
                             SparkDiamond { order: 7; size: 8;  x: 66;  y: 22; solid: true }
                             SparkDiamond { order: 8; size: 11; x: 100; y: 12 }
+                        }
+
+                        Item {
+                            anchors.fill: parent
+                            visible: !bannerPhoto.ready && mt.edgy
+
+                            CyberStripe {
+                                anchors.fill: parent
+                                anchors.margins: 4
+                                mode: "grid"
+                                gridStep: 24
+                                crossSize: 2.5
+                                color: Qt.rgba(mt.accentCyan.r, mt.accentCyan.g, mt.accentCyan.b, 0.16)
+                            }
+
+                            // Top-left ZONE : SAFE badge (anna-kuzminska-5.jpg)
+                            Rectangle {
+                                x: 8
+                                y: 8
+                                width: zoneTxt.implicitWidth + 12
+                                height: 15
+                                radius: 1
+                                color: Qt.rgba(mt.accentGreen.r, mt.accentGreen.g, mt.accentGreen.b, 0.18)
+                                border.width: 1
+                                border.color: mt.accentGreen
+
+                                Text {
+                                    id: zoneTxt
+                                    anchors.centerIn: parent
+                                    text: "ZONE : SAFE // NC-77"
+                                    font.family: "JetBrains Mono"
+                                    font.pixelSize: 8
+                                    font.weight: Font.Bold
+                                    font.letterSpacing: 1.1
+                                    color: mt.accentGreen
+                                }
+                            }
+
+                            // Right-side >>>> chevrons + diagonal //////// stripe bar
+                            CyberStripe {
+                                x: 112
+                                y: 48
+                                width: 62
+                                height: 10
+                                mode: "chevrons"
+                                barWidth: 4
+                                gap: 4
+                                color: mt.accentFrame
+                                altColor: mt.accentYellow
+                            }
+
+                            CyberStripe {
+                                x: 110
+                                y: 66
+                                width: parent.width - 118
+                                height: 6
+                                mode: "stripes"
+                                barWidth: 4
+                                gap: 3
+                                progress: 0.78
+                                color: mt.accentCyan
+                                altColor: mt.accentYellow
+                                trackColor: Qt.rgba(mt.accentFrame.r, mt.accentFrame.g, mt.accentFrame.b, 0.30)
+                            }
                         }
                     }
 
@@ -971,7 +1035,7 @@ PanelWindow {
                         y: 10
                         cornerRadius: 10
                         ringWidth: mt.borderWidth + mt.whiteLine
-                        fillColor: mt.chipFill
+                        fillColor: mt.edgy ? mt.accentYellow : mt.chipFill
                         rotation: 3 * mt.badgeTilt
                         transformOrigin: Item.Center
 
@@ -979,7 +1043,7 @@ PanelWindow {
                             id: greetText
                             anchors.centerIn: parent
                             text: win.greeting
-                            color: mt.chipInk
+                            color: mt.edgy ? "#07080e" : mt.chipInk
                             font.family: mt.fontFamily
                             font.pixelSize: 11
                             font.weight: Font.ExtraBold
@@ -1144,6 +1208,7 @@ PanelWindow {
                             y: 0
                             label: "UPTIME"
                             value: win.uptimeText
+                            hudAccent: mt.accentCyan
                             tilt: -card.tilt
                         }
 
@@ -1153,6 +1218,7 @@ PanelWindow {
                             gradientFill: true
                             label: "SHELL"
                             value: win.shellName
+                            hudAccent: mt.accentYellow
                         }
 
                         StatKey {
@@ -1160,6 +1226,7 @@ PanelWindow {
                             y: 0
                             label: "DESKTOP"
                             value: win.deskName
+                            hudAccent: mt.accentGreen
                             tilt: card.tilt
                         }
                     }
@@ -1179,7 +1246,7 @@ PanelWindow {
                             height: 30
                             cornerRadius: 10
                             ringWidth: 3
-                            fillColor: mt.chipFill
+                            fillColor: mt.edgy ? mt.hudSurface : mt.chipFill
                             rotation: 3 * mt.badgeTilt
                             transformOrigin: Item.Center
 
@@ -1188,7 +1255,7 @@ PanelWindow {
                                 horizontalAlignment: Text.AlignHCenter
                                 verticalAlignment: Text.AlignVCenter
                                 text: Math.round(win.dayFrac * 100) + "%"
-                                color: card.glow
+                                color: mt.edgy ? mt.accentYellow : card.glow
                                 font.family: mt.fontFamily
                                 font.pixelSize: 15
                                 font.weight: Font.ExtraBold
@@ -1203,7 +1270,7 @@ PanelWindow {
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.verticalCenterOffset: -2
                             text: "TODAY"
-                            color: mt.pInkSub
+                            color: mt.edgy ? mt.accentAmber : mt.pInkSub
                             font.family: mt.fontFamily
                             font.pixelSize: 10
                             font.weight: Font.ExtraBold
@@ -1229,6 +1296,7 @@ PanelWindow {
                             readonly property bool sweeps: win.hours24 !== 0 || win.mins !== 0
 
                             Rectangle {
+                                visible: !mt.edgy
                                 anchors.verticalCenter: parent.verticalCenter
                                 width: parent.width
                                 height: 12
@@ -1238,8 +1306,9 @@ PanelWindow {
                                 border.color: mt.pLine
                             }
 
-                            // What is gone of today.
+                            // What is gone of today (classic mode).
                             Rectangle {
+                                visible: !mt.edgy
                                 x: 2
                                 anchors.verticalCenter: parent.verticalCenter
                                 height: 8
@@ -1258,12 +1327,28 @@ PanelWindow {
                                 }
                             }
 
+                            // Cyberpunk 2077 diagonal //////// day-progress bar (when mt.edgy is true)
+                            CyberStripe {
+                                visible: mt.edgy
+                                anchors.verticalCenter: parent.verticalCenter
+                                width: parent.width
+                                height: 12
+                                mode: "stripes"
+                                barWidth: 5
+                                gap: 3
+                                progress: win.dayFrac
+                                color: mt.accentGreen
+                                altColor: mt.accentYellow
+                                trackColor: Qt.rgba(mt.accentFrame.r, mt.accentFrame.g, mt.accentFrame.b, 0.28)
+                            }
+
                             // Gates at 6 / 12 / 18 h.
                             Repeater {
                                 model: 3
 
                                 Rectangle {
                                     required property int index
+                                    visible: !mt.edgy
                                     x: track.width * (index + 1) / 4 - 1.5
                                     anchors.verticalCenter: parent.verticalCenter
                                     width: 3
@@ -1276,6 +1361,7 @@ PanelWindow {
 
                             // The playhead: a diamond note.
                             Rectangle {
+                                visible: !mt.edgy
                                 anchors.verticalCenter: parent.verticalCenter
                                 width: track.headSize
                                 height: track.headSize
