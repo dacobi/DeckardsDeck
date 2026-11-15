@@ -114,7 +114,7 @@ Item {
         width: root.width
         height: root.height
         y: -7 * root.lift
-        rotation: (root.slotIndex % 2 === 0 ? -2.2 : 2.2) * (1 - Math.min(1, root.lift))
+        rotation: 0
         scale: root.hop * (area.pressed ? 0.97 : 1 + 0.035 * root.lift)
         transformOrigin: Item.Center
 
@@ -200,7 +200,7 @@ Item {
             cornerRadius: 9
             ringWidth: 3
             fillColor: root.lift > 0.5 ? mt.accentMint : mt.chipFill
-            rotation: root.slotIndex % 2 === 0 ? 2 : -2
+            rotation: 0
             transformOrigin: Item.Center
 
             Behavior on width {
@@ -211,7 +211,7 @@ Item {
                 id: tagText
                 anchors.centerIn: parent
                 text: root.lift > 0.5 ? tag.verb : root.title.toUpperCase()
-                color: root.lift > 0.5 ? mt.colBorder : mt.chipInk
+                color: root.lift > 0.5 ? (mt.edgy ? "#07080e" : mt.colBorder) : mt.chipInk
                 font.family: mt.fontFamily
                 font.pixelSize: 11
                 font.weight: Font.ExtraBold

@@ -20,10 +20,10 @@ Item {
     property real unit: 1
     property real run: 0
     property real flash: 0
-    property color glowColor: "#ffffff"
-    property color ringColor: "#ffffff"
-    property color starFill: "#ffefce"
-    property color starInk: "#232235"
+    property color glowColor: "#00f0ff"
+    property color ringColor: "#00f0ff"
+    property color starFill: "#ff2a55"
+    property color starInk: "#05070d"
 
     readonly property real u: WM.clamp01(root.run)
     // glow: rises fast, falls slowly; the exit's flash adds its own

@@ -74,12 +74,12 @@ WelcomeLetter {
     readonly property real out: root.leaving ? 1 - root.lc : root.pe
 
     // where its middle rests, and the line from there to the logo's middle
-    readonly property real restY: root.baseY + root.rest[1] * root.pixelSize
+    readonly property real restY: root.baseY
     readonly property real vx: root.origin.x - (root.cellX + root.width / 2)
     readonly property real vy: root.origin.y - (root.cellY + root.restY + root.height / 2)
-    // the flight bends sideways: nothing at either end, most half way
-    readonly property real bend: 4 * WM.clamp01(root.out) * (1 - WM.clamp01(root.out)) * root.burst.swirl
-    readonly property real sq: root.leaving ? 0.8 * WM.squash(root.lp) : WM.squash(root.p * 1.5)
+    // straight HUD lock-in trajectory (no curved arc swirl or rubber squash)
+    readonly property real bend: 0
+    readonly property real sq: 0
 
     // the layers, each starting a little after the one before it
     readonly property real rimRun: WM.easeOutCubic(WM.layerRun(root.p, 0.04, 0.34))
@@ -106,19 +106,16 @@ WelcomeLetter {
     opacity: root.leaving ? 1 - WM.clamp01((root.lp - 0.8) / 0.2) : Math.min(1, root.p * 10)
     scale: Math.max(0, root.out)
     transformOrigin: Item.Center
-    rotation: root.rest[0]
-              + (root.leaving ? -root.lc * root.burst.tilt * 1.3 : (1 - root.pe) * root.burst.tilt)
-              + root.idleAmp * 1.6 * Math.sin(root.idle - root.idleSkew * (root.cellX + root.width / 2) + 1)
+    rotation: 0 * root.idleSkew
 
-    x: root.vx * (1 - root.out) - root.vy * root.bend
-    y: root.restY + root.vy * (1 - root.out) + root.vx * root.bend
-       + root.idleAmp * 2.2 * root.unit * Math.sin(root.idle - root.idleSkew * (root.cellX + root.width / 2))
+    x: root.vx * (1 - root.out)
+    y: root.restY + root.vy * (1 - root.out)
 
     transform: Scale {
         origin.x: root.width / 2
         origin.y: root.height / 2
-        xScale: 1 - 0.16 * root.sq
-        yScale: 1 + 0.22 * root.sq
+        xScale: 1
+        yScale: 1
     }
 
     // Out of focus for the first part of the way in, and again on the way out

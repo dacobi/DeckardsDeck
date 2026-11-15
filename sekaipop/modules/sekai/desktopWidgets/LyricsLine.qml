@@ -176,7 +176,7 @@ Item {
         y: -height / 2
         transformOrigin: Item.Center
         scale: line.pose.scale * (1 + 0.06 * line.land) * LM.fit(row.implicitWidth, line.maxW)
-        rotation: line.pose.rot
+        rotation: 0
         opacity: line.pose.opacity * line.dim
         visible: opacity > 0.01
 
@@ -225,7 +225,7 @@ Item {
                         sung: cell.sungV
                         litColor: cell.ad ? mt.accentMint : mt.accentCyan
                         scale: cell.sizeK * (1 + 0.11 * cell.lift)
-                        rotation: cell.ad ? -3 : 0
+                        rotation: 0
                         transformOrigin: Item.Bottom
 
                         transform: Scale {

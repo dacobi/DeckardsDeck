@@ -14,8 +14,8 @@ Item {
     property real cycles: 2
     property real stroke: 3
     property real draw: 1
-    property color fill: "#ffefce"
-    property color ink: "#232235"
+    property color fill: "#00f0ff"
+    property color ink: "#05070d"
 
     readonly property var knots: [
         Qt.point(0.00,  root.amplitude * 0.8),

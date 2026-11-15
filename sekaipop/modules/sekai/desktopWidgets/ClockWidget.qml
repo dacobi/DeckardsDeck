@@ -540,7 +540,7 @@ PanelWindow {
         Pill {
             id: press
             anchors.fill: parent
-            cornerRadius: 16
+            cornerRadius: mt.edgy ? 4 : 16
             ringWidth: mt.borderWidth + mt.whiteLine
             shadowDx: 3
             shadowDy: 4
@@ -551,16 +551,17 @@ PanelWindow {
                 x: 5
                 y: 3
                 visible: mt.edgy
-                text: tile.gradientFill ? "MN" : "HR"
-                font.family: "JetBrains Mono"
+                text: tile.gradientFill ? "CH.02" : "CH.01"
+                font.family: mt.monoFontFamily
                 font.pixelSize: 7
                 font.weight: Font.Bold
                 color: tile.gradientFill ? mt.accentMint : mt.accentFrame
-                opacity: 0.72
+                opacity: 0.8
             }
 
             Text {
                 anchors.fill: parent
+                anchors.topMargin: mt.edgy ? 4 : 0
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 text: tile.digit
@@ -568,14 +569,25 @@ PanelWindow {
                     ? (tile.gradientFill ? mt.accentMint : mt.accentCyan)
                     : (tile.gradientFill ? mt.colBorder : mt.chipInk)
                 opacity: tile.ghost ? 0.28 : 1
-                font.family: mt.fontFamily
-                font.pixelSize: 50
+                font.family: mt.edgy ? mt.displayFontFamily : mt.fontFamily
+                font.pixelSize: mt.edgy ? 52 : 50
                 font.weight: Font.ExtraBold
-                font.styleName: mt.fontStyleBold
+                font.styleName: mt.edgy ? "" : mt.fontStyleBold
 
                 Behavior on opacity {
                     NumberAnimation { duration: 200 }
                 }
+            }
+
+            // Horizontal HUD split-flap / scanline cut across the numeral in edgy mode
+            Rectangle {
+                visible: mt.edgy
+                x: 3
+                y: Math.round(parent.height * 0.52)
+                width: parent.width - 6
+                height: 1
+                color: "#05070c"
+                opacity: 0.65
             }
         }
     }
@@ -609,10 +621,10 @@ PanelWindow {
                 verticalAlignment: Text.AlignVCenter
                 text: gr.value
                 color: gr.ink
-                font.family: mt.fontFamily
-                font.pixelSize: 84
+                font.family: mt.edgy ? mt.displayFontFamily : mt.fontFamily
+                font.pixelSize: mt.edgy ? 82 : 84
                 font.weight: Font.ExtraBold
-                font.styleName: mt.fontStyleBold
+                font.styleName: mt.edgy ? "" : mt.fontStyleBold
             }
         }
     }
@@ -634,7 +646,7 @@ PanelWindow {
 
         width: 56
         height: 96
-        rotation: sd.tilt
+        rotation: 0
         scale: sd.pop
         transformOrigin: Item.Center
 
@@ -654,10 +666,41 @@ PanelWindow {
             easing.overshoot: 2.4
         }
 
-        GlyphRing { anchors.fill: parent; value: sd.value; ink: mt.edgy ? mt.accentFrame : mt.colBorder; radius: mt.edgy ? 4.5 : 6; dx: 3; dy: 4 }
-        GlyphRing { anchors.fill: parent; value: sd.value; ink: mt.edgy ? "#06070c" : mt.colBorder; radius: mt.edgy ? 5 : 6 }
-        GlyphRing { anchors.fill: parent; value: sd.value; ink: mt.edgy ? mt.accentFrame : "#ffffff"; radius: mt.edgy ? 2.2 : 3.2 }
+        // Sleek dark HUD telemetry backing plate in Cyberpunk (edgy) mode
+        Rectangle {
+            visible: mt.edgy
+            anchors.fill: parent
+            anchors.margins: 2
+            radius: 3
+            color: Qt.rgba(0.03, 0.04, 0.08, 0.82)
+            border.width: 1.5
+            border.color: sd.ghost ? mt.colOuterRing : Qt.rgba(sd.fillColor.r, sd.fillColor.g, sd.fillColor.b, 0.65)
+
+            Rectangle {
+                x: 4
+                y: 4
+                width: 8
+                height: 2
+                color: sd.fillColor
+                opacity: 0.85
+            }
+        }
+
+        GlyphRing { anchors.fill: parent; value: sd.value; ink: mt.edgy ? "#04060b" : mt.colBorder; radius: mt.edgy ? 3.5 : 6; dx: 3; dy: 4 }
+        GlyphRing { anchors.fill: parent; value: sd.value; ink: mt.edgy ? "#04060b" : mt.colBorder; radius: mt.edgy ? 3.5 : 6 }
+        GlyphRing { anchors.fill: parent; value: sd.value; ink: mt.edgy ? mt.accentFrame : "#ffffff"; radius: mt.edgy ? 1.4 : 3.2 }
         GlyphRing { anchors.fill: parent; value: sd.value; ink: sd.ghost ? mt.colOuterRing : sd.fillColor; radius: 0; steps: 1 }
+
+        // Horizontal laser scanline cut across the numeral in edgy mode
+        Rectangle {
+            visible: mt.edgy
+            x: 5
+            y: Math.round(parent.height * 0.52)
+            width: parent.width - 10
+            height: 1.5
+            color: "#04060b"
+            opacity: 0.72
+        }
     }
 
     // A diamond of the beat: lit on its turn, and it pops when it lights.
@@ -707,9 +750,9 @@ PanelWindow {
 
         width: 44
         height: 44
-        cornerRadius: 13
+        cornerRadius: mt.edgy ? 4 : 13
         ringWidth: 3
-        rotation: -5 * mt.badgeTilt
+        rotation: 0
         transformOrigin: Item.Center
         fillGradient: Gradient {
             GradientStop { position: 0.0; color: mt.edgy ? mt.accentYellow : mt.accentMint }
@@ -722,10 +765,10 @@ PanelWindow {
             verticalAlignment: Text.AlignVCenter
             text: ds.day
             color: mt.edgy ? "#07080e" : mt.colBorder
-            font.family: mt.fontFamily
+            font.family: mt.edgy ? mt.monoFontFamily : mt.fontFamily
             font.pixelSize: 20
             font.weight: Font.ExtraBold
-            font.styleName: mt.fontStyleBold
+            font.styleName: mt.edgy ? "" : mt.fontStyleBold
         }
     }
 
@@ -774,11 +817,11 @@ PanelWindow {
             verticalAlignment: Text.AlignVCenter
             text: "AM"
             opacity: sw.full ? 0 : 1
-            color: sw.pm ? mt.pInkSub : mt.colBorder
-            font.family: mt.fontFamily
+            color: sw.pm ? mt.pInkSub : (mt.edgy ? "#07080e" : mt.colBorder)
+            font.family: mt.edgy ? mt.monoFontFamily : mt.fontFamily
             font.pixelSize: 12
             font.weight: Font.ExtraBold
-            font.styleName: mt.fontStyleBold
+            font.styleName: mt.edgy ? "" : mt.fontStyleBold
             Behavior on opacity { NumberAnimation { duration: 160 } }
         }
 
@@ -790,11 +833,11 @@ PanelWindow {
             verticalAlignment: Text.AlignVCenter
             text: "PM"
             opacity: sw.full ? 0 : 1
-            color: sw.pm ? mt.colBorder : mt.pInkSub
-            font.family: mt.fontFamily
+            color: sw.pm ? (mt.edgy ? "#07080e" : mt.colBorder) : mt.pInkSub
+            font.family: mt.edgy ? mt.monoFontFamily : mt.fontFamily
             font.pixelSize: 12
             font.weight: Font.ExtraBold
-            font.styleName: mt.fontStyleBold
+            font.styleName: mt.edgy ? "" : mt.fontStyleBold
             Behavior on opacity { NumberAnimation { duration: 160 } }
         }
 
@@ -804,11 +847,11 @@ PanelWindow {
             verticalAlignment: Text.AlignVCenter
             text: "24H"
             opacity: sw.full ? 1 : 0
-            color: mt.colBorder
-            font.family: mt.fontFamily
+            color: mt.edgy ? "#07080e" : mt.colBorder
+            font.family: mt.edgy ? mt.monoFontFamily : mt.fontFamily
             font.pixelSize: 12
             font.weight: Font.ExtraBold
-            font.styleName: mt.fontStyleBold
+            font.styleName: mt.edgy ? "" : mt.fontStyleBold
             Behavior on opacity { NumberAnimation { duration: 160 } }
         }
     }
@@ -822,10 +865,10 @@ PanelWindow {
 
         width: 56
         height: 30
-        cornerRadius: 10
+        cornerRadius: mt.edgy ? 4 : 10
         ringWidth: 3
         fillColor: mt.chipFill
-        rotation: 3 * mt.badgeTilt
+        rotation: 0
         transformOrigin: Item.Center
 
         Text {
@@ -833,11 +876,11 @@ PanelWindow {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             text: sc.label
-            color: sc.ink
-            font.family: mt.fontFamily
+            color: mt.edgy ? mt.accentCyan : sc.ink
+            font.family: mt.edgy ? mt.monoFontFamily : mt.fontFamily
             font.pixelSize: 15
             font.weight: Font.ExtraBold
-            font.styleName: mt.fontStyleBold
+            font.styleName: mt.edgy ? "" : mt.fontStyleBold
         }
     }
 
@@ -849,10 +892,10 @@ PanelWindow {
 
         width: 36
         height: 28
-        cornerRadius: 9
+        cornerRadius: mt.edgy ? 4 : 9
         ringWidth: 2
-        fillColor: mt.accentMint
-        rotation: 3 * mt.badgeTilt
+        fillColor: mt.edgy ? mt.hudSurface : mt.accentMint
+        rotation: 0
         transformOrigin: Item.Center
 
         Text {
@@ -860,11 +903,11 @@ PanelWindow {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             text: chip.label
-            color: mt.colBorder
-            font.family: mt.fontFamily
+            color: mt.edgy ? mt.accentCyan : mt.colBorder
+            font.family: mt.edgy ? mt.monoFontFamily : mt.fontFamily
             font.pixelSize: 11
             font.weight: Font.ExtraBold
-            font.styleName: mt.fontStyleBold
+            font.styleName: mt.edgy ? "" : mt.fontStyleBold
         }
     }
 
@@ -923,10 +966,10 @@ PanelWindow {
                 anchors.centerIn: parent
                 text: Qt.locale().dayName(db.dow, Locale.ShortFormat).toUpperCase()
                 color: db.today ? (mt.edgy ? "#07080e" : mt.colBorder) : (mt.edgy ? mt.accentCyan : mt.pInkSub)
-                font.family: mt.fontFamily
+                font.family: mt.edgy ? mt.monoFontFamily : mt.fontFamily
                 font.pixelSize: 10
                 font.weight: Font.ExtraBold
-                font.styleName: mt.fontStyleBold
+                font.styleName: mt.edgy ? "" : mt.fontStyleBold
             }
         }
     }
@@ -1245,19 +1288,19 @@ PanelWindow {
                                     spacing: 0
 
                                     Text {
-                                        text: Qt.locale().dayName(win.now.getDay(), Locale.LongFormat)
+                                        text: mt.edgy ? Qt.locale().dayName(win.now.getDay(), Locale.LongFormat).toUpperCase() : Qt.locale().dayName(win.now.getDay(), Locale.LongFormat)
                                         color: mt.pInk
-                                        font.family: mt.fontFamily
-                                        font.pixelSize: 20
+                                        font.family: mt.edgy ? mt.displayFontFamily : mt.fontFamily
+                                        font.pixelSize: mt.edgy ? 22 : 20
                                         font.weight: Font.ExtraBold
-                                        font.styleName: mt.fontStyleBold
+                                        font.styleName: mt.edgy ? "" : mt.fontStyleBold
                                     }
 
                                     Text {
-                                        text: Qt.formatDate(win.now, "MMMM yyyy")
-                                        color: mt.pInkSub
-                                        font.family: mt.fontFamily
-                                        font.pixelSize: 11
+                                        text: mt.edgy ? Qt.formatDate(win.now, "MMMM yyyy").toUpperCase() : Qt.formatDate(win.now, "MMMM yyyy")
+                                        color: mt.edgy ? mt.accentCyan : mt.pInkSub
+                                        font.family: mt.edgy ? mt.monoFontFamily : mt.fontFamily
+                                        font.pixelSize: mt.edgy ? 10 : 11
                                         font.weight: Font.DemiBold
                                     }
                                 }
@@ -1560,19 +1603,19 @@ PanelWindow {
                                     spacing: 0
 
                                     Text {
-                                        text: Qt.locale().dayName(win.now.getDay(), Locale.LongFormat)
+                                        text: mt.edgy ? Qt.locale().dayName(win.now.getDay(), Locale.LongFormat).toUpperCase() : Qt.locale().dayName(win.now.getDay(), Locale.LongFormat)
                                         color: mt.pInk
-                                        font.family: mt.fontFamily
-                                        font.pixelSize: 20
+                                        font.family: mt.edgy ? mt.displayFontFamily : mt.fontFamily
+                                        font.pixelSize: mt.edgy ? 22 : 20
                                         font.weight: Font.ExtraBold
-                                        font.styleName: mt.fontStyleBold
+                                        font.styleName: mt.edgy ? "" : mt.fontStyleBold
                                     }
 
                                     Text {
-                                        text: Qt.formatDate(win.now, "MMMM yyyy")
-                                        color: mt.pInkSub
-                                        font.family: mt.fontFamily
-                                        font.pixelSize: 11
+                                        text: mt.edgy ? Qt.formatDate(win.now, "MMMM yyyy").toUpperCase() : Qt.formatDate(win.now, "MMMM yyyy")
+                                        color: mt.edgy ? mt.accentCyan : mt.pInkSub
+                                        font.family: mt.edgy ? mt.monoFontFamily : mt.fontFamily
+                                        font.pixelSize: mt.edgy ? 10 : 11
                                         font.weight: Font.DemiBold
                                     }
                                 }
@@ -1597,6 +1640,7 @@ PanelWindow {
                                         Math.max(0, vlane.height * Math.min(60, win.secs + 1) / 60 - vlane.headSize / 2))
 
                                     Rectangle {
+                                        visible: !mt.edgy
                                         x: 7
                                         width: 12
                                         height: vlane.height
@@ -1608,6 +1652,7 @@ PanelWindow {
 
                                     // What has played this minute.
                                     Rectangle {
+                                        visible: !mt.edgy
                                         x: 9
                                         y: 2
                                         width: 8
@@ -1626,12 +1671,37 @@ PanelWindow {
                                         }
                                     }
 
+                                    // Cyberpunk vertical segmented telemetry seconds bar (when mt.edgy is true)
+                                    Column {
+                                        visible: mt.edgy
+                                        x: 6
+                                        width: 14
+                                        height: vlane.height
+                                        spacing: 3
+
+                                        Repeater {
+                                            model: 20
+
+                                            Rectangle {
+                                                required property int index
+                                                readonly property bool lit: (index + 1) / 20 <= Math.min(60, win.secs + 1) / 60
+                                                width: 14
+                                                height: (vlane.height - 19 * 3) / 20
+                                                radius: 1
+                                                color: lit
+                                                    ? (index >= 15 ? mt.accentYellow : mt.accentCyan)
+                                                    : Qt.rgba(mt.accentFrame.r, mt.accentFrame.g, mt.accentFrame.b, 0.25)
+                                            }
+                                        }
+                                    }
+
                                     // Gates at 15 / 30 / 45 s.
                                     Repeater {
                                         model: 3
 
                                         Rectangle {
                                             required property int index
+                                            visible: !mt.edgy
                                             x: 7
                                             y: vlane.height * (index + 1) / 4 - 1.5
                                             width: 12
@@ -1644,6 +1714,7 @@ PanelWindow {
 
                                     // The playhead: a diamond note.
                                     Rectangle {
+                                        visible: !mt.edgy
                                         x: 7
                                         width: vlane.headSize
                                         height: vlane.headSize
@@ -1803,8 +1874,8 @@ PanelWindow {
                                     y: sroot.implicitHeight / 2 - 14 - 6
                                     lit: win.secs % 2 === 0
                                     litColor: mt.accentMint
-                                    offColor: "#ffffff"
-                                    lineColor: mt.colBorder
+                                    offColor: mt.edgy ? mt.hudSurface : "#ffffff"
+                                    lineColor: mt.edgy ? mt.accentFrame : mt.colBorder
                                 }
 
                                 BeatDiamond {
@@ -1812,8 +1883,8 @@ PanelWindow {
                                     y: sroot.implicitHeight / 2 + 14 - 6
                                     lit: win.secs % 2 !== 0
                                     litColor: mt.accentCyan
-                                    offColor: "#ffffff"
-                                    lineColor: mt.colBorder
+                                    offColor: mt.edgy ? mt.hudSurface : "#ffffff"
+                                    lineColor: mt.edgy ? mt.accentFrame : mt.colBorder
                                 }
                             }
 
@@ -1876,8 +1947,8 @@ PanelWindow {
                             y: 96 + card.stagger + 4 + 12 - 6
                             lit: win.secs % 2 === 0
                             litColor: mt.accentMint
-                            offColor: "#ffffff"
-                            lineColor: mt.colBorder
+                            offColor: mt.edgy ? mt.hudSurface : "#ffffff"
+                            lineColor: mt.edgy ? mt.accentFrame : mt.colBorder
                         }
 
                         BeatDiamond {
@@ -1885,8 +1956,8 @@ PanelWindow {
                             y: 96 + card.stagger + 4 + 12 - 6
                             lit: win.secs % 2 !== 0
                             litColor: mt.accentCyan
-                            offColor: "#ffffff"
-                            lineColor: mt.colBorder
+                            offColor: mt.edgy ? mt.hudSurface : "#ffffff"
+                            lineColor: mt.edgy ? mt.accentFrame : mt.colBorder
                         }
 
                         // ...and minutes below.

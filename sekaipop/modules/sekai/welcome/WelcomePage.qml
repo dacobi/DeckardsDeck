@@ -261,11 +261,11 @@ Item {
     // ---- corner labels (what the reference has in three corners) ----
     component Label: Text {
         color: root.ink
-        font.family: Theme.fontFamily
-        font.pixelSize: 12.5 * root.u
-        font.weight: Font.Medium
-        font.letterSpacing: 0.3 * root.u
-        lineHeight: 1.05
+        font.family: Theme.monoFontFamily
+        font.pixelSize: 12 * root.u
+        font.weight: Font.Bold
+        font.letterSpacing: 0.8 * root.u
+        lineHeight: 1.15
         opacity: root.chromeIn
     }
 
@@ -273,21 +273,23 @@ Item {
         visible: root.showContent
         x: root.margin
         y: root.margin
-        text: "DECKARD'S DECK\nLAPD // VK-2019"
+        color: Theme.accentCyan
+        text: "DECKARD'S DECK // HUD.OS\nLAPD // VK-2019"
     }
 
     Label {
         visible: root.showContent
         x: root.margin
         y: root.height - root.margin - height
-        text: WM.pageLabel(root.index, root.count)
+        color: Theme.accentCyan
+        text: "[ " + WM.pageLabel(root.index, root.count) + " ]"
     }
 
     Label {
         visible: root.showContent
         x: root.width - root.margin - width
         y: root.height - root.margin - height
-        text: "BLADE RUNNER NOIR \u00b7 QUICKSHELL"
+        text: "BLADE RUNNER NOIR // QUICKSHELL"
     }
 
     // ---- the hint at the bottom: how to move on, after a pause ----
@@ -376,7 +378,7 @@ Item {
             Rotation {
                 origin.x: heroBox.cx
                 origin.y: heroBox.cy
-                angle: root.leaving ? 0 : heroBox.pose.rotate * (1 - heroBox.k)
+                angle: 0
             },
             Translate {
                 y: root.leaving ? 0 : heroBox.pose.rise * root.u * (1 - heroBox.k)

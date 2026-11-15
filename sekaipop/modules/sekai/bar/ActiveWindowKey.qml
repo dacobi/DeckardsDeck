@@ -45,10 +45,12 @@ Item {
         cornerRadius: mt.radiusBadge
         ringWidth: 8
         pressed: area.pressed
-        fillGradient: Gradient {
+        fillColor: mt.edgy ? mt.chipFill : mt.surface
+        readonly property Gradient keyFillGrad: Gradient {
             GradientStop { position: 0.0; color: mt.accentMint }
             GradientStop { position: 1.0; color: mt.accentCyan }
         }
+        fillGradient: mt.edgy ? null : pill.keyFillGrad
 
         Image {
             id: iconImage
@@ -68,7 +70,7 @@ Item {
             anchors.centerIn: parent
             visible: !root.iconReady
             text: root.letter
-            color: mt.colBorder
+            color: mt.edgy ? mt.chipInk : mt.colBorder
             font.family: mt.fontFamily
             font.pixelSize: 15
             font.weight: Font.ExtraBold

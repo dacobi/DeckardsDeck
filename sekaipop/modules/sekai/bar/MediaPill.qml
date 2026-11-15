@@ -115,19 +115,20 @@ Pill {
     // (Capsule bar: no cover art or divider; a small glyph stands in for the art, and
     // the title is one line of the chip's own ink.)
     readonly property real artWidth: root.capsule ? 24 : 35
-    readonly property real dividerWidth: root.capsule ? 0 : 2
+    readonly property real dividerWidth: root.capsule ? 0 : (mt.edgy ? 1 : 2)
     readonly property real textMargin: 10
-    readonly property color ink: root.capsule ? mt.capInk : mt.colBorder
+    readonly property color ink: root.capsule ? mt.capInk : (mt.edgy ? mt.chipInk : mt.colBorder)
+    readonly property color subInk: mt.edgy ? mt.inkSub : mt.colSubText
 
     cornerRadius: mt.radiusBadge
     ringWidth: 5
-    fillColor: mt.surface
+    fillColor: mt.edgy ? mt.chipFill : mt.surface
 
     readonly property Gradient mediaGradient: Gradient {
         GradientStop { position: 0.0; color: mt.accentMint }
         GradientStop { position: 1.0; color: mt.accentCyan }
     }
-    fillGradient: mediaGradient
+    fillGradient: mt.edgy ? null : mediaGradient
 
     // Physical press, same as the workspace badges: pushes flush
     // into its own shadow on mouse-down, pops back on release.
@@ -185,7 +186,7 @@ Pill {
                     // Nothing playing (or no cover art): the Media Asset icon
                     // straight on the pill's own color.
                     MaterialIcon {
-                        color: root.ink
+                        color: mt.edgy ? mt.accentCyan : root.ink
                         anchors.centerIn: parent
                         size: 22
                         name: root.mediaIcon
@@ -227,7 +228,7 @@ Pill {
                     anchors.fill: parent
                     clip: true
                     // (The frame redraws the pill's outline over the cover art; a chip has none.)
-                    visible: !root.capsule
+                    visible: !root.capsule && !mt.edgy
 
                     Rectangle {
                         x: -root.ringWidth
@@ -271,7 +272,7 @@ Pill {
             anchors.top: parent.top
             anchors.bottom: parent.bottom
             width: root.dividerWidth
-            color: mt.surface
+            color: mt.edgy ? mt.accentFrame : mt.surface
         }
 
         // ===== text =====
@@ -314,7 +315,7 @@ Pill {
                     elide: Text.ElideRight
                     visible: root.active && root.artist !== "" && !root.capsule
                     text: root.artist
-                    color: mt.colSubText
+                    color: root.subInk
                     font.family: mt.fontFamily
                     font.pixelSize: root.artistSize
                     font.weight: Font.Medium
@@ -339,7 +340,7 @@ Pill {
             PillWave {
                 points: root.points
                 live: root.playing
-                color: root.ink
+                color: mt.edgy ? mt.accentCyan : root.ink
                 fillAlpha: 0.35
             }
         }
@@ -349,7 +350,7 @@ Pill {
             PillBars {
                 points: root.points
                 live: root.playing
-                contentColor: root.ink
+                contentColor: mt.edgy ? mt.accentCyan : root.ink
                 barCount: 3
                 maxBarHeight: root.capsule ? 14 : 22
             }

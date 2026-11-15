@@ -33,4 +33,11 @@ Item {
         sourceSize: Qt.size(Math.max(1, root.width), Math.max(1, root.height))
         source: root.wallpaper !== "" ? ("file://" + root.wallpaper) : ""
     }
+
+    Rectangle {
+        anchors.fill: parent
+        color: "transparent"
+        border.width: Math.max(2, Math.round(2 * root.unit))
+        border.color: Theme.accentCyan
+    }
 }

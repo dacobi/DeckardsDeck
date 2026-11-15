@@ -16,8 +16,8 @@ Item {
     property string glyph: "phone_iphone"
     // 0 = outline icon, 1 = solid icon (the Material Symbols FILL axis).
     property int glyphFill: 0
-    property color fill: Qt.tint(Theme.pal.B, Qt.rgba(1, 1, 1, 0.42))
-    property color ink: Theme.pal.deep
+    property color fill: Qt.color(Theme.pal.A)
+    property color ink: Qt.color("#05070d")
 
     readonly property real landed: WM.stagger(root.reveal, 0, 1, 0.4)
     readonly property real built: WM.easeOutCubic(WM.clamp01((root.reveal - 0.46) / 0.34))
@@ -29,7 +29,7 @@ Item {
         id: icon
 
         anchors.centerIn: parent
-        anchors.verticalCenterOffset: (root.idling ? Math.sin(root.idle) * 3.5 * root.unit : 0) + (1 - root.landed) * 30 * root.unit
+        anchors.verticalCenterOffset: (1 - root.landed) * 24 * root.unit
         text: root.glyph
         family: Theme.iconFont
         weight: Font.Normal
@@ -45,7 +45,7 @@ Item {
         build: root.built
         opacity: Math.min(1, root.landed * 3)
         scale: WM.easeOutBack(root.landed)
-        rotation: (1 - root.landed) * -12 + (root.idling ? Math.sin(root.idle * 0.7) * 1.8 : 0)
+        rotation: 0
         transformOrigin: Item.Center
     }
 }

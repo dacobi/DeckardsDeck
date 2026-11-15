@@ -8,8 +8,8 @@ Item {
     id: root
 
     property real size: 40
-    property color fill: "#ffefce"
-    property color ink: "#232235"
+    property color fill: "#00f0ff"
+    property color ink: "#05070d"
     property real stroke: Math.max(1.6, root.size * 0.075)
     property real pop: 1
     // 0..1: a slow pulse, driven from outside while the logo idles.
@@ -19,8 +19,8 @@ Item {
     height: root.size
     visible: root.pop > 0.001
     transformOrigin: Item.Center
-    scale: Math.max(0, root.pop) * (1 + 0.08 * root.twinkle)
-    rotation: (1 - Math.min(1, root.pop)) * -45 + 4 * root.twinkle
+    scale: Math.max(0, root.pop) * (1 + 0.05 * root.twinkle)
+    rotation: 0
 
     Shape {
         anchors.fill: parent

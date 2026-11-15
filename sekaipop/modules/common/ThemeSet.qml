@@ -220,9 +220,9 @@ QtObject {
     // (outerRingWidth) and Dark mode's inner ring (cardRing) are different things, not this.
     readonly property real whiteLine: edgy ? 1 : 2
     readonly property int shadowOffset: edgy ? 3 : 4
-    readonly property real cardTilt: edgy ? 0 : 2.5
-    readonly property real cardStagger: edgy ? 0 : 1
-    readonly property real badgeTilt: edgy ? 0 : 1
+    readonly property real cardTilt: 0
+    readonly property real cardStagger: 0
+    readonly property real badgeTilt: 0
 
     // The Quick Panel phone in its flat (2D) look: Settings -> Quick -> Quick Panel phone, and
     // always while Game Mode is on (GameModeService.qml), whatever that says.
@@ -393,6 +393,14 @@ QtObject {
     // grab it there and drop the .ttf in ~/.local/share/fonts.
     readonly property string fontFamily: "Google Sans Flex"
     readonly property int fontSize: 16
+
+    FontLoader {
+        id: roadRageLoader
+        source: Qt.resolvedUrl("../../assets/fonts/Road_Rage.otf")
+    }
+
+    readonly property string displayFontFamily: roadRageLoader.status === FontLoader.Ready ? roadRageLoader.name : "Road Rage"
+    readonly property string monoFontFamily: "JetBrainsMono Nerd Font"
 
     // Icons: the Solar Icon Set (assets/icons, SVG), drawn by MaterialIcon.qml
     // with the old Material Symbols names (functions/IconMap.js turns them into

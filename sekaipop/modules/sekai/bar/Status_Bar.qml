@@ -751,10 +751,12 @@ Item {
                 Math.max(status_Bar.capsule ? 80 : 140,
                     Math.max(awLine1.implicitWidth, awLine2.visible ? awLine2.implicitWidth : 0) + (status_Bar.capsule ? 20 : 30)))
             transform: Translate { y: status_Bar.liftY }
-            fillGradient: Gradient {
+            fillColor: mt.edgy ? mt.chipFill : mt.surface
+            readonly property Gradient awFillGrad: Gradient {
                 GradientStop { position: 0.0; color: mt.accentMint }
                 GradientStop { position: 1.0; color: mt.accentCyan }
             }
+            fillGradient: mt.edgy ? null : activeWindow.awFillGrad
 
             Behavior on implicitWidth {
                 NumberAnimation { duration: 150; easing.type: Easing.OutQuad }
@@ -785,7 +787,7 @@ Item {
                     lineHeightMode: Text.FixedHeight
                     lineHeight: Math.round(font.pixelSize * 1.25)
                     text: activeWindow.line1.replace(/\s+/g, " ")
-                    color: status_Bar.capsule ? mt.capInk : mt.colBorder
+                    color: status_Bar.capsule ? mt.capInk : (mt.edgy ? mt.chipInk : mt.colBorder)
                     font.family: mt.fontFamily
                     font.pixelSize: status_Bar.capsule ? mt.fontSizeInfo
                         : (activeWindow.hasWindow ? mt.fontSizeTitle : mt.fontSizeIdle)
@@ -808,7 +810,7 @@ Item {
                     // (Capsule: one line, the app; the title is in the media / window popups.)
                     visible: activeWindow.line2 !== "" && !status_Bar.capsule
                     text: activeWindow.line2.replace(/\s+/g, " ")
-                    color: mt.colSubText
+                    color: mt.edgy ? mt.inkSub : mt.colSubText
                     font.family: mt.fontFamily
                     font.pixelSize: mt.fontSizeSub
                     font.weight: Font.Medium

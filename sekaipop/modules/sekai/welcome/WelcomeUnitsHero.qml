@@ -28,7 +28,9 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: "#050505"
+        color: "#05070d"
+        border.width: Math.max(1, Math.round(1.5 * root.unit))
+        border.color: Qt.rgba(Theme.accentCyan.r, Theme.accentCyan.g, Theme.accentCyan.b, 0.35)
     }
 
     Row {
@@ -51,16 +53,16 @@ Item {
                 opacity: Math.min(1, p * 4)
                 scale: WM.easeOutBack(p)
                 transformOrigin: Item.Center
-                y: root.idling ? Math.sin(root.idle + index * 1.05) * 3 * root.unit : 0
+                y: 0
 
                 Rectangle {
                     id: disc
 
                     width: root.badge
                     height: root.badge
-                    radius: Math.max(2, 4 * root.unit)
-                    border.width: Math.max(2, 2.5 * root.unit)
-                    border.color: "#ffffff"
+                    radius: Math.max(2, 3 * root.unit)
+                    border.width: Math.max(2, 2 * root.unit)
+                    border.color: unitItem.modelData.id === ThemeService.current ? "#ffffff" : unitItem.modelData.c.A
                     gradient: Gradient {
                         GradientStop { position: 0.0; color: unitItem.modelData.c.A }
                         GradientStop { position: 1.0; color: unitItem.modelData.c.B }
@@ -91,11 +93,11 @@ Item {
                     anchors.horizontalCenter: parent.horizontalCenter
                     y: root.badge + root.badge * 0.11
                     text: root.tags[unitItem.modelData.id] || unitItem.modelData.name
-                    color: Qt.rgba(1, 1, 1, 0.78)
-                    font.family: Theme.fontFamily
+                    color: unitItem.modelData.id === ThemeService.current ? Theme.accentCyan : Qt.rgba(1, 1, 1, 0.78)
+                    font.family: Theme.monoFontFamily
                     font.pixelSize: Math.max(8, root.badge * 0.136)
-                    font.weight: Font.Medium
-                    font.letterSpacing: 0.6 * root.unit
+                    font.weight: Font.Bold
+                    font.letterSpacing: 0.8 * root.unit
                 }
 
                 // marks the theme that is on now
@@ -104,7 +106,8 @@ Item {
                     x: root.badge - width * 0.7
                     y: -height * 0.35
                     size: root.badge * 0.3
-                    ink: "#050505"
+                    fill: unitItem.modelData.c.C || "#fcee0a"
+                    ink: "#05070d"
                     stroke: 1.4 * root.unit
                 }
             }

@@ -71,7 +71,7 @@ PanelWindow {
         y: EditMode.dragY - height / 2
 
         scale: win.over === "card" ? 1 : (win.over === "shelf" ? 0.55 : 0.85)
-        rotation: win.over === "card" ? 0 : -4
+        rotation: 0
         opacity: win.over === "card" ? 0.95 : 0.55
         transformOrigin: Item.Center
 

@@ -48,12 +48,12 @@ Item {
     property bool idling: false
 
     // The palette comes from the shell theme, so the logo follows the unit theme.
-    property color fill: Qt.tint(Theme.pal.B, Qt.rgba(1, 1, 1, 0.16))
-    property color ink: Theme.pal.deep
-    property color haloColor: Qt.tint(Theme.pal.B, Qt.rgba(1, 1, 1, 0.78))
-    property color haloShadow: Qt.tint(Theme.pal.B, Qt.rgba(0.1, 0.25, 0.2, 0.15))
-    property color haloDots: Qt.tint(Theme.pal.B, Qt.rgba(0.05, 0.25, 0.2, 0.2))
-    property color sparkFill: "#ffefce"
+    property color fill: Qt.color(Theme.pal.A)
+    property color ink: Qt.color("#05070d")
+    property color haloColor: Qt.rgba(Theme.accentCyan.r * 0.14, Theme.accentCyan.g * 0.14, Theme.accentCyan.b * 0.20, 0.94)
+    property color haloShadow: Qt.color(Theme.pal.C || "#ff2a55")
+    property color haloDots: Qt.color(Theme.pal.A)
+    property color sparkFill: Qt.color(Theme.pal.C || "#ff2a55")
     // the dots' and the wave's ink: the fill, darker
     readonly property color dotInk: Qt.darker(root.fill, 1.4)
     // The wave texture's three tones, all made of the letter's own colour so it
@@ -91,7 +91,7 @@ Item {
     readonly property real halftoneK: root.leaving ? 0 : WM.halftoneRun(root.reveal)
     readonly property real warpU: root.leaving ? 0 : WM.warpRun(root.reveal)
     readonly property real sweepU: root.leaving ? 0 : WM.sweepRun(root.reveal)
-    readonly property bool warping: root.warpU > 0 && root.warpU < 1
+    readonly property bool warping: false
 
     // How much of the floating is on: eased, so it starts gently once the logo
     // has landed instead of jumping to wherever the phase happens to be.
@@ -124,19 +124,17 @@ Item {
     FontMetrics {
         id: fm1
 
-        font.family: Theme.fontFamily
+        font.family: Theme.displayFontFamily
         font.pixelSize: root.l1Size
         font.weight: Font.Black
-        font.variableAxes: root.axes
     }
 
     FontMetrics {
         id: fm2
 
-        font.family: Theme.fontFamily
+        font.family: Theme.displayFontFamily
         font.pixelSize: root.l2Size
         font.weight: Font.Black
-        font.variableAxes: root.axes
     }
 
     readonly property real l1X: root.pad
@@ -163,7 +161,9 @@ Item {
         a.push(Qt.point(x0, yBottom));
         for (let i = 0; i <= n; i++) {
             const x = x0 + (x1 - x0) * i / n;
-            a.push(Qt.point(x, yEdge + amp * Math.sin(2 * Math.PI * (x / wavelength + phase))));
+            const s = Math.sin(2 * Math.PI * (x / wavelength + phase));
+            const step = (s >= 0 ? 0.25 : -0.25);
+            a.push(Qt.point(x, yEdge + amp * step));
         }
         a.push(Qt.point(x1, yBottom));
         return a;
@@ -175,7 +175,9 @@ Item {
         const n = 48;
         for (let i = 0; i <= n; i++) {
             const x = x0 + (x1 - x0) * i / n;
-            a.push(Qt.point(x, yEdge + amp * Math.sin(2 * Math.PI * (x / wavelength + phase))));
+            const s = Math.sin(2 * Math.PI * (x / wavelength + phase));
+            const step = (s >= 0 ? 0.25 : -0.25);
+            a.push(Qt.point(x, yEdge + amp * step));
         }
         return a;
     }
@@ -239,9 +241,10 @@ Item {
             cellY: cell.lineY
             origin: root.origin
             text: cell.modelData
+            family: cell.small ? Theme.fontFamily : Theme.displayFontFamily
             pixelSize: Math.round(cell.pixelSize)
-            axes: root.axes
-            fill: root.fill
+            axes: cell.small ? root.axes : ({})
+            fill: cell.small ? Qt.color(Theme.pal.C || "#ff2a55") : root.fill
             outlineColor: root.ink
             halftone: cell.dots
             wave: cell.dots
@@ -269,7 +272,7 @@ Item {
         Row {
             id: lineRow
 
-            spacing: -root.size * 0.04
+            spacing: root.size * 0.01
 
             Repeater {
                 model: line.chars

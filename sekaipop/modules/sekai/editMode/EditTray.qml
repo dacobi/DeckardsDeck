@@ -832,20 +832,22 @@ PanelWindow {
 
         // ===== tape across the top corners =====
         WashiTape {
+            visible: !win.mt.edgy
             x: tray.x + 56
             y: tray.y - 12
             width: 92
             height: 24
-            rotation: -5
+            rotation: 0
             color: ScrapbookTheme.tapeMint
         }
 
         WashiTape {
+            visible: !win.mt.edgy
             x: tray.x + tray.width - 150
             y: tray.y - 12
             width: 92
             height: 24
-            rotation: 4
+            rotation: 0
             color: ScrapbookTheme.tapePink
         }
     }

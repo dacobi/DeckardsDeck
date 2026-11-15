@@ -38,18 +38,18 @@ Item {
     id: root
 
     property string text: ""
-    property string family: Theme.fontFamily
+    property string family: Theme.displayFontFamily
     property int pixelSize: 100
     property int weight: Font.Black
     // Font variation axes (Qt 6.7+), e.g. { "ROND": 100, "wdth": 118 }.
     property var axes: ({})
 
-    property color fill: "#a0e78f"
-    property color outlineColor: "#1c2a20"
+    property color fill: Theme.accentCyan
+    property color outlineColor: "#05070d"
     property color glossColor: "#ffffff"
     property color dotColor: Qt.darker(root.fill, 1.4)
     // the rim's gradient: this at the top of the letter, outlineColor at the bottom
-    property color rimLight: Qt.tint(root.outlineColor, Qt.rgba(1, 1, 1, 0.34))
+    property color rimLight: Theme.accentFrame
     property int ringSteps: 18
     // Which parts of the letter are built:
     //   "all"   everything, with the letter's own halftone, waves and shine (the
