@@ -644,7 +644,7 @@ PanelWindow {
         property real tilt: 0
         property real pop: 1
 
-        width: 56
+        width: 62
         height: 96
         rotation: 0
         scale: sd.pop
@@ -666,9 +666,9 @@ PanelWindow {
             easing.overshoot: 2.4
         }
 
-        GlyphRing { anchors.fill: parent; value: sd.value; ink: mt.edgy ? "#04060b" : mt.colBorder; radius: mt.edgy ? 3.5 : 6; dx: 3; dy: 4 }
-        GlyphRing { anchors.fill: parent; value: sd.value; ink: mt.edgy ? "#04060b" : mt.colBorder; radius: mt.edgy ? 3.5 : 6 }
-        GlyphRing { anchors.fill: parent; value: sd.value; ink: mt.edgy ? mt.accentFrame : "#ffffff"; radius: mt.edgy ? 1.4 : 3.2 }
+        GlyphRing { anchors.fill: parent; value: sd.value; ink: mt.edgy ? "#04060b" : mt.colBorder; radius: mt.edgy ? 3.0 : 6; dx: 3; dy: 4 }
+        GlyphRing { anchors.fill: parent; value: sd.value; ink: mt.edgy ? "#04060b" : mt.colBorder; radius: mt.edgy ? 2.5 : 6 }
+        GlyphRing { anchors.fill: parent; value: sd.value; ink: mt.edgy ? mt.accentFrame : "#ffffff"; radius: mt.edgy ? 0 : 3.2; steps: mt.edgy ? 1 : 16; dx: mt.edgy ? -2 : 0; dy: mt.edgy ? 2 : 0 }
         GlyphRing { anchors.fill: parent; value: sd.value; ink: sd.ghost ? mt.colOuterRing : sd.fillColor; radius: 0; steps: 1 }
     }
 
@@ -1812,7 +1812,7 @@ PanelWindow {
 
                     Item {
                         id: sroot
-                        implicitWidth: 4 * 56 + 24 + 4 * 2
+                        implicitWidth: 4 * 62 + 24 + 4 * 2
                         implicitHeight: 96 + card.stagger
 
                         Row {
@@ -1887,7 +1887,7 @@ PanelWindow {
 
                     Item {
                         id: aroot
-                        implicitWidth: 2 * 56 + 2
+                        implicitWidth: 2 * 62 + 2
                         implicitHeight: 2 * (96 + card.stagger) + 24 + 8
 
                         // Hours on top...

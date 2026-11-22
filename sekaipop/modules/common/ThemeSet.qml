@@ -394,12 +394,12 @@ QtObject {
     readonly property string fontFamily: "Google Sans Flex"
     readonly property int fontSize: 16
 
-    readonly property FontLoader roadRageLoader: FontLoader {
-        id: roadRageLoader
-        source: Qt.resolvedUrl("../../assets/fonts/Road_Rage.otf")
+    readonly property FontLoader cyberpunkFontLoader: FontLoader {
+        id: cyberpunkFontLoader
+        source: Qt.resolvedUrl("../../assets/fonts/Cyberpunk.otf")
     }
 
-    readonly property string displayFontFamily: roadRageLoader.status === FontLoader.Ready ? roadRageLoader.name : "Road Rage"
+    readonly property string displayFontFamily: cyberpunkFontLoader.status === FontLoader.Ready ? cyberpunkFontLoader.name : "Cyberpunk"
     readonly property string monoFontFamily: "JetBrainsMono Nerd Font"
 
     // Icons: the Solar Icon Set (assets/icons, SVG), drawn by MaterialIcon.qml
