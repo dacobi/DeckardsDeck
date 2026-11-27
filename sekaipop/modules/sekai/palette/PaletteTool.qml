@@ -419,7 +419,7 @@ Scope {
                                         Text {
                                             anchors.verticalCenter: parent.verticalCenter
                                             text: Theme.edgy
-                                                ? (PaletteService.applied ? "THEME SYNCED" : "PREVIEW ONLY // UNCHANGED")
+                                                ? (PaletteService.applied ? "THEME SYNCED" : "PREVIEW ONLY : UNCHANGED")
                                                 : (PaletteService.applied ? "Applied to the theme" : "Preview only, theme unchanged")
                                             color: Theme.edgy
                                                 ? (PaletteService.applied ? Theme.accentGreen : Theme.accentYellow)

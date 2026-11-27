@@ -32,6 +32,11 @@ Item {
     // This monitor's theme: Theme.of() gives the shell's own unless the monitor has one.
     readonly property var mt: Theme.of(QsWindow.window)
 
+    // Style mode: defaults to the shell's mt.edgy, or can be overridden per-component
+    // (e.g. QuickPanel's mt.quickEdgy).
+    property bool edgy: mt.edgy
+    property color borderColor: "transparent"
+
     // Inside the Capsule bar (Theme.capsuleFor): draw as a flat chip instead.
     readonly property bool capsule: mt.capsuleFor(root)
     // ...on a bar standing on the left / right edge.
@@ -59,10 +64,10 @@ Item {
     property color fillColor: classicScope ? mt.pSurface : mt.surface
     property Gradient fillGradient: null
     property real cornerRadius: height / 2
-    readonly property real effectiveRadius: mt.edgy
+    readonly property real effectiveRadius: root.edgy
         ? Math.min(root.cornerRadius, (root.width >= 160 && root.height >= 50) ? mt.radiusOuter : mt.radiusInner)
         : root.cornerRadius
-    property real ringWidth: mt.edgy ? (mt.borderWidth + mt.whiteLine) : 8
+    property real ringWidth: root.edgy ? (mt.borderWidth + mt.whiteLine) : 8
 
     // A ring drawn over the outer edge of the fill (inside, so the pill does
     // not grow), for the flat cards whose ringWidth equals their outline and
@@ -99,7 +104,7 @@ Item {
 
     implicitHeight: mt.pillHeight + shadowDy
 
-    // Cyberpunk HUD polygon geometry parameters (used when mt.edgy is true).
+    // Cyberpunk HUD polygon geometry parameters (used when root.edgy is true).
     readonly property bool isHudCard: root.width >= 160 && root.height >= 54
     readonly property bool isHudKey: !root.isHudCard && (root.width >= 44 || root.height >= 26)
     readonly property real cutTR: root.isHudCard ? 14 : (root.isHudKey ? 6 : 3.5)
@@ -110,7 +115,7 @@ Item {
     // Fixed hard shadow — never moves. It's what the cap below either
     // reveals (raised) or fully covers (pressed).
     Rectangle {
-        visible: !mt.edgy && !root.capsule && !root.bare && !root.flat
+        visible: !root.edgy && !root.capsule && !root.bare && !root.flat
         x: root.shadowDx
         y: root.shadowDy
         width: root.capWidth
@@ -121,10 +126,10 @@ Item {
         antialiasing: true
     }
 
-    // Cyberpunk 2077 chamfered wireframe ghost shadow (when mt.edgy is true).
+    // Cyberpunk 2077 chamfered wireframe ghost shadow (when root.edgy is true).
     Shape {
         id: hudShadow
-        visible: mt.edgy && !root.capsule && !root.bare && !root.flat && root.capWidth > 4 && root.capHeight > 4
+        visible: root.edgy && !root.capsule && !root.bare && !root.flat && root.capWidth > 4 && root.capHeight > 4
         x: root.shadowDx
         y: root.shadowDy
         width: root.capWidth
@@ -187,12 +192,12 @@ Item {
 
         Rectangle {
             id: face
-            visible: !mt.edgy && !root.capsule && !root.bare
+            visible: !root.edgy && !root.capsule && !root.bare
             anchors.fill: parent
             radius: root.effectiveRadius
             border.width: root.borderWidth
-            border.color: root.capRim ? mt.capRim
-                : (root.classicScope ? mt.pLine : mt.line)
+            border.color: root.borderColor.a > 0 ? root.borderColor
+                : (root.capRim ? mt.capRim : (root.classicScope ? mt.pLine : mt.line))
             antialiasing: true
 
             gradient: Gradient {
@@ -209,19 +214,20 @@ Item {
             }
         }
 
-        // Cyberpunk 2077 45° chamfered HUD polygon body (when mt.edgy is true).
+        // Cyberpunk 2077 45° chamfered HUD polygon body (when root.edgy is true).
         Shape {
             id: hudFace
-            visible: mt.edgy && !root.capsule && !root.bare && surface.width > 4 && surface.height > 4
+            visible: root.edgy && !root.capsule && !root.bare && surface.width > 4 && surface.height > 4
             anchors.fill: parent
 
             readonly property bool customRing: root.ringColorTop !== (root.classicScope ? mt.pRingTop : mt.ringTop)
             readonly property color baseFill: root.capRim ? mt.capBody
                 : (root.isHudCard && root.fillColor === mt.surface ? mt.hudSurface : root.fillColor)
-            readonly property color strokeCol: root.capRim ? mt.capRim
-                : (hudFace.customRing ? root.ringColorTop
-                    : (root.fillGradient !== null ? mt.accentCyan
-                        : (root.isHudCard ? mt.accentFrame : mt.line)))
+            readonly property color strokeCol: root.borderColor.a > 0 ? root.borderColor
+                : (root.capRim ? mt.capRim
+                    : (hudFace.customRing ? root.ringColorTop
+                        : (root.fillGradient !== null ? mt.accentCyan
+                            : (root.isHudCard ? mt.accentFrame : mt.line))))
             readonly property color gradStart: (root.fillGradient && root.fillGradient.stops.length > 0)
                 ? root.fillGradient.stops[0].color : hudFace.baseFill
             readonly property color gradEnd: (root.fillGradient && root.fillGradient.stops.length > 0)
@@ -258,13 +264,13 @@ Item {
             id: fill
             anchors.fill: face
             anchors.margins: root.capsule ? 0 : root.ringWidth
-            radius: root.capsule ? (mt.edgy ? mt.radiusInner : Math.min(width, height) / 2) : Math.max(0, root.effectiveRadius - root.ringWidth)
-            color: (root.bare || (mt.edgy && !root.capsule)) ? "transparent"
+            radius: root.capsule ? (root.edgy ? mt.radiusInner : Math.min(width, height) / 2) : Math.max(0, root.effectiveRadius - root.ringWidth)
+            color: (root.bare || (root.edgy && !root.capsule)) ? "transparent"
                 : (root.capsule
                     ? (root.capKeepsFill ? root.fillColor : mt.capChip)
                     : (root.capRim ? mt.capBody
                         : (root.fillGradient ? "transparent" : root.fillColor)))
-            gradient: (root.capsule || root.capRim || root.bare || mt.edgy) ? null : root.fillGradient
+            gradient: (root.capsule || root.capRim || root.bare || root.edgy) ? null : root.fillGradient
 
             Behavior on color {
                 ColorAnimation {
@@ -278,7 +284,7 @@ Item {
         Item {
             id: hudCorners
             anchors.fill: parent
-            visible: mt.edgy && !root.capsule && !root.bare && root.isHudCard
+            visible: root.edgy && !root.capsule && !root.bare && root.isHudCard
 
             CyberStripe {
                 anchors.fill: parent
@@ -331,7 +337,7 @@ Item {
             color: "transparent"
             border.width: root.innerRing
             border.color: root.capRim ? mt.capBody : root.ringColorTop
-            visible: !mt.edgy && root.innerRing > 0 && !root.capsule && !root.bare
+            visible: !root.edgy && root.innerRing > 0 && !root.capsule && !root.bare
             antialiasing: true
         }
     }

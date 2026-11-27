@@ -53,7 +53,6 @@ QtObject {
     }
     readonly property string quickStyle: quickStyleSetting === "auto" ? widgetStyle : quickStyleSetting
     readonly property bool quickEdgy: quickStyle === "cyberpunk"
-    readonly property int phoneCornerRadius: quickEdgy ? 6 : 24
     readonly property int quickRadiusOuter: quickEdgy ? 3 : 18
     readonly property int quickRadiusInner: quickEdgy ? 2 : 12
 
@@ -202,7 +201,7 @@ QtObject {
     readonly property real phoneRimWidth: 10
     readonly property real phoneBezelWidth: 9
     readonly property real phoneScreenInset: phoneRimWidth + phoneBezelWidth
-    readonly property real phoneCornerRadius: edgy ? 6 : 24
+    readonly property real phoneCornerRadius: quickEdgy ? 6 : 24
     readonly property color phoneWallLight: pal.wallLight
     readonly property color phoneWallMid: pal.wallMid
     readonly property color phoneWallDark: pal.wallDark

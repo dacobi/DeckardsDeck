@@ -190,7 +190,7 @@ Item {
 
                 Text {
                     anchors.verticalCenter: parent.verticalCenter
-                    text: root.locked ? (mt.edgy ? "LOCKED" : "locked") : ((root.compact || root.mini) ? (mt.edgy ? "COPY" : "copy") : (mt.edgy ? "CLICK // COPY" : "click to copy"))
+                    text: root.locked ? (mt.edgy ? "LOCKED" : "locked") : ((root.compact || root.mini) ? (mt.edgy ? "COPY" : "copy") : (mt.edgy ? "CLICK : COPY" : "click to copy"))
                     color: root.ink
                     opacity: root.copied ? 0 : (root.hovered || root.locked ? 0.8 : 0)
                     font.family: mt.edgy ? mt.monoFontFamily : mt.fontFamily
