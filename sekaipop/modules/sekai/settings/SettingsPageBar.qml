@@ -38,7 +38,7 @@ SettingsPage {
         { key: "bar.resources", icon: "memory", label: "CPU & RAM" },
         { key: "bar.status", icon: "wifi", label: "Wi-Fi, Bluetooth & sound icons" },
         { key: "bar.battery", icon: "battery_android_full", label: "Battery" },
-        { key: "bar.keyboardLayout", icon: "keyboard_alt", label: "Keyboard layout" },
+        { key: "bar.keyboardLayout", icon: "translate", label: "Dual language" },
         { key: "bar.notifications", icon: "notifications", label: "Notification bell" },
         { key: "bar.tray", icon: "apps", label: "Tray" },
         { key: "bar.utilButtons", icon: "construction", label: "Utility keys" },
@@ -209,10 +209,16 @@ SettingsPage {
     }
 
     SectionCard {
-        visible: SettingsService.flag("bar.keyboardLayout")
-        height: visible ? implicitHeight : 0
-        title: "Keyboard language"
-        icon: "keyboard_alt"
+        title: "Dual language"
+        icon: "translate"
+
+        SettingToggle {
+            icon: "translate"
+            label: "Show Dual language on bar"
+            detail: SettingsService.flag("bar.keyboardLayout") ? "ON · also movable in Edit Desktop > BAR" : "OFF"
+            checked: SettingsService.flag("bar.keyboardLayout")
+            onToggled: SettingsService.toggle("bar.keyboardLayout")
+        }
 
         SettingAction {
             icon: "translate"

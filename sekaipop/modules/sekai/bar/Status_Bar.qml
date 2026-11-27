@@ -1039,6 +1039,7 @@ Item {
             Layout.column: status_Bar.vertical ? 0 : status_Bar.slotOf("keyboardLayout")
             // (Hides itself with nothing to show; repeated, see battery.)
             visible: layoutCode !== "" && status_Bar.shows("keyboardLayout")
+            vertical: status_Bar.vertical
             Layout.alignment: status_Bar.crossAlign
             transform: Translate { y: status_Bar.liftY }
             layoutCode: status_Bar.keyboardLayoutCode

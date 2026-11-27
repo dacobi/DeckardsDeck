@@ -56,7 +56,7 @@ Singleton {
         { id: "resources", label: "CPU & RAM", icon: "memory" },
         { id: "status", label: "Wi-Fi, Bluetooth & sound", icon: "wifi" },
         { id: "battery", label: "Battery", icon: "battery_android_full" },
-        { id: "keyboardLayout", label: "Keyboard layout", icon: "keyboard_alt" },
+        { id: "keyboardLayout", label: "Dual language", icon: "translate" },
         { id: "notifications", label: "Notification bell", icon: "notifications" },
         { id: "tray", label: "Tray", icon: "apps" },
         { id: "weather", label: "Weather", icon: "partly_cloudy_day" },

@@ -568,7 +568,7 @@ PanelWindow {
                 color: mt.edgy
                     ? (tile.gradientFill ? mt.accentMint : mt.accentCyan)
                     : (tile.gradientFill ? mt.colBorder : mt.chipInk)
-                opacity: tile.ghost ? 0.28 : 1
+                opacity: 1
                 font.family: mt.edgy ? mt.displayFontFamily : mt.fontFamily
                 font.pixelSize: mt.edgy ? 52 : 50
                 font.weight: Font.ExtraBold
@@ -669,7 +669,7 @@ PanelWindow {
         GlyphRing { anchors.fill: parent; value: sd.value; ink: mt.edgy ? "#04060b" : mt.colBorder; radius: mt.edgy ? 3.0 : 6; dx: 3; dy: 4 }
         GlyphRing { anchors.fill: parent; value: sd.value; ink: mt.edgy ? "#04060b" : mt.colBorder; radius: mt.edgy ? 2.5 : 6 }
         GlyphRing { anchors.fill: parent; value: sd.value; ink: mt.edgy ? mt.accentFrame : "#ffffff"; radius: mt.edgy ? 0 : 3.2; steps: mt.edgy ? 1 : 16; dx: mt.edgy ? -2 : 0; dy: mt.edgy ? 2 : 0 }
-        GlyphRing { anchors.fill: parent; value: sd.value; ink: sd.ghost ? mt.colOuterRing : sd.fillColor; radius: 0; steps: 1 }
+        GlyphRing { anchors.fill: parent; value: sd.value; ink: sd.fillColor; radius: 0; steps: 1 }
     }
 
     // A diamond of the beat: lit on its turn, and it pops when it lights.
@@ -1345,12 +1345,9 @@ PanelWindow {
                                     height: kstage.height
                                     spacing: 6
 
-                                    // 12h mode: a leading zero is ghosted, not removed, so
-                                    // nothing moves.
                                     KeyTile {
                                         y: 4
                                         digit: win.hh.charAt(0)
-                                        ghost: !ClockService.use24h && win.hh.charAt(0) === "0"
                                         tilt: -card.tilt
                                     }
 
@@ -1713,7 +1710,6 @@ PanelWindow {
                                         x: 0
                                         y: 0
                                         digit: win.hh.charAt(0)
-                                        ghost: !ClockService.use24h && win.hh.charAt(0) === "0"
                                         tilt: -card.tilt
                                     }
 
@@ -1821,7 +1817,6 @@ PanelWindow {
                             StickerDigit {
                                 y: 0
                                 value: win.hh.charAt(0)
-                                ghost: !ClockService.use24h && win.hh.charAt(0) === "0"
                                 fillColor: mt.accentMint
                                 tilt: -card.tilt
                             }
@@ -1897,7 +1892,6 @@ PanelWindow {
                             StickerDigit {
                                 y: 0
                                 value: win.hh.charAt(0)
-                                ghost: !ClockService.use24h && win.hh.charAt(0) === "0"
                                 fillColor: mt.accentMint
                                 tilt: -card.tilt
                             }

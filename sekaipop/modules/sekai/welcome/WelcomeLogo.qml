@@ -64,11 +64,8 @@ Item {
     readonly property color waveDeep: Qt.darker(root.fill, 1.22)
     readonly property color waveMid: Qt.darker(root.fill, 1.08)
     readonly property color waveCrest: Qt.tint(root.fill, Qt.rgba(1, 1, 1, 0.7))
-    // The small line above the word: katakana "de-kku" ("デック"), matching
-    // Blade Runner's Japanese neon signage.
-    property var kana: ["\u30c7", "\u30c3", "\u30af"]
 
-    // Sized so the whole mark (kana, reticles and stroke included) is about 60% of
+    // Sized so the whole mark (reticles and stroke included) is about 60% of
     // the page width and 32% of its height.
     readonly property real size: 114 * root.unit
     readonly property real l1Size: Math.round(root.size * 0.65)
@@ -785,29 +782,6 @@ Item {
                 maskSource: faces2Tex
                 autoPaddingEnabled: false
                 visible: root.fxDots > 0.001 || root.fxWave > 0.001 || root.shineU > 0.001
-            }
-
-            // ---- the small katakana above the first line: letters of their own ----
-            Row {
-                id: kanaRow
-
-                x: root.pad + line1Back.implicitWidth * 0.56
-                y: root.pad - root.size * 0.28
-                z: 7
-                spacing: -root.size * 0.012
-
-                Repeater {
-                    model: root.kana
-
-                    Cell {
-                        slotBase: 12
-                        lineX: kanaRow.x
-                        lineY: kanaRow.y
-                        pixelSize: Math.round(root.size * 0.27)
-                        dots: false
-                        small: true
-                    }
-                }
             }
 
             // ---- the squiggle, lower left, drawn on ----

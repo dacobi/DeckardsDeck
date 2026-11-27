@@ -329,15 +329,14 @@ Scope {
                 if (m.button !== Qt.LeftButton)
                     return
                 win.dragging = false
-                // A click with no drag takes the window under it, or does nothing.
+                // A click with no drag takes the window under it, or the whole screen when clicking the background.
                 if (win.dragKind === "new" && !mouse.moved) {
                     const r = win.windowAt(m.x, m.y)
-                    if (r) {
+                    if (r)
                         win.setSel(r.x, r.y, r.w, r.h)
-                        win.hoverRect = null
-                    } else {
-                        win.hasSel = false
-                    }
+                    else
+                        win.setSel(0, 0, win.width, win.height)
+                    win.hoverRect = null
                 }
             }
         }
@@ -518,7 +517,7 @@ Scope {
             Text {
                 id: hintText
                 anchors.centerIn: parent
-                text: "Drag a region or click a window  ·  Right-drag to annotate  ·  Esc cancels"
+                text: "Drag a region, click a window, or click the background for the whole screen  ·  Right-drag to annotate  ·  Esc cancels"
                 color: Theme.textWhite
                 font.family: Theme.fontFamily
                 font.pixelSize: 12

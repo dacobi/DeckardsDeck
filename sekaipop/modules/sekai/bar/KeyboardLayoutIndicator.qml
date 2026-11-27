@@ -14,13 +14,16 @@ Item {
 
     property string layoutCode: "EN"
 
+    // True on a standing bar (left / right edge).
+    property bool vertical: false
+
     // Which edge the bar is on, so the hover tag opens towards the screen.
     property string barPosition: "top"
 
     // What the hover tag says.
     readonly property string tipText: KeyboardLayoutService.configuredLayouts.length > 1
-        ? "Keyboard language: " + (KeyboardLayoutService.layoutName || root.layoutCode.toUpperCase()) + " (click to switch)"
-        : "Keyboard language: " + (KeyboardLayoutService.layoutName || root.layoutCode.toUpperCase()) + " (add a 2nd language in Settings > Bar)"
+        ? "Dual language: " + (KeyboardLayoutService.layoutName || root.layoutCode.toUpperCase()) + " (click to switch)"
+        : "Dual language: " + (KeyboardLayoutService.layoutName || root.layoutCode.toUpperCase()) + " (add a 2nd language in Settings > Bar)"
 
     signal clicked()
 
@@ -34,7 +37,9 @@ Item {
         cornerRadius: mt.radiusBadge
         fillColor: mt.chipFill
         pressed: area.pressed
-        implicitWidth: label.implicitWidth + (pill.capsule ? 20 : 28)
+        ringWidth: 6   // the bar's pills all share the Utility pill's ring
+        implicitWidth: root.vertical ? pill.barVWidth : label.implicitWidth + (pill.capsule ? 20 : 28)
+        implicitHeight: mt.pillHeight + mt.shadowOffset
 
         Text {
             id: label
