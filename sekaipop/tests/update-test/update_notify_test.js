@@ -57,9 +57,9 @@ ok("already seen at start (read from the cache file): nothing", () => {
     const w = world({ seen: "abc1234" }); w.run();
     assert.strictEqual(w.sent.length, 0); assert.strictEqual(w.wrote.length, 0);
 });
-ok("a look the user asked for counts as seen and sends nothing", () => {
+ok("a look the user asked for also notifies once and marks seen when watching is on", () => {
     const w = world({ byUser: true }); w.run();
-    assert.strictEqual(w.sent.length, 0);
+    assert.strictEqual(w.sent.length, 1);
     assert.strictEqual(w.root.seen, "abc1234");
     assert.strictEqual(w.wrote.length, 1);
 });

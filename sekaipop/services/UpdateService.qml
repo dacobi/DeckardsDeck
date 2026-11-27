@@ -96,16 +96,15 @@ Singleton {
         checker.running = true
     }
 
-    // One notification per newer version, and only for a look nobody asked for.
+    // One notification per newer version (whether found by timer or manual check).
     function announce() {
         if (root.status !== "behind" || root.unknown || root.rev === "" || root.rev === root.seen)
             return
         if (!root.byUser && root.watching && GameModeService.enabled)
             return
-        const byUser = root.byUser
         root.seen = root.rev
         seenWriter.exec(["sh", root.script, "seen", root.rev])
-        if (byUser || !root.watching)
+        if (!root.watching)
             return
         const what = root.isGit && root.behind > 0
             ? root.behind + (root.behind === 1 ? " new commit is" : " new commits are") + " waiting upstream."

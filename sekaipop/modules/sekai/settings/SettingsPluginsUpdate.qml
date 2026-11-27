@@ -51,15 +51,21 @@ SectionCard {
         onTriggered: card.now = Date.now()
     }
 
+    readonly property bool panelActive: !card.settingsPage || !card.settingsPage.host || card.settingsPage.host.active
+
     // Opening About / Update looks for plugin updates too, when nothing has looked yet.
     onVisibleChanged: {
-        if (visible && PluginRepoService.lockLoaded && PluginRepoService.checkStatus === "idle")
+        if (visible && card.panelActive && PluginRepoService.lockLoaded && PluginRepoService.checkStatus === "idle")
+            PluginRepoService.check(true)
+    }
+    onPanelActiveChanged: {
+        if (visible && card.panelActive && PluginRepoService.lockLoaded && PluginRepoService.checkStatus === "idle")
             PluginRepoService.check(true)
     }
     Connections {
         target: PluginRepoService
         function onLockLoadedChanged() {
-            if (card.visible && PluginRepoService.checkStatus === "idle")
+            if (card.visible && card.panelActive && PluginRepoService.checkStatus === "idle")
                 PluginRepoService.check(true)
         }
     }

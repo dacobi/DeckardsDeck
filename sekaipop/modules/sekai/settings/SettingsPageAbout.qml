@@ -10,14 +10,23 @@ SettingsPage {
     id: page
 
     // Opening this page is the "check for updates" gesture, when nothing is already
-    // checking. Guarded by `page.visible` so background page warmup in SettingsFace
-    // does not mark an unread update as user-seen before the notification fires.
+    // checking. Guarded by `page.visible && page.host && page.host.active` so background
+    // page warmup or restoring `"settings.page": "about"` while the Settings Panel is
+    // closed does not trigger a check at startup.
     function checkOnOpen() {
-        if (page.visible && UpdateService.status !== "checking")
+        if (page.visible && page.host && page.host.active && UpdateService.status !== "checking")
             UpdateService.check(true)
     }
 
     Component.onCompleted: page.checkOnOpen()
+
+    Connections {
+        target: page.host
+        function onActiveChanged() {
+            if (page.host && page.host.active)
+                page.checkOnOpen()
+        }
+    }
 
     readonly property string statusTitle: {
         switch (UpdateService.status) {

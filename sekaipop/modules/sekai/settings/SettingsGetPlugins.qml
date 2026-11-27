@@ -37,10 +37,16 @@ SectionCard {
         onTriggered: card.now = Date.now()
     }
 
+    readonly property bool panelActive: !card.settingsPage || !card.settingsPage.host || card.settingsPage.host.active
+
     // The list is fetched when the card is first shown (not at start-up: nothing here touches
     // the network until someone opens About / Update).
     onVisibleChanged: {
-        if (visible && PluginRepoService.listStatus === "idle")
+        if (visible && card.panelActive && PluginRepoService.listStatus === "idle")
+            PluginRepoService.fetchList()
+    }
+    onPanelActiveChanged: {
+        if (visible && card.panelActive && PluginRepoService.listStatus === "idle")
             PluginRepoService.fetchList()
     }
 
