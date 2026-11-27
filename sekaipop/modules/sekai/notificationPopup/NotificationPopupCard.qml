@@ -50,9 +50,10 @@ Item {
 
     // This monitor's theme: Theme.of() gives the shell's own unless the monitor has one.
     readonly property var mt: Theme.of(QsWindow.window)
+    readonly property bool edgy: mt.edgy
 
-    // MaterialIcon asks for this to use the panel's colours.
-    readonly property bool classicPanel: true
+    // MaterialIcon asks for this to use the panel's colours (classic white only in SekaiPop mode).
+    readonly property bool classicPanel: !edgy
 
     required property string key
     required property string app
@@ -73,28 +74,37 @@ Item {
 
     // The cap's outline and the ring just inside it; a critical card has the
     // thicker outline it always had.
-    readonly property real outline: card.critical ? 5 : 3
-    readonly property real ring: card.outline + 1
-    readonly property real cornerRadius: 30
+    readonly property real outline: card.edgy ? (card.critical ? 2 : 1.5) : (card.critical ? 5 : 3)
+    readonly property real ring: card.edgy ? card.outline : (card.outline + 1)
+    readonly property real cornerRadius: card.edgy ? mt.radiusSmall : 30
     // What is inside the ring: the area the plate and the text are laid out in.
     readonly property real faceW: card.cardWidth - 2 * card.ring
     readonly property real faceH: card.cardHeight - 2 * card.ring
     // How wide the coloured plate is (measured at its middle, its edge leans).
-    readonly property real plateW: 100
-    readonly property real textX: card.plateW + 20
+    readonly property real plateW: card.edgy ? 88 : 100
+    readonly property real textX: card.plateW + (card.edgy ? 16 : 20)
 
     // A notification with a "material:<glyph>" icon is one the shell sent
     // itself (a screenshot, a recording, a timer ...): its icon is a ShellBadge
     // and the plate wears that badge's attribute colour.
     readonly property bool shell: card.materialIcon
     readonly property color kindColor: mt.attributeColors[NK.index(card.icon.substring(9))]
+    readonly property var neonColors: [
+        mt.accentCyan,
+        mt.accentRed,
+        mt.accentYellow,
+        mt.accentMint,
+        mt.accentGreen
+    ]
+    readonly property color hudAccent: card.critical ? mt.accentYellow
+        : (card.shell ? card.neonColors[NK.index(card.icon.substring(9)) % card.neonColors.length] : mt.accentCyan)
 
     // The plate's colours: the theme's accents, the kind's colour for the
     // shell's own, or the panel's pink when critical.
-    readonly property color plateTop: card.critical ? "#FFB3D1"
-        : (card.shell ? Qt.lighter(card.kindColor, 1.05) : mt.accentMint)
-    readonly property color plateBottom: card.critical ? "#FF6F9C"
-        : (card.shell ? Qt.darker(card.kindColor, 1.22) : mt.accentCyan)
+    readonly property color plateTop: card.edgy ? Qt.darker(mt.hudSurface, 1.15)
+        : (card.critical ? "#FFB3D1" : (card.shell ? Qt.lighter(card.kindColor, 1.05) : mt.accentMint))
+    readonly property color plateBottom: card.edgy ? Qt.darker(mt.hudSurface, 1.35)
+        : (card.critical ? "#FF6F9C" : (card.shell ? Qt.darker(card.kindColor, 1.22) : mt.accentCyan))
     readonly property color navy: mt.colBorder
     readonly property color stickerShadow: Qt.rgba(card.navy.r, card.navy.g, card.navy.b, 0.5)
 
@@ -219,9 +229,11 @@ Item {
                 id: cap
                 width: card.width
                 height: card.height
+                edgy: card.edgy
                 cornerRadius: card.cornerRadius
                 ringWidth: card.ring
                 borderWidth: card.outline
+                borderColor: card.edgy ? card.hudAccent : mt.colBorder
                 shadowDx: card.shadowX
                 shadowDy: card.shadowY
                 fillGradient: bodyGradient
@@ -236,17 +248,52 @@ Item {
                     // Pointer on the card: a faint wash of the accent.
                     Rectangle {
                         anchors.fill: parent
-                        color: Qt.rgba(mt.accentCyan.r, mt.accentCyan.g, mt.accentCyan.b, 0.12)
+                        color: Qt.rgba(card.hudAccent.r, card.hudAccent.g, card.hudAccent.b, 0.12)
                         opacity: area.containsMouse ? 1 : 0
                         Behavior on opacity {
                             NumberAnimation { duration: 140 }
                         }
                     }
 
-                    // The plate. Its right edge leans (Slant), and the left
+                    // Cyberdeck left compartment and vertical LED accent bar
+                    Rectangle {
+                        visible: card.edgy
+                        x: 0
+                        y: 0
+                        width: card.plateW
+                        height: parent.height
+                        gradient: plateGradient
+
+                        CyberStripe {
+                            anchors.fill: parent
+                            color: Qt.rgba(card.hudAccent.r, card.hudAccent.g, card.hudAccent.b, 0.09)
+                            barWidth: 5
+                            gap: 7
+                        }
+
+                        Rectangle {
+                            x: 4
+                            y: 10
+                            width: 3
+                            height: parent.height - 20
+                            radius: 1
+                            color: card.hudAccent
+                        }
+
+                        Rectangle {
+                            x: parent.width - 1.5
+                            y: 8
+                            width: 1.5
+                            height: parent.height - 16
+                            color: Qt.rgba(card.hudAccent.r, card.hudAccent.g, card.hudAccent.b, 0.45)
+                        }
+                    }
+
+                    // The plate (classic mode). Its right edge leans (Slant), and the left
                     // end runs off the card under the rounded corner.
                     Slant {
                         id: plate
+                        visible: !card.edgy
                         x: -40
                         width: 140 + plate.lean / 2
                         height: parent.height
@@ -256,6 +303,7 @@ Item {
                     }
 
                     DotField {
+                        visible: !card.edgy
                         width: card.plateW - 14
                         height: parent.height
                         corner: "bl"
@@ -265,8 +313,9 @@ Item {
                         dotColor: Qt.rgba(card.navy.r, card.navy.g, card.navy.b, 0.15)
                     }
 
-                    // Stage light: two bands across the plate.
+                    // Stage light: two bands across the plate (classic mode).
                     Slant {
+                        visible: !card.edgy
                         x: 36 - height * 0.18 / 2
                         width: 22 + height * 0.18
                         height: parent.height
@@ -278,6 +327,7 @@ Item {
                         }
                     }
                     Slant {
+                        visible: !card.edgy
                         x: 66 - height * 0.18 / 2
                         width: 9 + height * 0.18
                         height: parent.height
@@ -289,8 +339,9 @@ Item {
                         }
                     }
 
-                    // The cut where the plate meets the body.
+                    // The cut where the plate meets the body (classic mode).
                     Slant {
+                        visible: !card.edgy
                         x: card.plateW - 1.5 - height * 0.18 / 2
                         width: 3 + height * 0.18
                         height: parent.height
@@ -307,18 +358,20 @@ Item {
                         height: parent.height
                         skew: 0.3
                         radius: 0
-                        color: Qt.rgba(1, 1, 1, 0.5)
+                        color: card.edgy
+                            ? Qt.rgba(card.hudAccent.r, card.hudAccent.g, card.hudAccent.b, 0.22)
+                            : Qt.rgba(1, 1, 1, 0.5)
                     }
                 }
 
-                // ----- the icon, as a tilted sticker on the plate -----
+                // ----- the icon, as a HUD module (Cyberpunk) or tilted sticker (SekaiPop) -----
                 Item {
                     id: sticker
-                    x: 46 - width / 2
+                    x: (card.edgy ? (card.plateW / 2 + 2) : 46) - width / 2
                     y: (card.faceH - height) / 2
-                    width: 60
-                    height: 60
-                    rotation: area.containsMouse ? 4 : -5
+                    width: card.edgy ? 54 : 60
+                    height: card.edgy ? 54 : 60
+                    rotation: card.edgy ? 0 : (area.containsMouse ? 4 : -5)
                     scale: card.stickerPop
                     transformOrigin: Item.Center
 
@@ -337,18 +390,18 @@ Item {
                         y: 3
                         width: parent.width
                         height: parent.height
-                        radius: 19
-                        color: card.stickerShadow
+                        radius: card.edgy ? 4 : 19
+                        color: card.edgy ? mt.pLineShadow : card.stickerShadow
                         antialiasing: true
                     }
 
                     Rectangle {
                         visible: !card.shell
                         anchors.fill: parent
-                        radius: 19
-                        color: "#ffffff"
-                        border.width: 3
-                        border.color: card.navy
+                        radius: card.edgy ? 4 : 19
+                        color: card.edgy ? mt.hudSurface : "#ffffff"
+                        border.width: card.edgy ? 1.5 : 3
+                        border.color: card.edgy ? card.hudAccent : card.navy
                         antialiasing: true
                     }
 
@@ -356,9 +409,9 @@ Item {
                     // in NotificationSource.qml. No icon at all -> a bell.
                     ClippingRectangle {
                         anchors.centerIn: parent
-                        width: 42
-                        height: 42
-                        radius: 12
+                        width: card.edgy ? 38 : 42
+                        height: card.edgy ? 38 : 42
+                        radius: card.edgy ? 3 : 12
                         color: "transparent"
                         visible: card.icon !== "" && !card.materialIcon
 
@@ -376,6 +429,7 @@ Item {
                     ShellBadge {
                         anchors.fill: parent
                         size: parent.width
+                        edgy: card.edgy
                         visible: card.shell
                         glyph: card.shell ? card.icon.substring(9) : ""
                     }
@@ -383,9 +437,9 @@ Item {
                     // No icon at all -> a bell.
                     MaterialIcon {
                         anchors.centerIn: parent
-                        size: 36
+                        size: card.edgy ? 30 : 36
                         visible: card.icon === ""
-                        color: card.navy
+                        color: card.edgy ? card.hudAccent : card.navy
                         name: "notifications_active"
                     }
                 }
@@ -397,8 +451,10 @@ Item {
                     y: 10
                     height: 20
                     width: Math.min(appText.implicitWidth + 18, card.faceW - card.textX - 110)
-                    radius: 10
-                    color: mt.chipFill
+                    radius: card.edgy ? 2 : 10
+                    color: card.edgy ? Qt.darker(mt.hudSurface, 1.25) : mt.chipFill
+                    border.width: card.edgy ? 1 : 0
+                    border.color: Qt.rgba(card.hudAccent.r, card.hudAccent.g, card.hudAccent.b, 0.55)
                     antialiasing: true
 
                     Text {
@@ -408,23 +464,33 @@ Item {
                         anchors.rightMargin: 9
                         verticalAlignment: Text.AlignVCenter
                         elide: Text.ElideRight
-                        text: card.app
-                        color: mt.chipInk
-                        font.family: mt.fontFamily
-                        font.pixelSize: 12
+                        text: card.edgy ? card.app.toUpperCase() : card.app
+                        color: card.edgy ? card.hudAccent : mt.chipInk
+                        font.family: card.edgy ? mt.monoFontFamily : mt.fontFamily
+                        font.pixelSize: card.edgy ? 11 : 12
                         font.weight: Font.ExtraBold
                         font.styleName: mt.fontStyleBold
                     }
                 }
 
-                // A lit diamond and the time.
+                // A lit diamond (or HUD square LED) and the time.
                 Row {
                     x: card.faceW - 20 - width
                     y: 10
                     height: 20
                     spacing: 7
 
+                    Rectangle {
+                        visible: card.edgy
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 6
+                        height: 6
+                        radius: 1
+                        color: card.hudAccent
+                    }
+
                     DiamondDot {
+                        visible: !card.edgy
                         anchors.verticalCenter: parent.verticalCenter
                         lit: true
                         size: 9
@@ -434,10 +500,10 @@ Item {
 
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
-                        text: "now"
-                        color: mt.pInkSub
-                        font.family: mt.fontFamily
-                        font.pixelSize: 12
+                        text: card.edgy ? "// NOW" : "now"
+                        color: card.edgy ? mt.accentYellow : mt.pInkSub
+                        font.family: card.edgy ? mt.monoFontFamily : mt.fontFamily
+                        font.pixelSize: card.edgy ? 11 : 12
                         font.weight: Font.Medium
                     }
                 }
@@ -448,7 +514,7 @@ Item {
                     width: card.faceW - card.textX - 20
                     elide: Text.ElideRight
                     text: card.title
-                    color: mt.pInk
+                    color: card.edgy && card.critical ? mt.accentYellow : mt.pInk
                     font.family: mt.fontFamily
                     font.pixelSize: 19
                     font.weight: Font.ExtraBold
@@ -465,7 +531,7 @@ Item {
                     maximumLineCount: 2
                     elide: Text.ElideRight
                     lineHeight: 0.92
-                    color: mt.pInk
+                    color: card.edgy ? mt.pInkSub : mt.pInk
                     font.family: mt.fontFamily
                     font.pixelSize: 14
                 }
@@ -475,8 +541,8 @@ Item {
             // gradient (pink when critical).
             Gradient {
                 id: bodyGradient
-                GradientStop { position: 0.0; color: mt.pSurface }
-                GradientStop { position: 1.0; color: mt.pSurfaceHover }
+                GradientStop { position: 0.0; color: card.edgy ? mt.hudSurface : mt.pSurface }
+                GradientStop { position: 1.0; color: card.edgy ? Qt.darker(mt.hudSurface, 1.18) : mt.pSurfaceHover }
             }
             Gradient {
                 id: plateGradient

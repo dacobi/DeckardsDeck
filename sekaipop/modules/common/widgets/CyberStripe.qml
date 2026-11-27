@@ -13,11 +13,13 @@ Canvas {
     property real progress: 1.0              // 0..1 for progress bars; 1.0 for full decorative strip
     property alias fillRatio: root.progress
     property color color: "#00f0ff"
+    property alias stripeColor: root.color
     property color altColor: "#fcee0a"
     property color trackColor: Qt.rgba(1, 0.165, 0.333, 0.24)
     property real barWidth: 5
     property alias stripeWidth: root.barWidth
     property real gap: 4
+    property alias gapWidth: root.gap
     property real slant: 0.65                // horizontal shear per px of height
     property bool reverse: false             // flip slant or chevron direction
     property int gridStep: 28                // spacing for '+' grid mode

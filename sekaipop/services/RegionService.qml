@@ -241,7 +241,7 @@ Singleton {
             if (j !== null && code === 0) {
                 root.afterCrop(j)
             } else {
-                Quickshell.execDetached(["notify-send", "-a", "sekaipop", "-i", "material:error", "Screen region",
+                Quickshell.execDetached(["notify-send", "-a", "Deckard's Deck", "-i", "material:error", "Screen region",
                     "Couldn't grab the region (is grim installed?)"])
                 root.finishJob(false)
             }
@@ -388,8 +388,8 @@ Singleton {
         onExited: {
             if (root.recordFile !== "") {
                 Quickshell.execDetached(["sh", "-c",
-                    "if [ -s \"$1\" ]; then notify-send -a sekaipop -i material:videocam 'Recording saved' \"$1\"; "
-                    + "else notify-send -a sekaipop -i material:error 'Recording failed' 'wf-recorder stopped before it saved anything. Run it in a terminal to see why.'; fi",
+                    "if [ -s \"$1\" ]; then notify-send -a \"Deckard's Deck\" -i material:videocam 'Recording saved' \"$1\"; "
+                    + "else notify-send -a \"Deckard's Deck\" -i material:error 'Recording failed' 'wf-recorder stopped before it saved anything. Run it in a terminal to see why.'; fi",
                     "sh", root.recordFile])
                 root.recordFile = ""
             }

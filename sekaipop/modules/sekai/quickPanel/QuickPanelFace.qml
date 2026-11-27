@@ -2852,6 +2852,7 @@ Item {
             ShellBadge {
                 anchors.centerIn: parent
                 size: 58
+                edgy: face.edgy
                 visible: alertCard.shellIcon
                 glyph: alertCard.shellIcon ? alertCard.e.icon.substring(9) : ""
             }
@@ -2871,6 +2872,7 @@ Item {
                 anchors.centerIn: parent
                 size: parent.width - 10
                 visible: alertCard.e === null || alertCard.e.icon === ""
+                color: face.edgy ? mt.accentCyan : mt.pInk
                 name: "notifications_active"
             }
         }
@@ -2880,11 +2882,11 @@ Item {
             y: 12
             width: 340
             elide: Text.ElideRight
-            text: alertCard.e !== null ? alertCard.e.app : ""
-            color: mt.pInkSub
-            font.family: mt.fontFamily
-            font.pixelSize: 15
-            font.weight: Font.Medium
+            text: alertCard.e !== null ? (face.edgy ? alertCard.e.app.toUpperCase() : alertCard.e.app) : ""
+            color: face.edgy ? mt.accentCyan : mt.pInkSub
+            font.family: face.edgy ? mt.monoFontFamily : mt.fontFamily
+            font.pixelSize: face.edgy ? 13 : 15
+            font.weight: face.edgy ? Font.Bold : Font.Medium
         }
 
         Text {
@@ -2892,10 +2894,10 @@ Item {
             y: 12
             width: 70
             horizontalAlignment: Text.AlignRight
-            text: "now"
-            color: mt.pInkSub
-            font.family: mt.fontFamily
-            font.pixelSize: 15
+            text: face.edgy ? "// NOW" : "now"
+            color: face.edgy ? mt.accentYellow : mt.pInkSub
+            font.family: face.edgy ? mt.monoFontFamily : mt.fontFamily
+            font.pixelSize: face.edgy ? 13 : 15
             font.weight: Font.Medium
         }
 
@@ -2905,7 +2907,7 @@ Item {
             width: 434
             elide: Text.ElideRight
             text: alertCard.e !== null ? alertCard.e.title : ""
-            color: mt.pInk
+            color: face.edgy && alertCard.critical ? mt.accentYellow : mt.pInk
             font.family: mt.fontFamily
             font.pixelSize: 23
             font.weight: Font.ExtraBold
@@ -2922,7 +2924,7 @@ Item {
             maximumLineCount: 2
             elide: Text.ElideRight
             lineHeight: 0.92
-            color: mt.pInk
+            color: face.edgy ? mt.pInkSub : mt.pInk
             font.family: mt.fontFamily
             font.pixelSize: 17
         }

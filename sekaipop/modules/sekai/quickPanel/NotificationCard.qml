@@ -199,6 +199,7 @@ Item {
             ShellBadge {
                 anchors.centerIn: parent
                 size: 42
+                edgy: card.edgy
                 visible: card.materialIcon
                 glyph: card.materialIcon ? card.icon.substring(9) : ""
             }
@@ -219,6 +220,7 @@ Item {
                 anchors.centerIn: parent
                 size: parent.width - 6
                 visible: card.icon === ""
+                color: card.edgy ? mt.accentCyan : mt.pInk
                 name: "apps"
             }
         }
@@ -279,7 +281,7 @@ Item {
             width: card.cardWidth - 100 - (card.group ? 36 : 0)
             elide: Text.ElideRight
             text: card.title
-            color: mt.pInk
+            color: card.edgy && card.urgency === 2 ? mt.accentYellow : mt.pInk
             font.family: mt.fontFamily
             font.pixelSize: 20
             font.weight: Font.ExtraBold
@@ -296,7 +298,7 @@ Item {
             maximumLineCount: 2
             elide: Text.ElideRight
             lineHeight: 0.92
-            color: mt.pInk
+            color: card.edgy ? mt.pInkSub : mt.pInk
             font.family: mt.fontFamily
             font.pixelSize: 15
         }
@@ -308,6 +310,7 @@ Item {
             y: 46
             size: 28
             name: "expand_more"
+            color: card.edgy ? mt.accentCyan : mt.pInk
             rotation: card.expanded ? 180 : 0
             Behavior on rotation {
                 NumberAnimation {

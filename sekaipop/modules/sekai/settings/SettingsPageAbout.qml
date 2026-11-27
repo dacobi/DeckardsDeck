@@ -9,12 +9,15 @@ import qs.modules.common.widgets
 SettingsPage {
     id: page
 
-    // Opening this page is the "check for updates" gesture, when nothing has looked yet
-    // (with the background look on, it usually has).
-    Component.onCompleted: {
-        if (UpdateService.status === "idle")
+    // Opening this page is the "check for updates" gesture, when nothing is already
+    // checking. Guarded by `page.visible` so background page warmup in SettingsFace
+    // does not mark an unread update as user-seen before the notification fires.
+    function checkOnOpen() {
+        if (page.visible && UpdateService.status !== "checking")
             UpdateService.check(true)
     }
+
+    Component.onCompleted: page.checkOnOpen()
 
     readonly property string statusTitle: {
         switch (UpdateService.status) {
@@ -329,7 +332,12 @@ SettingsPage {
         Qt.callLater(() => page.scrollToItem(t === "get" ? getCard : pluginsCard))
     }
 
-    onVisibleChanged: if (visible) Qt.callLater(page.takeTarget)
+    onVisibleChanged: {
+        if (visible) {
+            page.checkOnOpen()
+            Qt.callLater(page.takeTarget)
+        }
+    }
 
     Connections {
         target: PluginRepoService

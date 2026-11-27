@@ -50,7 +50,7 @@
 mode="$1"
 [ $# -gt 0 ] && shift
 
-notify() { command -v notify-send >/dev/null 2>&1 && notify-send -a sekaipop "$@"; }
+notify() { command -v notify-send >/dev/null 2>&1 && notify-send -a "Deckard's Deck" "$@"; }
 have() { command -v "$1" >/dev/null 2>&1; }
 
 # Does a one-frame encode with the given ffmpeg arguments work? Gives up after 5 s.

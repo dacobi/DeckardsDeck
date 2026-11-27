@@ -177,7 +177,7 @@ Singleton {
     property Process notice: Process {
         property string title: ""
         property string body: ""
-        command: ["notify-send", "-a", "sekaipop", "-i", "material:extension", "--action=default=Show me", notice.title, notice.body]
+        command: ["notify-send", "-a", "Deckard's Deck", "-i", "material:extension", "--action=default=Show me", notice.title, notice.body]
         stdout: StdioCollector {
             onStreamFinished: {
                 if (text.trim() === "default")

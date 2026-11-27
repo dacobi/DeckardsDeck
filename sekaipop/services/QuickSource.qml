@@ -1104,7 +1104,7 @@ Scope {
                 "mkdir -p \"$dir\"",
                 "f=\"$dir/$(date +%Y-%m-%d_%H-%M-%S).png\"",
                 "g=$(slurp) || exit 0",
-                "grim -g \"$g\" \"$f\" && wl-copy < \"$f\" && notify-send -a sekaipop -i material:photo_camera \"Screenshot saved\" \"$f\""
+                "grim -g \"$g\" \"$f\" && wl-copy < \"$f\" && notify-send -a \"Deckard's Deck\" -i material:photo_camera \"Screenshot saved\" \"$f\""
             ].join("; ")])
         } else if (id === "colorPicker") {
             Quickshell.execDetached(["sh", "-c", "sleep 1; exec hyprpicker -a"])

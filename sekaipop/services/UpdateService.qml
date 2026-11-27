@@ -53,6 +53,7 @@ Singleton {
     // True while the look in progress was asked for by the user.
     property bool byUser: false
     readonly property bool watching: SettingsService.flag("updates.shellNotify")
+    readonly property bool edgy: SettingsService.get("quick.style") !== "sekaipop"
     property string reason: ""
     property double checkedAt: 0
     // Commits an update would bring: [{ hash, subject, age }]
@@ -109,8 +110,9 @@ Singleton {
         const what = root.isGit && root.behind > 0
             ? root.behind + (root.behind === 1 ? " new commit is" : " new commits are") + " waiting upstream."
             : (!root.isGit && !root.managed && root.latest !== "" ? "Version " + root.latest + " is out." : "A newer version is on GitHub.")
-        Quickshell.execDetached(["notify-send", "-a", "sekaipop", "-i", "material:system_update",
-            "SekaiPop update available", what + " Open Settings \u2192 About / Update to install it."])
+        const title = root.edgy ? "SYSTEM // UPDATE AVAILABLE" : "Deckard's Deck update available"
+        Quickshell.execDetached(["notify-send", "-a", "Deckard's Deck", "-i", "material:system_update",
+            title, what + " Open Settings \u2192 About / Update to install it."])
     }
 
     function update() {
@@ -184,7 +186,7 @@ Singleton {
     // A first look a little after the start (the network is often not up yet in the
     // very first seconds), then regularly. Both only run while the setting is on.
     Timer {
-        interval: 40 * 1000
+        interval: 10 * 1000
         running: root.watching
         onTriggered: root.check()
     }

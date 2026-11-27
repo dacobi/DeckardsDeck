@@ -310,10 +310,16 @@ Scope {
         return null
     }
 
+    function isUpdateNote(entry) {
+        if (!entry)
+            return false
+        return entry.icon === "material:system_update" && String(entry.body || "").indexOf("About / Update") >= 0
+    }
+
     // True when clicking this notification can do something (it has a live default action).
     function canActivate(key) {
         const i = indexOfKey(entries, key)
-        return i >= 0 && defaultAction(entries[i]) !== null
+        return i >= 0 && (defaultAction(entries[i]) !== null || isUpdateNote(entries[i]))
     }
 
     // A click on the notification. Runs its default action and, since it has been dealt
@@ -325,11 +331,17 @@ Scope {
         if (i < 0)
             return false
         const action = defaultAction(entries[i])
-        if (action === null)
-            return false
-        action.invoke()
-        dismiss(key)
-        return true
+        if (action !== null) {
+            action.invoke()
+            dismiss(key)
+            return true
+        }
+        if (isUpdateNote(entries[i])) {
+            Quickshell.execDetached(["qs", "-p", Quickshell.shellDir, "ipc", "call", "settings", "page", "about"])
+            dismiss(key)
+            return true
+        }
+        return false
     }
 
     // Closes the app's side of a notification, if it's still live.
@@ -399,7 +411,8 @@ Scope {
     // The shell's own screenshot confirmations (scripts/system/region-action.sh).
     // Errors ("wl-clipboard is not installed") are not matched, so they still show.
     function isScreenshotNote(e) {
-        if (String(e.app).toLowerCase() !== "sekaipop")
+        const app = String(e.app).toLowerCase()
+        if (app !== "sekaipop" && app !== "deckard's deck")
             return false
         return e.title === "Copied to the clipboard" && e.body === "Region screenshot"
             || e.title === "Screenshot saved"

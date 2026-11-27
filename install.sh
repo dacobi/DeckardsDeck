@@ -249,9 +249,9 @@ fi
 # (Only when installing from a git checkout, which is what get.sh does; a zip has no commit to record.)
 if [ "$DRY" != 1 ] && [ -d "$HERE/.git" ] && have git && [ -d "$QS_DEST" ] && [ "$(realpath "$QS_DEST")" != "$RICE" ]; then
     {
-        echo "commit=$(git -C "$HERE" rev-parse HEAD)"
-        echo "repo=$(git -C "$HERE" config --get remote.origin.url)"
-        echo "ref=$(git -C "$HERE" rev-parse --abbrev-ref HEAD)"
+        echo "commit=$(git -c safe.directory="$HERE" -C "$HERE" rev-parse HEAD)"
+        echo "repo=$(git -c safe.directory="$HERE" -C "$HERE" config --get remote.origin.url)"
+        echo "ref=$(git -c safe.directory="$HERE" -C "$HERE" rev-parse --abbrev-ref HEAD)"
     } > "$QS_DEST/.source" 2>/dev/null || true
 fi
 
