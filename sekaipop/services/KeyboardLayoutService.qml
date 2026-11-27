@@ -60,7 +60,9 @@ Singleton {
     readonly property string secondLayout: root.configuredLayouts.length > 1 ? root.configuredLayouts[1] : ""
 
     property bool restored: false
-    property bool applyingLayouts: false
+    property bool needsActiveRestore: true
+    property bool pendingWrite: false
+    property string lastAppliedLayouts: ""
 
     function setConfiguredLayouts(list) {
         if (!list || list.length === 0)
@@ -69,23 +71,16 @@ Singleton {
         if (clean.length === 0)
             return
         const joined = clean.join(",")
-        root.applyingLayouts = true
         SettingsService.set("kb.layouts", joined)
         if (root.savedActive === "" || clean.indexOf(root.savedActive) < 0)
             SettingsService.set("kb.active", clean[0])
+        root.needsActiveRestore = true
+        root.lastAppliedLayouts = joined
         if (HyprlandSettings.str("input.kb_variant") !== "")
             HyprlandSettings.set("input.kb_variant", "str", "")
-        HyprlandSettings.set("input.kb_layout", "str", joined)
-    }
-
-    function applySavedActiveLayout() {
-        if (!SettingsService.loaded || root.savedActive === "")
-            return
-        const list = root.configuredLayouts
-        const idx = list.indexOf(root.savedActive)
-        if (idx >= 0) {
-            root.activeIndex = idx
-            Quickshell.execDetached(["hyprctl", "switchxkblayout", "all", String(idx)])
+        if (HyprlandSettings.str("input.kb_layout", "") !== joined || root.layoutIds.join(",") !== joined) {
+            root.pendingWrite = true
+            HyprlandSettings.set("input.kb_layout", "str", joined)
         }
     }
 
@@ -93,13 +88,9 @@ Singleton {
         if (!SettingsService.loaded || root.restored)
             return
         root.restored = true
-        if (root.savedLayouts !== "") {
-            root.applyingLayouts = true
-            HyprlandSettings.set("input.kb_layout", "str", root.savedLayouts)
-        } else if (root.savedActive !== "") {
-            root.applySavedActiveLayout()
-            refetch.restart()
-        }
+        root.needsActiveRestore = true
+        root.lastAppliedLayouts = ""
+        refetch.restart()
     }
 
     Component.onCompleted: {
@@ -152,8 +143,10 @@ Singleton {
         const ids = root.layoutIds.length > 0 ? root.layoutIds : root.configuredLayouts
         if (ids.length > 1) {
             const nextIdx = (root.activeIndex + 1) % ids.length
+            root.activeIndex = nextIdx
             SettingsService.set("kb.active", ids[nextIdx])
         }
+        root.needsActiveRestore = false
         Quickshell.execDetached(["hyprctl", "switchxkblayout", "all", "next"])
         refetch.restart()
     }
@@ -164,6 +157,7 @@ Singleton {
         const ids = root.layoutIds.length > 0 ? root.layoutIds : root.configuredLayouts
         if (index >= 0 && index < ids.length)
             SettingsService.set("kb.active", ids[index])
+        root.needsActiveRestore = false
         Quickshell.execDetached(["hyprctl", "switchxkblayout", "all", String(index)])
         refetch.restart()
     }
@@ -206,11 +200,31 @@ Singleton {
                         root.layoutIds = ids
                         root.layoutCount = ids.length
                         root.activeIndex = kb.active_layout_index || 0
-                        if (SettingsService.loaded && root.restored && !root.applyingLayouts) {
-                            if (root.savedLayouts === "" && ids.length > 1)
-                                SettingsService.set("kb.layouts", ids.join(","))
-                            if (ids.length > 0 && root.activeIndex >= 0 && root.activeIndex < ids.length)
-                                SettingsService.set("kb.active", ids[root.activeIndex])
+                        if (SettingsService.loaded && !root.pendingWrite) {
+                            const currentJoined = ids.join(",")
+                            if (root.savedLayouts !== "" && currentJoined !== root.savedLayouts && root.lastAppliedLayouts !== root.savedLayouts) {
+                                root.lastAppliedLayouts = root.savedLayouts
+                                root.needsActiveRestore = true
+                                Quickshell.execDetached(["hyprctl", "keyword", "input:kb_layout", root.savedLayouts])
+                                refetch.restart()
+                            } else if (root.needsActiveRestore) {
+                                root.needsActiveRestore = false
+                                if (root.savedLayouts === "" && ids.length > 1)
+                                    SettingsService.set("kb.layouts", currentJoined)
+                                const targetIdx = root.savedActive !== "" ? ids.indexOf(root.savedActive) : -1
+                                if (targetIdx >= 0 && targetIdx !== root.activeIndex) {
+                                    root.activeIndex = targetIdx
+                                    Quickshell.execDetached(["hyprctl", "switchxkblayout", "all", String(targetIdx)])
+                                    refetch.restart()
+                                } else if (root.savedActive === "" && ids.length > 0 && root.activeIndex >= 0 && root.activeIndex < ids.length) {
+                                    SettingsService.set("kb.active", ids[root.activeIndex])
+                                }
+                            } else if (ids.length > 0 && root.activeIndex >= 0 && root.activeIndex < ids.length) {
+                                if (root.savedLayouts === "" && ids.length > 1)
+                                    SettingsService.set("kb.layouts", currentJoined)
+                                if (root.savedActive !== ids[root.activeIndex])
+                                    SettingsService.set("kb.active", ids[root.activeIndex])
+                            }
                         }
                     }
                     root.failures = 0
@@ -232,17 +246,14 @@ Singleton {
             // Hyprland sends "activelayout" as "<device>,<layout name>"
             if (event.name === "activelayout") {
                 root.layoutName = event.data.substring(event.data.indexOf(",") + 1)
-                // The event gives the name, not the place in the list.
-                root.refresh()
+                // The event gives the name, not the place in the list; debounce across sub-devices.
+                refetch.restart()
             }
             // A reload can add or drop layouts (kb_layout = "us,ru"), so ask again.
             else if (event.name === "configreloaded") {
-                if (SettingsService.loaded && root.savedLayouts !== "") {
-                    root.applyingLayouts = true
-                    HyprlandSettings.set("input.kb_layout", "str", root.savedLayouts)
-                } else {
-                    root.refresh()
-                }
+                root.lastAppliedLayouts = ""
+                root.needsActiveRestore = true
+                refetch.restart()
             }
         }
     }
@@ -253,8 +264,8 @@ Singleton {
         target: HyprlandSettings
         function onApplied(path) {
             if (path.indexOf("input.kb_") === 0) {
-                root.applySavedActiveLayout()
-                root.applyingLayouts = false
+                root.pendingWrite = false
+                root.needsActiveRestore = true
                 refetch.restart()
             }
         }

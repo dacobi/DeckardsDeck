@@ -87,5 +87,6 @@ ok(calendar.indexOf("id: calLayoutTag") > calendar.indexOf("id: pwGroup"), "Lock
 ok(/SettingsService\.get\("kb\.layouts"\)/.test(service) && /SettingsService\.set\("kb\.layouts"/.test(service), "persists configured layouts in SettingsService");
 ok(/SettingsService\.get\("kb\.active"\)/.test(service) && /SettingsService\.set\("kb\.active"/.test(service), "persists active layout in SettingsService");
 ok(/function restoreSaved\(\)/.test(service) && /target: SettingsService[\s\S]{0,120}root\.restoreSaved\(\)/.test(service), "restores saved layouts and active layout on startup when SettingsService loads");
+ok(!/event\.name === "configreloaded"[\s\S]{0,200}HyprlandSettings\.set/.test(service), "configreloaded never writes sekaipop_overrides.lua (avoids infinite reload loop)");
 
 console.log("lock layout: " + n + " checks passed");
