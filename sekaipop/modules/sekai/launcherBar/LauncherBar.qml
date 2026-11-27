@@ -309,14 +309,16 @@ PanelWindow {
     EditPreview {
         widgetId: "launcherbar"
         target: pillBox
+        pixelRatio: launcherWin.uiScale
     }
 
-    ScaleHost {
-        scale: launcherWin.uiScale
+    EditStage {
+        id: stage
+        screenObj: launcherWin.screen
+        uiScale: launcherWin.uiScale
 
-        EditStage {
-            anchors.fill: parent
-            screenName: launcherWin.screen ? launcherWin.screen.name : ""
+        ScaleHost {
+            scale: launcherWin.uiScale
 
             // Hot-edge hover sensor for Auto-hide mode.
             Item {
@@ -387,7 +389,8 @@ PanelWindow {
                     id: bodyPill
                     anchors.fill: parent
                     visible: launcherWin.look !== "transparent"
-                    capsule: launcherWin.capKeys
+                    capRim: launcherWin.capKeys
+                    flat: launcherWin.capKeys
                     cornerRadius: launcherWin.fullBar ? 0 : (mt.edgy ? mt.radiusInner : mt.radiusOuter)
                     ringWidth: launcherWin.capKeys ? mt.capRing : (mt.edgy ? 2 : 7)
                     fillColor: launcherWin.capKeys ? mt.capBody
@@ -465,7 +468,7 @@ PanelWindow {
                         Pill {
                             id: keyCap
                             anchors.fill: parent
-                            capsule: launcherWin.capKeys
+                            flat: launcherWin.capKeys
                             cornerRadius: mt.edgy ? 5 : 12
                             ringWidth: launcherWin.capKeys ? mt.capDotRing : (mt.edgy ? 2 : 5)
                             pressed: keyArea.pressed && !keySlot.isDragged
@@ -613,7 +616,7 @@ PanelWindow {
 
                     Pill {
                         anchors.fill: parent
-                        capsule: launcherWin.capKeys
+                        flat: launcherWin.capKeys
                         cornerRadius: mt.edgy ? 5 : 12
                         ringWidth: launcherWin.capKeys ? mt.capDotRing : (mt.edgy ? 2 : 5)
                         pressed: addArea.pressed
