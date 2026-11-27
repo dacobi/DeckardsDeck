@@ -340,7 +340,7 @@ var SHELL_TARGET = {
     overview: "shell", applauncher: "shell", quickpanel: "shell",
     phone: "shell", launcherphone: "shell", overviewphone: "shell", wallpaperphone: "shell",
     cheatsheet: "shell", wallpaperpicker: "shell", theme: "shell", palette: "shell",
-    barstyle: "shell", barposition: "shell", todo: "shell", notes: "shell", clock: "shell", usercard: "shell", weathercard: "shell", image: "shell", calendarcard: "shell", palettecard: "shell", lyrics: "shell",
+    barstyle: "shell", barposition: "shell", todo: "shell", notes: "shell", clock: "shell", usercard: "shell", weathercard: "shell", image: "shell", calendarcard: "shell", palettecard: "shell", lyrics: "shell", launcherbar: "shell",
     lock: "session",
     scale: "screen"
     // osd is split by function, see shellCategory()
@@ -367,7 +367,7 @@ var IPC_NAME = {
     overview: "overview", applauncher: "app launcher", quickpanel: "quick panel",
     phone: "phone", launcherphone: "apps", overviewphone: "overview", wallpaperphone: "wallpapers",
     cheatsheet: "cheatsheet", wallpaperpicker: "wallpaper picker", theme: "theme picker", palette: "palette",
-    barstyle: "bar style", barposition: "bar position", todo: "to-do", notes: "sticky notes", clock: "clock", usercard: "user card", weathercard: "weather card", image: "images", calendarcard: "calendar", palettecard: "palette card", lyrics: "lyrics", lock: "lock screen", scale: "UI scale", osd: "OSD"
+    barstyle: "bar style", barposition: "bar position", todo: "to-do", notes: "sticky notes", clock: "clock", usercard: "user card", weathercard: "weather card", image: "images", calendarcard: "calendar", palettecard: "palette card", lyrics: "lyrics", launcherbar: "launcher", lock: "lock screen", scale: "UI scale", osd: "OSD"
 };
 
 var IPC_VERB = {
@@ -426,7 +426,7 @@ function ipcMinor(target, fn, toggled) {
     if (target === "barstyle" || target === "barposition") return true;
     if (target === "theme") return !/^(toggle|darktoggle)$/.test(fn);
     if (target === "palette") return fn !== "toggle";
-    if (target === "todo" || target === "notes" || target === "clock" || target === "usercard" || target === "weathercard" || target === "image" || target === "calendarcard" || target === "palettecard" || target === "lyrics") return fn !== "toggle" && fn !== "pick" && !(target === "image" && fn === "add") && !(target === "notes" && fn === "create");
+    if (target === "todo" || target === "notes" || target === "clock" || target === "usercard" || target === "weathercard" || target === "image" || target === "calendarcard" || target === "palettecard" || target === "lyrics" || target === "launcherbar") return fn !== "toggle" && fn !== "pick" && !(target === "image" && fn === "add") && !(target === "notes" && fn === "create");
     if (target === "osd") return /^(gamma|setgamma|hide)/.test(fn);
     if (target === "scale") return fn !== "bump";
     if (target === "lock") return fn === "focus";

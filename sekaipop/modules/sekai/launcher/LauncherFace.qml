@@ -787,15 +787,57 @@ Item {
                 font.styleName: mt.fontStyleBold
             }
 
-            // The whole cell is the click target.
+            // The whole cell is the click & drag target.
             MouseArea {
                 id: area
 
                 anchors.fill: parent
                 hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onPositionChanged: face.keyNav = false
-                onClicked: face.activate(tile.modelData)
+                cursorShape: area.draggingApp ? Qt.ClosedHandCursor : Qt.PointingHandCursor
+                property real pressX: 0
+                property real pressY: 0
+                property bool draggingApp: false
+
+                onPressed: mouse => {
+                    area.pressX = mouse.x
+                    area.pressY = mouse.y
+                    area.draggingApp = false
+                }
+                onPositionChanged: mouse => {
+                    face.keyNav = false
+                    if (!(mouse.buttons & Qt.LeftButton))
+                        return
+                    const dx = mouse.x - area.pressX
+                    const dy = mouse.y - area.pressY
+                    if (!area.draggingApp && Math.hypot(dx, dy) > 12) {
+                        const sp = AppDragService.toScreenPoint(tile, mouse.x, mouse.y)
+                        if (AppDragService.startDrag(tile.modelData, face.screenName, sp.x, sp.y)) {
+                            area.draggingApp = true
+                            drawerGrid.interactive = false
+                        }
+                    } else if (area.draggingApp) {
+                        const sp = AppDragService.toScreenPoint(tile, mouse.x, mouse.y)
+                        AppDragService.updateDrag(sp.x, sp.y)
+                    }
+                }
+                onReleased: mouse => {
+                    if (area.draggingApp) {
+                        const sp = AppDragService.toScreenPoint(tile, mouse.x, mouse.y)
+                        AppDragService.updateDrag(sp.x, sp.y)
+                        AppDragService.endDrag()
+                        area.draggingApp = false
+                        drawerGrid.interactive = true
+                    } else {
+                        face.activate(tile.modelData)
+                    }
+                }
+                onCanceled: {
+                    if (area.draggingApp) {
+                        AppDragService.cancelDrag()
+                        area.draggingApp = false
+                        drawerGrid.interactive = true
+                    }
+                }
             }
         }
     }

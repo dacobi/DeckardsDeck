@@ -144,7 +144,46 @@ Item {
         id: area
         anchors.fill: parent
         hoverEnabled: true
-        cursorShape: Qt.PointingHandCursor
-        onClicked: row.activated()
+        cursorShape: area.draggingApp ? Qt.ClosedHandCursor : Qt.PointingHandCursor
+        property real pressX: 0
+        property real pressY: 0
+        property bool draggingApp: false
+
+        onPressed: mouse => {
+            area.pressX = mouse.x
+            area.pressY = mouse.y
+            area.draggingApp = false
+        }
+        onPositionChanged: mouse => {
+            if (!(mouse.buttons & Qt.LeftButton) || row.isAction || !row.app)
+                return
+            const dx = mouse.x - area.pressX
+            const dy = mouse.y - area.pressY
+            if (!area.draggingApp && Math.hypot(dx, dy) > 12) {
+                const sp = AppDragService.toScreenPoint(row, mouse.x, mouse.y)
+                const sName = (QsWindow.window && QsWindow.window.screen) ? QsWindow.window.screen.name : ""
+                if (AppDragService.startDrag(row.app, sName, sp.x, sp.y))
+                    area.draggingApp = true
+            } else if (area.draggingApp) {
+                const sp = AppDragService.toScreenPoint(row, mouse.x, mouse.y)
+                AppDragService.updateDrag(sp.x, sp.y)
+            }
+        }
+        onReleased: mouse => {
+            if (area.draggingApp) {
+                const sp = AppDragService.toScreenPoint(row, mouse.x, mouse.y)
+                AppDragService.updateDrag(sp.x, sp.y)
+                AppDragService.endDrag()
+                area.draggingApp = false
+            } else {
+                row.activated()
+            }
+        }
+        onCanceled: {
+            if (area.draggingApp) {
+                AppDragService.cancelDrag()
+                area.draggingApp = false
+            }
+        }
     }
 }

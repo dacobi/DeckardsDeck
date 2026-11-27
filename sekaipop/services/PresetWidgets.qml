@@ -115,6 +115,9 @@ Singleton {
         // Only the look (place, on / off): the sync nudges belong to your player and your songs, not to a look.
         { id: "lyrics", service: LyricsService, skip: ["syncMs", "offsets"] },
 
+        // The Launcher bar: on / off and monitor; the pinned apps are yours, not the look's.
+        { id: "launcherbar", service: LauncherBarService, skip: ["apps"] },
+
         // The sticky notes: on / off here. Their content is per preset but kept by NotesService
         // itself (switchSet / adoptSet / renameSet / dropSet, called by DesktopPresetService).
         {

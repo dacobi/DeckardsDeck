@@ -226,6 +226,14 @@ Singleton {
         "timer.pomLong": 15,            // minutes of long break
         "timer.pomRounds": 4,           // focus rounds before the long break
         "dock.pinOnStartup": false,     // start every session with the dock pinned (kept shown)
+        // ===== Launcher bar (modules/sekai/launcherBar/LauncherBar.qml, services/LauncherBarService.qml) =====
+        "launcherbar.perMonitor": false, // one Launcher bar on every monitor (off = one, on launcherbar.screen)
+        "launcherbar.screen": "",        // the monitor the Launcher bar sits on when perMonitor is off
+        "launcherbar.position": "left",  // the edge the Launcher bar sits on: left | right | top | bottom
+        "launcherbar.style": "float",    // float | bar (full-edge strip) | capsule | transparent
+        "launcherbar.hideMode": "off",   // off (always shown) | auto (auto-hide) | reserve (reserve screen space like Bar)
+        "launcherbar.iconSize": 36,      // size of an app icon key, design pixels
+        "launcherbar.addButton": true,   // show the "+" button on the Launcher bar to open the Apps drawer
         "wallpaper.enabled": true,       // Show or hide the desktop wallpaper
       
         "wallpaper.perMonitor": false,  // each monitor keeps its own wallpaper (off = one wallpaper on all of them)

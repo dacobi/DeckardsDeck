@@ -351,6 +351,14 @@ SettingsPage {
             onToggled: LyricsService.setShown(!LyricsService.shown)
         }
 
+        SettingToggle {
+            icon: "apps"
+            label: "Launcher"
+            detail: "A bar/dock strip for application icons you drag onto it"
+            checked: LauncherBarService.shown
+            onToggled: LauncherBarService.setShown(!LauncherBarService.shown)
+        }
+
         SettingChoice {
             label: "Lyrics source"
             sublabel: "Auto takes the best one for each song, Boidu first. Pick one to use it whenever it has the song"
@@ -667,6 +675,93 @@ SettingsPage {
                 : "Off: nothing is changed"
             checked: SettingsService.flag("perf.lowEnd")
             onToggled: SettingsService.toggle("perf.lowEnd")
+        }
+    }
+
+    SectionCard {
+        title: "Launcher"
+        icon: "apps"
+
+        SettingToggle {
+            icon: "apps"
+            label: "Show Launcher"
+            detail: "Drag application icons from the Apps launcher or a file manager onto it; drag off to remove"
+            checked: LauncherBarService.shown
+            onToggled: LauncherBarService.setShown(!LauncherBarService.shown)
+        }
+
+        SettingToggle {
+            icon: "monitor"
+            label: "Launcher on every monitor"
+            detail: SettingsService.flag("launcherbar.perMonitor")
+                ? "One Launcher per monitor"
+                : "One Launcher, on " + (SettingsService.get("launcherbar.screen") || "the first monitor")
+            checked: SettingsService.flag("launcherbar.perMonitor")
+            onToggled: SettingsService.toggle("launcherbar.perMonitor")
+        }
+
+        SettingChoice {
+            label: "Style"
+            sublabel: "Float is a compact dock/bar hybrid strip; Bar spans the whole screen edge"
+            current: SettingsService.get("launcherbar.style")
+            options: [
+                { id: "float", label: "Float", edge: SettingsService.get("launcherbar.position"), variant: "float" },
+                { id: "bar", label: "Bar strip", edge: SettingsService.get("launcherbar.position"), variant: "straight" },
+                { id: "capsule", label: "Capsule", edge: SettingsService.get("launcherbar.position"), variant: "capsule" },
+                { id: "transparent", label: "Transparent", edge: SettingsService.get("launcherbar.position"), variant: "transparent" }
+            ]
+            onPicked: id => SettingsService.set("launcherbar.style", id)
+        }
+
+        SettingChoice {
+            label: "Position"
+            sublabel: "Which screen edge the Launcher sits on"
+            current: SettingsService.get("launcherbar.position")
+            options: [
+                { id: "left", label: "Left", edge: "left" },
+                { id: "right", label: "Right", edge: "right" },
+                { id: "top", label: "Top", edge: "top" },
+                { id: "bottom", label: "Bottom", edge: "bottom" }
+            ]
+            onPicked: id => SettingsService.set("launcherbar.position", id)
+        }
+
+        SettingChoice {
+            label: "Hiding & space"
+            sublabel: "Always shown floats over windows; Auto-hide slides away; Reserve space pushes tiled windows aside like the Bar"
+            current: SettingsService.get("launcherbar.hideMode")
+            options: [
+                { id: "off", label: "Always shown", icon: "visibility" },
+                { id: "auto", label: "Auto-hide", icon: "vertical_align_bottom" },
+                { id: "reserve", label: "Reserve space", icon: "space_dashboard" }
+            ]
+            onPicked: id => SettingsService.set("launcherbar.hideMode", id)
+        }
+
+        SettingStepper {
+            icon: "format_size"
+            label: "Icon size"
+            from: 28
+            to: 56
+            step: 1
+            value: SettingsService.get("launcherbar.iconSize")
+            onMoved: v => SettingsService.set("launcherbar.iconSize", Math.round(v))
+        }
+
+        SettingToggle {
+            icon: "add_circle"
+            label: "Show + add button"
+            detail: "Quick button at the end of the Launcher to open the Apps drawer"
+            checked: SettingsService.flag("launcherbar.addButton")
+            onToggled: SettingsService.toggle("launcherbar.addButton")
+        }
+
+        SettingAction {
+            visible: LauncherBarService.apps.length > 0
+            icon: "delete_sweep"
+            label: "Clear Launcher icons"
+            detail: LauncherBarService.apps.length + (LauncherBarService.apps.length === 1 ? " app pinned" : " apps pinned")
+            onActivated: LauncherBarService.clear()
         }
     }
 

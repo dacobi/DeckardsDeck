@@ -34,6 +34,7 @@ function world() {
         CalendarCardService: snap("calendarcard", { x: 9, y: 9, shown: true, size: "full", events: ["mine"] }),
         PaletteService: snap("palettecard", { x: 1, y: 1, shown: true, size: "full", colors: ["#fff"], scheme: "x" }),
         LyricsService: snap("lyrics", { x: 2, y: 3, shown: true, syncMs: 250, offsets: { "a|b|1": 300 } }),
+        LauncherBarService: snap("launcherbar", { x: -1, y: -1, shown: true, apps: [{ id: "kitty", name: "Kitty", icon: "kitty", exec: "kitty" }] }),
         TodoService: { posX: 1, posY: 2, posScale: 1, shown: true, size: "2x2",
             setShown(v) { log.push("todo.setShown(" + v + ")"); this.shown = v },
             setSize(v) { this.size = v }, setPosition(x, y, s) { this.posX = x; this.posY = y; this.posScale = s } },
@@ -50,7 +51,7 @@ const ctx = { name: "P", wearFrames: items => frames.push(items) }
 // ---------- 1. the registry file itself ----------
 let w = world()
 let list = reg.load(w)
-assert.deepStrictEqual(reg.ids, ["clock", "usercard", "weathercard", "visualizer", "todo", "calendarcard", "palettecard", "lyrics", "notes", "images"])
+assert.deepStrictEqual(reg.ids, ["clock", "usercard", "weathercard", "visualizer", "todo", "calendarcard", "palettecard", "lyrics", "launcherbar", "notes", "images"])
 assert.deepStrictEqual(PP.problems(list), [], "the real list has no problems: " + JSON.stringify(PP.problems(list)))
 // problems() says what is wrong with a half-made entry
 assert.ok(PP.problems([{ id: "x" }]).some(m => m.includes("no service")))
@@ -83,10 +84,10 @@ assert.deepStrictEqual(got.bad, {}); assert.ok("clock" in got)
 // ---------- 3. THE RULE: an old preset switches a newer widget off ----------
 // A preset saved before the calendar card, palette card, notes and images existed:
 const old = JSON.parse(JSON.stringify(saved))
-for (const id of ["calendarcard", "palettecard", "lyrics", "notes", "images"]) delete old[id]
+for (const id of ["calendarcard", "palettecard", "lyrics", "launcherbar", "notes", "images"]) delete old[id]
 w = world(); list = reg.load(w); log.length = 0
 PP.wear(list, old, ctx)
-for (const id of ["calendarcard", "palettecard", "lyrics", "notes", "images"])
+for (const id of ["calendarcard", "palettecard", "lyrics", "launcherbar", "notes", "images"])
     assert.ok(log.includes(id + ".setShown(false)"), id + " must be switched OFF by a preset that predates it")
 assert.deepStrictEqual(frames, [], "no frames are touched for a preset that holds none")
 for (const id of ["clock", "usercard", "weathercard", "visualizer", "todo"])

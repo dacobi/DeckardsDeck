@@ -15,6 +15,7 @@ import qs.modules.sekai.editMode
 import qs.modules.sekai.framing
 import qs.modules.sekai.keyboard
 import qs.modules.sekai.launcher
+import qs.modules.sekai.launcherBar
 import qs.modules.sekai.lock
 import qs.modules.sekai.notificationPopup
 import qs.modules.sekai.onScreenDisplay
@@ -668,6 +669,78 @@ ShellRoot {
             launcher: panel
             overviewBoard: overview
         }
+    }
+
+    // The Launcher bar (modules/sekai/launcherBar/LauncherBar.qml): a screen-edge bar/dock
+    // hybrid whose sole purpose is holding application icons dragged onto it.
+    FocusGate {
+        id: launcherbarGate
+        widgetId: "launcherbar"
+        unloads: false
+        screenName: EditMode.homeScreen(LauncherBarService.screenName)
+    }
+
+    Variants {
+        id: launcherBars
+        model: {
+            const list = []
+            if (GameModeService.enabled || !GameModeService.loaded || !SettingsService.loaded || !LauncherBarService.loaded)
+                return list
+            if (!LauncherBarService.shown && !EditMode.active)
+                return list
+            const every = SettingsService.flag("launcherbar.perMonitor")
+            const saved = SettingsService.get("launcherbar.position")
+            const pos = (saved === "left" || saved === "right" || saved === "top" || saved === "bottom") ? saved : "left"
+            const wantName = SettingsService.get("launcherbar.screen") || LauncherBarService.screenName
+            let only = 0
+            for (let j = 0; j < Quickshell.screens.length; j++) {
+                if (Quickshell.screens[j].name === wantName) {
+                    only = j
+                    break
+                }
+            }
+            for (let i = 0; i < Quickshell.screens.length; i++) {
+                if (!every && i !== only)
+                    continue
+                list.push({ screen: Quickshell.screens[i], position: pos, perMonitor: every })
+            }
+            return list
+        }
+        LauncherBar {
+            quickPanel: panel
+        }
+    }
+
+    // Floating icon ghost while dragging an app from the Cyberdeck Apps screen to the Launcher bar.
+    LazyLoader {
+        active: AppDragService.active
+        AppDragGhost {}
+    }
+
+    IpcHandler {
+        target: "launcherbar"
+        function toggle(): void { LauncherBarService.setShown(!LauncherBarService.shown) }
+        function show(): void { LauncherBarService.setShown(true) }
+        function open(): void { LauncherBarService.setShown(true) }
+        function hide(): void { LauncherBarService.setShown(false) }
+        function close(): void { LauncherBarService.setShown(false) }
+        function peek(): void {
+            for (const lb of launcherBars.instances)
+                lb.peek()
+        }
+        function position(edge: string): void {
+            if (edge === "left" || edge === "right" || edge === "top" || edge === "bottom")
+                SettingsService.set("launcherbar.position", edge)
+        }
+        function style(name: string): void {
+            if (name === "float" || name === "bar" || name === "capsule" || name === "transparent")
+                SettingsService.set("launcherbar.style", name)
+        }
+        function hidemode(mode: string): void {
+            if (mode === "off" || mode === "auto" || mode === "reserve")
+                SettingsService.set("launcherbar.hideMode", mode)
+        }
+        function clear(): void { LauncherBarService.clear() }
     }
 
     // The bar's own IPC (one handler for every bar, like the dock's below).

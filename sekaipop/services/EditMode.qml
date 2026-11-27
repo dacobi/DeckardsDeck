@@ -189,7 +189,8 @@ Singleton {
         // others, though it has no tile of its own.
         { id: "image", title: "Image", icon: "add_photo_alternate" },
         { id: "palettecard", title: "Palette", icon: "palette" },
-        { id: "lyrics", title: "Lyrics", icon: "lyrics" }
+        { id: "lyrics", title: "Lyrics", icon: "lyrics" },
+        { id: "launcherbar", title: "Launcher", icon: "apps" }
     ]
 
     // What the shelf shows: the widgets above, then the desktop widget plugins that loaded
@@ -239,6 +240,8 @@ Singleton {
             return PaletteService
         if (id === "lyrics")
             return LyricsService
+        if (id === "launcherbar")
+            return LauncherBarService
         if (PluginService.isPluginId(id))
             return PluginService.stateFor(id)
         return null
@@ -352,6 +355,8 @@ Singleton {
             return PaletteService.shown
         if (id === "lyrics")
             return LyricsService.shown
+        if (id === "launcherbar")
+            return LauncherBarService.shown
         if (id === "todo")
             return TodoService.shown
         if (id === "notes")
@@ -388,6 +393,8 @@ Singleton {
             return root.homeScreen(PaletteService.screenName) === root.screenName
         if (id === "lyrics")
             return root.homeScreen(LyricsService.screenName) === root.screenName
+        if (id === "launcherbar")
+            return SettingsService.flag("launcherbar.perMonitor") || root.homeScreen(LauncherBarService.screenName) === root.screenName
         if (id === "visualizer")
             return root.homeScreen(VisualizerService.screenName) === root.screenName
         // The shelf's Image tile is a button, not a widget: it is never "placed".
@@ -459,6 +466,12 @@ Singleton {
                 LyricsService.screenName = here
             }
             LyricsService.setShown(true)
+        } else if (id === "launcherbar") {
+            if (here !== "") {
+                LauncherBarService.screenName = here
+                SettingsService.set("launcherbar.screen", here)
+            }
+            LauncherBarService.setShown(true)
         } else if (id === "visualizer") {
             if (here !== "" && root.homeScreen(VisualizerService.screenName) !== here) {
                 VisualizerService.posX = -1
@@ -519,6 +532,8 @@ Singleton {
             PaletteService.setShown(false)
         else if (id === "lyrics")
             LyricsService.setShown(false)
+        else if (id === "launcherbar")
+            LauncherBarService.setShown(false)
         else if (id === "todo")
             TodoService.setShown(false)
         else if (id === "notes")
