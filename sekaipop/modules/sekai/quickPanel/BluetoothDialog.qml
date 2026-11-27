@@ -71,7 +71,7 @@ Item {
         y: 200 + 4
         width: 575
         height: 940
-        radius: 41
+        radius: mt.quickEdgy ? mt.quickRadiusOuter : 41
         color: mt.pLineShadow
         antialiasing: true
     }
@@ -82,10 +82,10 @@ Item {
         y: 200
         width: 575
         height: 940
-        radius: 41
-        color: mt.pSurface
-        border.width: 3
-        border.color: mt.pLine
+        radius: mt.quickEdgy ? mt.quickRadiusOuter : 41
+        color: mt.quickEdgy ? mt.hudSurface : mt.pSurface
+        border.width: mt.quickEdgy ? 2 : 3
+        border.color: mt.quickEdgy ? mt.accentFrame : mt.pLine
         clip: true
 
         MouseArea { anchors.fill: parent }
@@ -93,10 +93,10 @@ Item {
         Text {
             x: 28
             y: 26
-            text: "Bluetooth"
-            color: mt.pInk
+            text: mt.quickEdgy ? "BLUETOOTH // LINK" : "Bluetooth"
+            color: mt.quickEdgy ? mt.accentCyan : mt.pInk
             font.family: mt.fontFamily
-            font.pixelSize: 26
+            font.pixelSize: mt.quickEdgy ? 22 : 26
             font.weight: Font.ExtraBold
             font.styleName: mt.fontStyleBold
         }
@@ -107,18 +107,18 @@ Item {
             y: 22
             width: scanLabel.implicitWidth + 28
             height: 34
-            radius: 17
+            radius: mt.quickEdgy ? mt.quickRadiusInner : 17
             color: scanArea.containsMouse ? mt.pSurfaceHover : "transparent"
             border.width: 2
-            border.color: mt.pLine
+            border.color: mt.quickEdgy ? mt.accentCyan : mt.pLine
             opacity: root.manualScanning ? 0.5 : 1
 
             Text {
                 id: scanLabel
                 anchors.centerIn: parent
                 text: root.manualScanning ? "Refreshing…" : "Refresh"
-                color: mt.pInk
-                font.family: mt.fontFamily
+                color: mt.quickEdgy ? mt.accentCyan : mt.pInk
+                font.family: mt.quickEdgy ? mt.monoFontFamily : mt.fontFamily
                 font.pixelSize: 14
                 font.weight: Font.DemiBold
             }
@@ -141,10 +141,10 @@ Item {
             y: 22
             width: advancedLabel.implicitWidth + 28
             height: 34
-            radius: 17
+            radius: mt.quickEdgy ? mt.quickRadiusInner : 17
             color: advancedArea.containsMouse ? mt.pSurfaceHover : "transparent"
             border.width: 2
-            border.color: mt.pLine
+            border.color: mt.quickEdgy ? mt.accentFrame : mt.pLine
 
             Text {
                 id: advancedLabel
@@ -217,7 +217,7 @@ Item {
                     y: 2
                     width: parent.width
                     height: 60
-                    radius: 20
+                    radius: mt.quickEdgy ? mt.quickRadiusInner : 20
                     color: rowArea.containsMouse ? mt.pSurfaceHover : "transparent"
                     antialiasing: true
                 }

@@ -569,7 +569,26 @@ PanelWindow {
                                 anchors.verticalCenter: parent.verticalCenter
                                 spacing: 8
 
+                                Rectangle {
+                                    visible: mt.edgy
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: card.small ? 24 : 26
+                                    height: width
+                                    radius: mt.radiusInner
+                                    color: mt.hudSurface
+                                    border.width: 1
+                                    border.color: mt.accentFrame
+
+                                    MaterialIcon {
+                                        anchors.centerIn: parent
+                                        name: "palette"
+                                        size: card.small ? 15 : 17
+                                        color: mt.accentCyan
+                                    }
+                                }
+
                                 MaterialIcon {
+                                    visible: !mt.edgy
                                     anchors.verticalCenter: parent.verticalCenter
                                     name: "palette"
                                     size: 24
@@ -578,12 +597,13 @@ PanelWindow {
 
                                 Text {
                                     anchors.verticalCenter: parent.verticalCenter
-                                    text: "Palette"
-                                    color: mt.pInk
+                                    text: mt.edgy ? "PALETTE" : "Palette"
+                                    color: mt.edgy ? mt.accentCyan : mt.pInk
                                     font.family: mt.fontFamily
-                                    font.pixelSize: card.small ? 18 : 20
+                                    font.pixelSize: card.small ? (mt.edgy ? 15 : 18) : (mt.edgy ? 17 : 20)
                                     font.weight: Font.ExtraBold
                                     font.styleName: mt.fontStyleBold
+                                    font.letterSpacing: mt.edgy ? 0.8 : 0
                                 }
                             }
 
@@ -596,12 +616,18 @@ PanelWindow {
                                 Rectangle {
                                     anchors.verticalCenter: parent.verticalCenter
                                     height: 26
-                                    width: statusRow.implicitWidth + 18
-                                    radius: 13
+                                    width: statusRow.implicitWidth + (mt.edgy ? 14 : 18)
+                                    radius: mt.edgy ? mt.radiusInner : 13
                                     antialiasing: true
-                                    color: PaletteService.applied ? mt.accentMint : mt.surfaceHover
-                                    border.width: 2
-                                    border.color: mt.line
+                                    color: mt.edgy
+                                        ? (PaletteService.applied
+                                            ? Qt.rgba(mt.accentGreen.r, mt.accentGreen.g, mt.accentGreen.b, 0.18)
+                                            : mt.hudSurface)
+                                        : (PaletteService.applied ? mt.accentMint : mt.surfaceHover)
+                                    border.width: mt.edgy ? 1 : 2
+                                    border.color: mt.edgy
+                                        ? (PaletteService.applied ? mt.accentGreen : mt.accentFrame)
+                                        : mt.line
 
                                     Behavior on color { ColorAnimation { duration: 200 } }
 
@@ -614,15 +640,21 @@ PanelWindow {
                                             anchors.verticalCenter: parent.verticalCenter
                                             name: PaletteService.applied ? "check_circle" : "visibility"
                                             size: 15
-                                            color: PaletteService.applied ? mt.colBorder : mt.ink
+                                            color: mt.edgy
+                                                ? (PaletteService.applied ? mt.accentGreen : mt.accentYellow)
+                                                : (PaletteService.applied ? mt.colBorder : mt.ink)
                                         }
 
                                         Text {
                                             anchors.verticalCenter: parent.verticalCenter
-                                            text: PaletteService.applied ? "Applied" : "Preview only"
-                                            color: PaletteService.applied ? mt.colBorder : mt.ink
-                                            font.family: mt.fontFamily
-                                            font.pixelSize: 11
+                                            text: mt.edgy
+                                                ? (PaletteService.applied ? "SYNCED" : "PREVIEW")
+                                                : (PaletteService.applied ? "Applied" : "Preview only")
+                                            color: mt.edgy
+                                                ? (PaletteService.applied ? mt.accentGreen : mt.accentYellow)
+                                                : (PaletteService.applied ? mt.colBorder : mt.ink)
+                                            font.family: mt.edgy ? mt.monoFontFamily : mt.fontFamily
+                                            font.pixelSize: mt.edgy ? 10 : 11
                                             font.weight: Font.ExtraBold
                                             font.styleName: mt.fontStyleBold
                                         }
@@ -635,11 +667,15 @@ PanelWindow {
                                     anchors.verticalCenter: parent.verticalCenter
                                     width: 28
                                     height: 28
-                                    radius: 14
+                                    radius: mt.edgy ? mt.radiusInner : 14
                                     antialiasing: true
-                                    color: expandMouse.containsMouse ? mt.surfaceTint : mt.surfaceHover
-                                    border.width: 2
-                                    border.color: mt.line
+                                    color: mt.edgy
+                                        ? (expandMouse.containsMouse ? Qt.lighter(mt.hudSurface, 1.3) : mt.hudSurface)
+                                        : (expandMouse.containsMouse ? mt.surfaceTint : mt.surfaceHover)
+                                    border.width: mt.edgy ? 1 : 2
+                                    border.color: mt.edgy
+                                        ? (expandMouse.containsMouse ? mt.accentCyan : mt.accentFrame)
+                                        : mt.line
 
                                     Behavior on color { ColorAnimation { duration: 120 } }
 
@@ -647,7 +683,7 @@ PanelWindow {
                                         anchors.centerIn: parent
                                         name: "open_in_full"
                                         size: 15
-                                        color: mt.ink
+                                        color: mt.edgy ? mt.accentCyan : mt.ink
                                     }
 
                                     MouseArea {
@@ -658,6 +694,23 @@ PanelWindow {
                                         onClicked: PaletteService.requestOpen()
                                     }
                                 }
+                            }
+
+                            // Cyberdeck diagonal stripe telemetry bar at bottom of header
+                            CyberStripe {
+                                visible: mt.edgy && !card.small
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                anchors.bottom: parent.bottom
+                                anchors.bottomMargin: -4
+                                height: 3
+                                mode: "stripes"
+                                fillRatio: PaletteService.applied ? 1.0 : 0.65
+                                color: mt.accentCyan
+                                altColor: mt.accentYellow
+                                trackColor: Qt.rgba(mt.accentFrame.r, mt.accentFrame.g, mt.accentFrame.b, 0.28)
+                                stripeWidth: 5
+                                gap: 3
                             }
                         }
 

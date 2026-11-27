@@ -24,6 +24,7 @@ Item {
 
     // This monitor's theme: Theme.of() gives the shell's own unless the monitor has one.
     readonly property var mt: Theme.of(QsWindow.window)
+    readonly property bool edgy: mt.quickEdgy
 
     property var key
     property string app: ""
@@ -129,29 +130,44 @@ Item {
         // The card's slightly deeper edge tone, used by both the side
         // gradient and the bottom fade below. Derived from the card colour
         // itself, so the fades blend into the card.
-        readonly property color edgeTone: mt.classic ? Qt.color("#e9e9e9") : Qt.darker(mt.pSurfaceHover, 1.12)
+        readonly property color edgeTone: card.edgy
+            ? Qt.darker(mt.hudSurface, 1.22)
+            : (mt.classic ? Qt.color("#e9e9e9") : Qt.darker(mt.pSurfaceHover, 1.12))
 
         Rectangle {
             anchors.fill: parent
-            radius: 16.5
-            color: mt.pSurfaceHover
+            radius: card.edgy ? mt.quickRadiusInner : 16.5
+            color: card.edgy ? Qt.lighter(mt.hudSurface, 1.15) : mt.pSurfaceHover
             opacity: card.pressed ? 0.7 : 1
-            // A critical one gets the panel's outline.
-            border.width: card.urgency === 2 ? 3 : 0
-            border.color: mt.pLine
+            // In cyberdeck mode, every card has an angular HUD frame; critical notifications glow yellow.
+            border.width: card.edgy ? (card.urgency === 2 ? 2 : 1) : (card.urgency === 2 ? 3 : 0)
+            border.color: card.edgy
+                ? (card.urgency === 2 ? mt.accentYellow : Qt.rgba(mt.accentFrame.r, mt.accentFrame.g, mt.accentFrame.b, 0.55))
+                : mt.pLine
             gradient: Gradient {
                 orientation: Gradient.Horizontal
-                GradientStop { position: 0.0; color: mt.pSurfaceHover }
-                GradientStop { position: 0.72; color: mt.pSurfaceHover }
+                GradientStop { position: 0.0; color: card.edgy ? Qt.lighter(mt.hudSurface, 1.18) : mt.pSurfaceHover }
+                GradientStop { position: 0.72; color: card.edgy ? Qt.lighter(mt.hudSurface, 1.12) : mt.pSurfaceHover }
                 GradientStop { position: 1.0; color: slide.edgeTone }
             }
             antialiasing: true
         }
 
+        // Cyberdeck left vertical neon indicator bar
+        Rectangle {
+            visible: card.edgy
+            x: 4
+            y: 10
+            width: 3
+            height: parent.height - 20
+            radius: 1
+            color: card.urgency === 2 ? mt.accentYellow : mt.accentCyan
+        }
+
         // A soft settle toward the bottom of the card.
         Rectangle {
             anchors.fill: parent
-            radius: 16.5
+            radius: card.edgy ? mt.quickRadiusInner : 16.5
             gradient: Gradient {
                 GradientStop { position: 0.0; color: Qt.rgba(slide.edgeTone.r, slide.edgeTone.g, slide.edgeTone.b, 0) }
                 GradientStop { position: 0.62; color: Qt.rgba(slide.edgeTone.r, slide.edgeTone.g, slide.edgeTone.b, 0) }
@@ -171,8 +187,10 @@ Item {
             Rectangle {
                 visible: !card.materialIcon
                 anchors.fill: parent
-                radius: width / 2
-                color: mt.pSurface
+                radius: card.edgy ? mt.quickRadiusInner : width / 2
+                color: card.edgy ? mt.hudSurface : mt.pSurface
+                border.width: card.edgy ? 1 : 0
+                border.color: Qt.rgba(mt.accentCyan.r, mt.accentCyan.g, mt.accentCyan.b, 0.45)
                 antialiasing: true
             }
 
@@ -215,19 +233,19 @@ Item {
                 id: appText
                 width: Math.min(implicitWidth, card.cardWidth - 198 - (card.group ? 34 : 0))
                 elide: Text.ElideRight
-                text: card.app
-                color: mt.pInkSub
-                font.family: mt.fontFamily
-                font.pixelSize: 14
-                font.weight: Font.Medium
+                text: card.edgy ? card.app.toUpperCase() : card.app
+                color: card.edgy ? mt.accentCyan : mt.pInkSub
+                font.family: card.edgy ? mt.monoFontFamily : mt.fontFamily
+                font.pixelSize: card.edgy ? 12 : 14
+                font.weight: card.edgy ? Font.Bold : Font.Medium
             }
 
             Rectangle {
                 visible: card.group
                 height: 18
                 width: Math.max(18, countText.implicitWidth + 12)
-                radius: 9
-                color: mt.pLine
+                radius: card.edgy ? mt.quickRadiusInner : 9
+                color: card.edgy ? mt.accentFrame : mt.pLine
                 antialiasing: true
                 anchors.verticalCenter: appText.verticalCenter
 
@@ -236,7 +254,7 @@ Item {
                     anchors.centerIn: parent
                     text: card.groupCount > 9 ? "9+" : card.groupCount
                     color: "white"
-                    font.family: mt.fontFamily
+                    font.family: card.edgy ? mt.monoFontFamily : mt.fontFamily
                     font.pixelSize: 12
                     font.weight: Font.ExtraBold
                 }
@@ -249,9 +267,9 @@ Item {
             width: 70
             horizontalAlignment: Text.AlignRight
             text: card.agoText
-            color: mt.pInkSub
-            font.family: mt.fontFamily
-            font.pixelSize: 14
+            color: card.edgy ? mt.accentYellow : mt.pInkSub
+            font.family: card.edgy ? mt.monoFontFamily : mt.fontFamily
+            font.pixelSize: card.edgy ? 12 : 14
             font.weight: Font.Medium
         }
 

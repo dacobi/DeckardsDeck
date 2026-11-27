@@ -71,6 +71,8 @@ Singleton {
         // ===== General =====
         // Widget & shell style: "cyberpunk" (angular cyberdeck default) | "sekaipop" (classic curvy look).
         "appearance.style": "cyberpunk",
+        // Quick Panel style override: "auto" (follows appearance.style) | "cyberpunk" | "sekaipop".
+        "quick.style": "auto",
         "time.use24h": false,
         "weather.fahrenheit": false,
         // How a new notification announces itself: phone (the Quick Panel's phone rises and buzzes; the default) | popups (a stack of cards in the corner).

@@ -46,6 +46,17 @@ QtObject {
         ? "sekaipop" : "cyberpunk"
     readonly property bool edgy: widgetStyle === "cyberpunk"
 
+    // Quick Panel style: "auto" (follows widgetStyle), "cyberpunk", or "sekaipop".
+    readonly property string quickStyleSetting: {
+        const s = SettingsService.get("quick.style")
+        return (s === "cyberpunk" || s === "sekaipop") ? s : "auto"
+    }
+    readonly property string quickStyle: quickStyleSetting === "auto" ? widgetStyle : quickStyleSetting
+    readonly property bool quickEdgy: quickStyle === "cyberpunk"
+    readonly property int phoneCornerRadius: quickEdgy ? 6 : 24
+    readonly property int quickRadiusOuter: quickEdgy ? 3 : 18
+    readonly property int quickRadiusInner: quickEdgy ? 2 : 12
+
     // Light mode: how much of the theme's border colour stays in the border
     // and in the drop shadow (0 = white, 1 = the full navy). Lower = lighter.
     // Pixels one mouse-wheel notch scrolls any list in the shell (WheelScroll.qml).

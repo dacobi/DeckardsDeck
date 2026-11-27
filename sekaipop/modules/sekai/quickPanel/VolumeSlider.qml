@@ -77,15 +77,18 @@ Item {
     // Wi-Fi/Bluetooth, so these two read as on/off toggles too instead
     // of just a fading fill. Glides between them rather than snapping.
     property real litP: root.muted ? 0 : 1
+    property bool edgy: mt.quickEdgy
 
-    // Text / glyph colour: mode ink when muted (plain surface), dark ink when
-    // lit (accent gradient behind it). `simple` (Brightness) has no button
-    // and no gradient behind its text -- it always sits on the plain surface,
-    // so it always wears the mode ink (it was going navy on the dark surface).
+    // Text / glyph colour: in cyberdeck mode, glowing cyan when active and muted sub-ink when muted;
+    // in SekaiPop mode, mode ink when muted and dark ink over the bright accent gradient when lit.
     readonly property color inkNow: root.simple
-        ? mt.pInk
-        : Qt.tint(mt.pInk, Qt.rgba(mt.colBorder.r, mt.colBorder.g, mt.colBorder.b, litP))
-    readonly property color inkSubNow: Qt.rgba(inkNow.r, inkNow.g, inkNow.b, 0.667)
+        ? (root.edgy ? mt.accentCyan : mt.pInk)
+        : (root.edgy
+            ? (root.muted ? mt.pInkSub : mt.accentCyan)
+            : Qt.tint(mt.pInk, Qt.rgba(mt.colBorder.r, mt.colBorder.g, mt.colBorder.b, litP)))
+    readonly property color inkSubNow: root.edgy
+        ? (root.muted ? mt.accentFrame : mt.accentYellow)
+        : Qt.rgba(inkNow.r, inkNow.g, inkNow.b, 0.667)
     Behavior on litP {
         NumberAnimation {
             duration: 170
@@ -132,9 +135,16 @@ Item {
         // same trick QuickToggle uses.
         width: root.sliderWidth + shadowDx
         height: 73 + shadowDy
-        cornerRadius: 40
-        borderWidth: 3 + 2 * root.litP
-        ringWidth: 3 + 11 * root.litP
+        edgy: root.edgy
+        cornerRadius: root.edgy ? mt.quickRadiusOuter : 40
+        borderWidth: root.edgy ? 2 : (3 + 2 * root.litP)
+        ringWidth: root.edgy ? 3 : (3 + 11 * root.litP)
+        borderColor: root.edgy ? (root.muted ? mt.accentFrame : mt.accentCyan) : mt.pLine
+        fillColor: root.edgy
+            ? (root.muted
+                ? mt.hudSurface
+                : Qt.tint(mt.hudSurface, Qt.rgba(mt.accentCyan.r, mt.accentCyan.g, mt.accentCyan.b, 0.16)))
+            : mt.pSurface
         shadowDx: root.flatShadow ? 0 : 3 + 2 * root.litP
         shadowDy: root.flatShadow ? 3 + root.litP : 1 + root.litP
 
@@ -146,8 +156,9 @@ Item {
 
         // The white base is Pill's own default fillColor — always
         // there, nothing drawn over it. This gradient fades IN on top
-        // as litP rises, same as QuickToggle's ON look.
+        // as litP rises in SekaiPop mode.
         Rectangle {
+            visible: !root.edgy
             anchors.fill: parent
             radius: parent.radius
             gradient: Gradient {
@@ -173,6 +184,16 @@ Item {
             width: cap.capWidth
             height: cap.capHeight
 
+            Rectangle {
+                visible: root.edgy
+                x: 4
+                y: 12
+                width: 3
+                height: parent.height - 24
+                radius: 1
+                color: root.muted ? mt.accentFrame : mt.accentGreen
+            }
+
             MaterialIcon {
                 color: root.inkNow
                 id: glyph
@@ -180,7 +201,7 @@ Item {
                 size: 24
                 anchors.verticalCenter: parent.verticalCenter
                 name: root.icon
-                opacity: root.muted ? 0.4 : 1
+                opacity: root.muted ? 0.55 : 1
             }
 
             Text {
@@ -191,12 +212,13 @@ Item {
                 anchors.rightMargin: 6
                 anchors.verticalCenter: parent.verticalCenter
                 elide: Text.ElideRight
-                text: root.label
+                text: root.edgy ? root.label.toUpperCase() : root.label
                 color: root.muted ? mt.pInkSub : root.inkNow
                 font.family: mt.fontFamily
-                font.pixelSize: 18
+                font.pixelSize: root.edgy ? 16 : 18
                 font.weight: Font.ExtraBold
                 font.styleName: mt.fontStyleBold
+                font.letterSpacing: root.edgy ? 0.6 : 0
             }
 
             Text {
@@ -206,8 +228,9 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 text: root.muted ? "MUTE" : Math.round(root.shownValue) + "%"
                 color: root.inkSubNow
-                font.family: mt.fontFamily
-                font.pixelSize: 14
+                font.family: root.edgy ? mt.monoFontFamily : mt.fontFamily
+                font.pixelSize: root.edgy ? 13 : 14
+                font.weight: root.edgy ? Font.Bold : Font.Normal
             }
         }
     }
@@ -313,17 +336,33 @@ Item {
     // nudge the track up and down as it animates.
     Rectangle {
         id: track
-        x: 20
+        x: root.edgy ? 8 : 20
         // Pinned right under whichever header is showing: the full-size
         // cap (73 tall, +2 for its max shadow, +8 gap) normally, or
         // simple mode's plain 32px line (+10 gap) when there's no cap.
         y: root.simple ? (32 + 10) : (73 + 2 + 8)
-        width: parent.width - 40
+        width: parent.width - (root.edgy ? 16 : 40)
         height: 14
-        radius: 7
-        color: mt.pSurfaceDivider
+        radius: root.edgy ? mt.quickRadiusInner : 7
+        color: root.edgy ? mt.hudSurface : mt.pSurfaceDivider
+        border.width: root.edgy ? 1 : 0
+        border.color: Qt.rgba(mt.accentFrame.r, mt.accentFrame.g, mt.accentFrame.b, 0.55)
+
+        CyberStripe {
+            visible: root.edgy
+            anchors.fill: parent
+            anchors.margins: 2
+            mode: "stripes"
+            fillRatio: Math.max(0, Math.min(1, root.shownValue / 100))
+            color: root.muted ? mt.pInkSub : mt.accentCyan
+            altColor: root.muted ? mt.pInkSub : mt.accentMint
+            trackColor: Qt.rgba(mt.accentFrame.r, mt.accentFrame.g, mt.accentFrame.b, 0.25)
+            stripeWidth: 5
+            gap: 3
+        }
 
         Rectangle {
+            visible: !root.edgy
             width: parent.width * Math.max(0, Math.min(1, root.shownValue / 100))
             height: parent.height
             radius: 7

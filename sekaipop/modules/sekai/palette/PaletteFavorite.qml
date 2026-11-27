@@ -23,10 +23,11 @@ Item {
     implicitHeight: 36
 
     Rectangle {
+        x: mt.edgy ? 2 : 0
         y: 3
         width: root.width
         height: 32
-        radius: 11
+        radius: mt.edgy ? mt.radiusInner : 11
         color: mt.lineShadow
         antialiasing: true
     }
@@ -48,7 +49,7 @@ Item {
             anchors.fill: parent
 
             readonly property real cell: clipBox.width / 5
-            readonly property real r: 11
+            readonly property real r: mt.edgy ? mt.radiusInner : 11
 
             Repeater {
                 model: 5
@@ -70,10 +71,10 @@ Item {
 
         Rectangle {
             anchors.fill: parent
-            radius: 11
+            radius: mt.edgy ? mt.radiusInner : 11
             color: "transparent"
             border.width: root.current ? 3 : 2
-            border.color: root.current ? mt.accentCyan : mt.line
+            border.color: root.current ? mt.accentCyan : (mt.edgy ? mt.accentFrame : mt.line)
             antialiasing: true
             Behavior on border.color { ColorAnimation { duration: 140 } }
         }
@@ -85,10 +86,10 @@ Item {
             y: 3
             width: 18
             height: 18
-            radius: 9
-            color: mt.surface
-            border.width: 2
-            border.color: mt.line
+            radius: mt.edgy ? 2 : 9
+            color: mt.edgy ? mt.hudSurface : mt.surface
+            border.width: mt.edgy ? 1 : 2
+            border.color: mt.edgy ? mt.accentFrame : mt.line
             opacity: mouse.containsMouse || crossMouse.containsMouse ? 1 : 0
             antialiasing: true
             Behavior on opacity { NumberAnimation { duration: 120 } }

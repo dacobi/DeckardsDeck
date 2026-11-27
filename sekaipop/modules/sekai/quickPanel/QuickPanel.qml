@@ -349,9 +349,9 @@ Scope {
     // wall, and does not tilt as it comes out of the pocket; it just rises and settles. The Settings
     // turn is unchanged (the phone tips into the Settings pose on its way, as before).
     readonly property bool flat2d: Theme.quickFlat
-    property real tiltRoll: 0
-    property real tiltPitch: 0
-    property real tiltYaw: 0
+    property real tiltRoll: flat2d ? 0 : -11
+    property real tiltPitch: flat2d ? 0 : 12
+    property real tiltYaw: flat2d ? 0 : 14
 
     // The vibration when a notification arrives. buzzAmount is how far
     // (px on screen) the phone shakes sideways, buzzHz how fast, and it
@@ -2659,16 +2659,18 @@ Scope {
                     // The Power button is the phone's own side button (it used to be a
                     // key in the header row): the upper side button on the 2.5D phone, a
                     // small button out of the right edge on the 2D one.
+                    edgy: mt.quickEdgy
+                    cornerRadius: mt.phoneCornerRadius
                     powerButton: true
                     powerOn: panelFace.powerMenuOpen
                     onPowerClicked: panelFace.togglePowerMenu()
                     // `flat` drops the side wall (and its layer) while it is at rest
                     // facing front; it comes back for the turn into the Settings.
-                    yaw: 0
-                    pitch: 0
-                    flat: stage.flip === 0 && !stage.flipping
-                    // Keep the cyberdeck hardware details visible on the front face.
-                    plain: false
+                    yaw: root.flat2d ? 0 : 33
+                    pitch: root.flat2d ? 0 : 18
+                    flat: root.flat2d && stage.flip === 0 && !stage.flipping
+                    // Keep the cyberdeck hardware details visible in Cyberpunk mode.
+                    plain: !mt.quickEdgy && root.flat2d
                     // Up and still: on the pixel grid (`stage.direct`). Moving: the same offscreen
                     // pictures as the 2.5D phone (supersampled, mipmapped), so it is as sharp in the
                     // pull-out and the bounce as that one is.

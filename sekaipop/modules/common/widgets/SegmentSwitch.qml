@@ -36,10 +36,10 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        radius: height / 2.4
-        color: mt.surfaceHover
-        border.width: mt.borderWidth
-        border.color: mt.line
+        radius: mt.edgy ? mt.radiusInner : height / 2.4
+        color: mt.edgy ? mt.hudSurface : mt.surfaceHover
+        border.width: mt.edgy ? 1 : mt.borderWidth
+        border.color: mt.edgy ? mt.accentFrame : mt.line
         antialiasing: true
     }
 
@@ -48,8 +48,12 @@ Item {
         height: root.height - 6
         width: root.slot
         x: 3 + root.index * root.slot
-        radius: (root.height - 6) / 2.4
-        color: mt.accentMint
+        radius: mt.edgy ? mt.radiusInner : (root.height - 6) / 2.4
+        color: mt.edgy
+            ? Qt.rgba(mt.accentCyan.r, mt.accentCyan.g, mt.accentCyan.b, 0.22)
+            : mt.accentMint
+        border.width: mt.edgy ? 1 : 0
+        border.color: mt.accentCyan
         antialiasing: true
 
         Behavior on x {
@@ -69,12 +73,15 @@ Item {
 
             Text {
                 anchors.centerIn: parent
-                text: modelData.label
-                color: index === root.index ? mt.colBorder : mt.inkSub
-                font.family: mt.fontFamily
-                font.pixelSize: 12
+                text: mt.edgy ? modelData.label.toUpperCase() : modelData.label
+                color: index === root.index
+                    ? (mt.edgy ? mt.accentCyan : mt.colBorder)
+                    : mt.inkSub
+                font.family: mt.edgy ? mt.monoFontFamily : mt.fontFamily
+                font.pixelSize: mt.edgy ? 11 : 12
                 font.weight: Font.ExtraBold
                 font.styleName: mt.fontStyleBold
+                font.letterSpacing: mt.edgy ? 0.5 : 0
                 Behavior on color { ColorAnimation { duration: 140 } }
             }
 

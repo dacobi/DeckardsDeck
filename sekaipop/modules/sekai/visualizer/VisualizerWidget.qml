@@ -456,9 +456,9 @@ PanelWindow {
     readonly property color neutralInk: mt.dark ? Qt.color("#ffffff") : Qt.color(mt.colBorder)
 
     // [color1, color2, color3]: the two of the shape, then the accent (peaks, the ring's
-    // fallback). The same roles as end4's palettes, from this theme's colours.
+    // fallback). All three follow the current desktop palette.
     readonly property var themePalette: {
-        const A = mt.accentCyan, B = mt.accentMint, P = mt.irisColorPink
+        const A = mt.accentCyan, B = mt.accentMint, P = mt.accentFrame
         switch (win.style) {
             case "ring": return [A, B, Qt.lighter(A, 1.25)]
             case "dots": return [win.neutralInk, A, P]
@@ -466,25 +466,22 @@ PanelWindow {
         }
     }
 
-    // The five card attributes (Cool, Cute, Happy, Mysterious, Pure).
+    // The five card attributes, mapped to the active desktop palette (mt.attributeColors).
     readonly property var attrPalette: {
         const a = mt.attributeColors
         switch (win.style) {
-            case "dots": return [win.neutralInk, Qt.color(a[1]), Qt.color(a[2])]
+            case "dots": return [win.neutralInk, Qt.color(a[0]), Qt.color(a[1])]
             case "bars":
-            case "mirror": return [Qt.color(a[0]), Qt.color(a[3]), Qt.color(a[1])]
-            default: return [Qt.color(a[0]), Qt.color(a[1]), Qt.color(a[3])]
+            case "mirror": return [Qt.color(a[0]), Qt.color(a[1]), Qt.color(a[2])]
+            default: return [Qt.color(a[0]), Qt.color(a[1]), Qt.color(a[2])]
         }
     }
 
+    // Always follow the current desktop palette for the visualizer graph.
     readonly property var shapeColors: {
         const mode = VisualizerService.colorMode
-        if (mode === 2) return win.themePalette
-        if (mode === 0 && cover.palette) {
-            const c = cover.palette
-            return win.style === "dots" ? [win.neutralInk, c[0], c[1]] : c
-        }
-        return win.attrPalette
+        if (mode === 1) return win.attrPalette
+        return win.themePalette
     }
 
     VisualizerEngine {

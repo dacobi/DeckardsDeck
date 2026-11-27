@@ -35,7 +35,8 @@ Item {
     // ===== the flat design this is built around =====
     property real faceWidth: 654
     property real faceHeight: 1214
-    property real cornerRadius: 24
+    property bool edgy: mt.quickEdgy
+    property real cornerRadius: edgy ? 6 : 24
     // A landscape phone (the Settings Panel): the same body turned a quarter
     // turn anticlockwise, so the camera cut-out is on the LEFT edge, the
     // charging port and speaker holes are on the right-hand wall (the one the
@@ -1004,7 +1005,7 @@ Item {
                     y: root.powerY + 4 * root.powerPress
                     width: root.powerStick + 4
                     height: root.powerH
-                    radius: 4
+                    radius: root.edgy ? 4 : 8
                     color: powerTabArea.pressed ? mt.accentCyan : (lit ? mt.accentMint : root.wallLight)
                     border.width: 2
                     border.color: root.wallDark
@@ -1012,6 +1013,7 @@ Item {
 
                     // Cyberdeck knurled breaker switch ridges
                     Column {
+                        visible: root.edgy
                         anchors.centerIn: parent
                         spacing: 8
                         Repeater {
@@ -1028,6 +1030,7 @@ Item {
 
                     // Active power indicator LED strip
                     Rectangle {
+                        visible: root.edgy
                         anchors.right: parent.right
                         anchors.rightMargin: 3
                         anchors.verticalCenter: parent.verticalCenter
@@ -1146,7 +1149,7 @@ Item {
 
                 // Cyberdeck corner hex rivets / bolts on the outer bezel
                 Repeater {
-                    model: root.plain ? 0 : 4
+                    model: (root.plain || !root.edgy) ? 0 : 4
                     delegate: Rectangle {
                         required property int index
                         readonly property bool rightSide: (index % 2) === 1
@@ -1178,7 +1181,7 @@ Item {
                     anchors.margins: root.screenInset
                     radius: Math.max(2, root.cornerRadius - root.screenInset)
                     color: root.screenColor
-                    border.width: 1
+                    border.width: root.edgy ? 1 : 0
                     border.color: Qt.alpha(mt.accentCyan, 0.24)
                     antialiasing: true
                 }
@@ -1190,8 +1193,9 @@ Item {
                 }
 
                 // Voight-Kampff / Esper Optical Sensor & Telemetry Header Module (Portrait):
-                // Replaces the rounded smartphone notch with an angular LAPD 2019 sensor
-                // bar housing the optical iris lens, cooling vents, and status LEDs.
+                // In Cyberpunk mode, shows an angular LAPD 2019 sensor bar housing the optical
+                // iris lens, cooling vents, and status LEDs. In SekaiPop mode, shows a classic
+                // rounded phone notch with a centered camera lens.
                 Item {
                     visible: !root.landscape
                     x: 202
@@ -1204,16 +1208,37 @@ Item {
                         y: -10
                         width: parent.width
                         height: parent.height + 10
-                        radius: 8
+                        radius: root.edgy ? 8 : 24
                         color: root.bezelColor
-                        border.width: 1.5
+                        border.width: root.edgy ? 1.5 : 0
                         border.color: root.rimHighlight
                         antialiasing: true
                     }
 
+                    // Classic SekaiPop centered camera lens (when !root.edgy)
+                    Rectangle {
+                        visible: !root.edgy
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        y: 12 + root.notchLead
+                        width: 22
+                        height: 22
+                        radius: 11
+                        color: root.hardwareDark
+                        antialiasing: true
+
+                        Rectangle {
+                            anchors.centerIn: parent
+                            width: 10
+                            height: 10
+                            radius: 5
+                            color: mt.phoneLens
+                            antialiasing: true
+                        }
+                    }
+
                     // Inner recessed telemetry plate
                     Rectangle {
-                        visible: !root.plain
+                        visible: !root.plain && root.edgy
                         x: 8
                         y: 6 + root.notchLead
                         width: parent.width - 16
@@ -1227,7 +1252,7 @@ Item {
 
                     // Voight-Kampff optical iris scanner lens
                     Rectangle {
-                        visible: !root.plain
+                        visible: !root.plain && root.edgy
                         x: 18
                         y: 12 + root.notchLead
                         width: 22
@@ -1259,7 +1284,7 @@ Item {
 
                     // Micro cooling vent grilles
                     Row {
-                        visible: !root.plain
+                        visible: !root.plain && root.edgy
                         x: 50
                         y: 16 + root.notchLead
                         spacing: 4
@@ -1278,11 +1303,11 @@ Item {
 
                     // LAPD 2019 // VK-DECK telemetry stencil
                     Text {
-                        visible: !root.plain
+                        visible: !root.plain && root.edgy
                         x: 88
                         y: 16 + root.notchLead
                         text: "VK-2019 // LAPD"
-                        font.family: mt.fontFamilyMono
+                        font.family: mt.monoFontFamily
                         font.pixelSize: 10
                         font.weight: Font.Bold
                         font.letterSpacing: 1.1
@@ -1291,7 +1316,7 @@ Item {
 
                     // 3 Diagnostic Status LEDs (Amber, Cyan, Crimson)
                     Row {
-                        visible: !root.plain
+                        visible: !root.plain && root.edgy
                         x: 198
                         y: 19 + root.notchLead
                         spacing: 7

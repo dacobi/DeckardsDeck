@@ -89,9 +89,9 @@ Item {
     // the "wallpaper" behind
     Rectangle {
         anchors.fill: parent
-        radius: 16
+        radius: mt.edgy ? mt.radiusOuter : 16
         antialiasing: true
-        border.width: 3
+        border.width: mt.edgy ? 2 : 3
         border.color: root.cLine
 
         gradient: Gradient {
@@ -112,7 +112,7 @@ Item {
             y: 3
             width: parent.width
             height: parent.height
-            radius: 18
+            radius: mt.edgy ? 3 : 18
             color: root.cShadow
             antialiasing: true
         }
@@ -237,10 +237,10 @@ Item {
                 Rectangle {
                     width: 70
                     height: 26
-                    radius: 10
+                    radius: mt.edgy ? 2 : 10
                     antialiasing: true
                     border.width: 2
-                    border.color: root.cBorder
+                    border.color: mt.edgy ? root.cA : root.cBorder
                     gradient: Gradient {
                         orientation: Gradient.Horizontal
                         GradientStop { position: 0; color: root.cA }
@@ -249,9 +249,9 @@ Item {
 
                     Text {
                         anchors.centerIn: parent
-                        text: "Apply"
+                        text: mt.edgy ? "APPLY" : "Apply"
                         color: root.cBorder
-                        font.family: mt.fontFamily
+                        font.family: mt.edgy ? mt.monoFontFamily : mt.fontFamily
                         font.pixelSize: 12
                         font.weight: Font.ExtraBold
                         font.styleName: mt.fontStyleBold
@@ -261,15 +261,17 @@ Item {
                 Rectangle {
                     width: 70
                     height: 26
-                    radius: 10
+                    radius: mt.edgy ? 2 : 10
                     color: root.cChip
+                    border.width: mt.edgy ? 1 : 0
+                    border.color: root.cLine
                     antialiasing: true
 
                     Text {
                         anchors.centerIn: parent
-                        text: "Later"
+                        text: mt.edgy ? "LATER" : "Later"
                         color: root.cChipInk
-                        font.family: mt.fontFamily
+                        font.family: mt.edgy ? mt.monoFontFamily : mt.fontFamily
                         font.pixelSize: 12
                         font.weight: Font.ExtraBold
                         font.styleName: mt.fontStyleBold
@@ -298,17 +300,17 @@ Item {
                     y: 3
                     width: parent.width
                     height: parent.height
-                    radius: 12
+                    radius: mt.edgy ? 3 : 12
                     color: root.cShadow
                     antialiasing: true
                 }
 
                 Rectangle {
                     anchors.fill: parent
-                    radius: 12
+                    radius: mt.edgy ? 3 : 12
                     antialiasing: true
-                    border.width: 3
-                    border.color: modelData.on ? root.cBorder : root.cLine
+                    border.width: mt.edgy ? 1.5 : 3
+                    border.color: modelData.on ? (mt.edgy ? root.cA : root.cBorder) : root.cLine
                     color: modelData.on ? root.cA : root.cSurface
 
                     MaterialIcon {

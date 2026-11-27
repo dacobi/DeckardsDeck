@@ -158,6 +158,40 @@ SettingsPage {
     SectionCard {
         title: "Quick Panel"
 
+        SettingChoice {
+            label: "Quick Panel style"
+            sublabel: "Auto follows the main Look style, or override Quick Panel to Cyberpunk or SekaiPop"
+            current: {
+                const s = SettingsService.get("quick.style")
+                return (s === "cyberpunk" || s === "sekaipop") ? s : "auto"
+            }
+            options: [
+                { id: "auto", label: "Auto", icon: "hdr_auto" },
+                { id: "cyberpunk", label: "Cyberpunk", icon: "terminal" },
+                { id: "sekaipop", label: "SekaiPop", icon: "auto_awesome" }
+            ]
+            onPicked: id => SettingsService.set("quick.style", id)
+        }
+
+        SettingChoice {
+            label: "Phone pose"
+            sublabel: "2D flat front-on view or 2.5D tilted deck chassis"
+            current: SettingsService.flag("quick.flat") ? "flat" : "tilt"
+            options: [
+                { id: "flat", label: "2D Flat", icon: "crop_portrait" },
+                { id: "tilt", label: "2.5D Deck", icon: "view_in_ar" }
+            ]
+            onPicked: id => SettingsService.set("quick.flat", id === "flat")
+        }
+
+        SettingToggle {
+            icon: "blur_on"
+            label: "Phone shadow"
+            detail: SettingsService.flag("quick.phoneShadow") ? "Soft drop shadow" : "OFF"
+            checked: SettingsService.flag("quick.phoneShadow")
+            onToggled: SettingsService.toggle("quick.phoneShadow")
+        }
+
         SettingToggle {
             icon: "swipe_up"
             label: "Hot edge"

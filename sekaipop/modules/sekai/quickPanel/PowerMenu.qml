@@ -387,10 +387,10 @@ Item {
         z: 10
         width: labelText.width + 28
         height: labelText.implicitHeight + 16
-        radius: 12
-        color: warned ? "#ff9f1c" : mt.chipFill
-        border.width: 3
-        border.color: warned ? mt.colBorder : mt.pLine
+        radius: mt.quickEdgy ? mt.quickRadiusInner : 12
+        color: warned ? "#ff9f1c" : (mt.quickEdgy ? mt.hudSurface : mt.chipFill)
+        border.width: mt.quickEdgy ? 2 : 3
+        border.color: warned ? mt.colBorder : (mt.quickEdgy ? mt.accentCyan : mt.pLine)
         antialiasing: true
 
         opacity: root.open && idx >= 0 ? 1 : 0
@@ -413,12 +413,15 @@ Item {
             // which only reaches about 390 design units past the rail.
             width: Math.min(implicitWidth, 300)
             wrapMode: Text.WordWrap
-            text: label.warned
-                  ? root.labels[label.shownIdx] + " will cut it off: " + PowerBusyService.note
-                  : root.labels[label.shownIdx]
-            color: label.warned ? mt.colBorder : mt.chipInk
-            font.family: mt.fontFamily
-            font.pixelSize: 14
+            text: {
+                const raw = label.warned
+                    ? root.labels[label.shownIdx] + " will cut it off: " + PowerBusyService.note
+                    : root.labels[label.shownIdx]
+                return mt.quickEdgy ? raw.toUpperCase() : raw
+            }
+            color: label.warned ? mt.colBorder : (mt.quickEdgy ? mt.accentCyan : mt.chipInk)
+            font.family: mt.quickEdgy ? mt.monoFontFamily : mt.fontFamily
+            font.pixelSize: mt.quickEdgy ? 13 : 14
             font.weight: Font.Black
         }
     }

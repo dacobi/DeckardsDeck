@@ -155,6 +155,77 @@ SettingsPage {
     }
 
     SectionCard {
+        title: "Quick Panel Style"
+
+        SettingChoice {
+            label: "Style"
+            sublabel: "Follow the shell look, or pin Quick Panel to Cyberdeck or SekaiPop"
+            current: {
+                const s = SettingsService.get("quick.style")
+                return (s === "cyberpunk" || s === "sekaipop") ? s : "auto"
+            }
+            options: [
+                { id: "auto", label: "Auto", icon: "hdr_auto" },
+                { id: "cyberpunk", label: "Cyberpunk", icon: "terminal" },
+                { id: "sekaipop", label: "SekaiPop", icon: "auto_awesome" }
+            ]
+            onPicked: id => SettingsService.set("quick.style", id)
+        }
+
+        SettingChoice {
+            label: "Pose"
+            sublabel: "2.5D tilted deck chassis or 2D flat front-on view"
+            current: SettingsService.flag("quick.flat") ? "flat" : "tilt"
+            options: [
+                { id: "flat", label: "2D Flat", icon: "crop_portrait" },
+                { id: "tilt", label: "2.5D Deck", icon: "view_in_ar" }
+            ]
+            onPicked: id => SettingsService.set("quick.flat", id === "flat")
+        }
+
+        SettingChoice {
+            label: "Phone wallpaper"
+            sublabel: "Backdrop behind the Quick Panel and Apps screen"
+            current: PanelImages.phoneMode
+            options: [
+                { id: "off", label: "Off", icon: "hide_image" },
+                { id: "desktop", label: "Desktop", icon: "wallpaper" },
+                { id: "picture", label: "A picture", icon: "image" }
+            ]
+            onPicked: id => {
+                if (id === "picture" && PanelImages.phonePath === "")
+                    PanelImages.pick("phone")
+                else
+                    SettingsService.set("phone.wallpaper", id)
+            }
+        }
+
+        SettingToggle {
+            icon: "blur_on"
+            label: "Phone shadow"
+            detail: SettingsService.flag("quick.phoneShadow") ? "ON" : "OFF"
+            checked: SettingsService.flag("quick.phoneShadow")
+            onToggled: SettingsService.toggle("quick.phoneShadow")
+        }
+
+        SettingToggle {
+            icon: "swipe_up"
+            label: "Hot edge"
+            detail: SettingsService.flag("panel.hotEdge") ? "Bottom centre" : "OFF"
+            checked: SettingsService.flag("panel.hotEdge")
+            onToggled: SettingsService.toggle("panel.hotEdge")
+        }
+
+        SettingToggle {
+            icon: "ads_click"
+            label: "Peek first"
+            detail: SettingsService.flag("panel.hotPeek") ? "Tip first" : "Full open"
+            checked: SettingsService.flag("panel.hotPeek")
+            onToggled: SettingsService.toggle("panel.hotPeek")
+        }
+    }
+
+    SectionCard {
         title: "Desktop widgets"
 
         SettingToggle {

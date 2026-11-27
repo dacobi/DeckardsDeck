@@ -106,7 +106,7 @@ Item {
         y: 200 + 4
         width: 575
         height: 940
-        radius: 41
+        radius: mt.quickEdgy ? mt.quickRadiusOuter : 41
         color: mt.pLineShadow
         antialiasing: true
     }
@@ -117,10 +117,10 @@ Item {
         y: 200
         width: 575
         height: 940
-        radius: 41
-        color: mt.pSurface
-        border.width: 3
-        border.color: mt.pLine
+        radius: mt.quickEdgy ? mt.quickRadiusOuter : 41
+        color: mt.quickEdgy ? mt.hudSurface : mt.pSurface
+        border.width: mt.quickEdgy ? 2 : 3
+        border.color: mt.quickEdgy ? mt.accentFrame : mt.pLine
         clip: true
 
         MouseArea { anchors.fill: parent }
@@ -128,10 +128,10 @@ Item {
         Text {
             x: 28
             y: 26
-            text: root.title
-            color: mt.pInk
+            text: mt.quickEdgy ? (root.title.toUpperCase() + " // MIXER") : root.title
+            color: mt.quickEdgy ? mt.accentCyan : mt.pInk
             font.family: mt.fontFamily
-            font.pixelSize: 26
+            font.pixelSize: mt.quickEdgy ? 22 : 26
             font.weight: Font.ExtraBold
             font.styleName: mt.fontStyleBold
         }
@@ -142,18 +142,18 @@ Item {
             y: 22
             width: scanLabel.implicitWidth + 28
             height: 34
-            radius: 17
+            radius: mt.quickEdgy ? mt.quickRadiusInner : 17
             color: scanArea.containsMouse ? mt.pSurfaceHover : "transparent"
             border.width: 2
-            border.color: mt.pLine
+            border.color: mt.quickEdgy ? mt.accentCyan : mt.pLine
             opacity: root.manualScanning ? 0.5 : 1
 
             Text {
                 id: scanLabel
                 anchors.centerIn: parent
                 text: root.manualScanning ? "Refreshing…" : "Refresh"
-                color: mt.pInk
-                font.family: mt.fontFamily
+                color: mt.quickEdgy ? mt.accentCyan : mt.pInk
+                font.family: mt.quickEdgy ? mt.monoFontFamily : mt.fontFamily
                 font.pixelSize: 14
                 font.weight: Font.DemiBold
             }
@@ -199,8 +199,10 @@ Item {
             Rectangle {
                 width: parent.width
                 height: 58
-                radius: 20
+                radius: mt.quickEdgy ? mt.quickRadiusInner : 20
                 color: mt.pSurfaceHover
+                border.width: mt.quickEdgy ? 1 : 0
+                border.color: mt.accentFrame
 
                 Text {
                     x: 18
@@ -268,7 +270,7 @@ Item {
                     Rectangle {
                         width: parent.width
                         height: 42
-                        radius: 16
+                        radius: mt.quickEdgy ? mt.quickRadiusInner : 16
                         color: deviceRowArea.containsMouse ? mt.pSurfaceHover : "transparent"
                         antialiasing: true
                     }
@@ -370,10 +372,26 @@ Item {
                     y: 34
                     width: parent.width - 20 - 20 - 44
                     height: 14
-                    radius: 7
-                    color: mt.pSurfaceDivider
+                    radius: mt.quickEdgy ? mt.quickRadiusInner : 7
+                    color: mt.quickEdgy ? mt.hudSurface : mt.pSurfaceDivider
+                    border.width: mt.quickEdgy ? 1 : 0
+                    border.color: Qt.rgba(mt.accentFrame.r, mt.accentFrame.g, mt.accentFrame.b, 0.55)
+
+                    CyberStripe {
+                        visible: mt.quickEdgy
+                        anchors.fill: parent
+                        anchors.margins: 2
+                        mode: "stripes"
+                        fillRatio: Math.max(0, Math.min(1, streamRow.shownValue / 100))
+                        color: streamRow.modelData.muted ? mt.pInkSub : mt.accentCyan
+                        altColor: streamRow.modelData.muted ? mt.pInkSub : mt.accentMint
+                        trackColor: Qt.rgba(mt.accentFrame.r, mt.accentFrame.g, mt.accentFrame.b, 0.25)
+                        stripeWidth: 5
+                        gap: 3
+                    }
 
                     Rectangle {
+                        visible: !mt.quickEdgy
                         width: parent.width * Math.max(0, Math.min(1, streamRow.shownValue / 100))
                         height: parent.height
                         radius: 7
@@ -442,8 +460,10 @@ Item {
                     anchors.verticalCenter: track.verticalCenter
                     width: 36
                     height: 36
-                    radius: 18
+                    radius: mt.quickEdgy ? mt.quickRadiusInner : 18
                     color: muteArea.containsMouse ? mt.pSurfaceHover : "transparent"
+                    border.width: mt.quickEdgy ? 1 : 0
+                    border.color: mt.accentFrame
 
                     MaterialIcon {
                         anchors.centerIn: parent

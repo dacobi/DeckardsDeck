@@ -41,7 +41,7 @@ Item {
     readonly property real rest: 8
     readonly property real raised: 2
     readonly property real faceH: root.mini ? 72 : (root.compact ? 104 : 152)
-    readonly property real corner: root.mini ? 12 : 16
+    readonly property real corner: mt.edgy ? mt.radiusInner : (root.mini ? 12 : 16)
 
     implicitWidth: root.mini ? 52 : (root.compact ? 72 : 124)
     implicitHeight: root.rest + root.faceH + 8
@@ -61,7 +61,8 @@ Item {
 
     // the hard shadow stays put while the face lifts off it
     Rectangle {
-        y: root.rest + 4
+        x: mt.edgy ? 2 : 0
+        y: root.rest + (mt.edgy ? 3 : 4)
         width: root.width
         height: root.faceH
         radius: root.corner
@@ -77,13 +78,24 @@ Item {
         radius: root.corner
         antialiasing: true
         color: root.hex
-        border.width: root.selected ? 4 : 3
-        border.color: root.selected ? mt.accentCyan : mt.line
+        border.width: mt.edgy ? 2 : (root.selected ? 4 : 3)
+        border.color: root.selected ? mt.accentCyan : (mt.edgy ? mt.accentFrame : mt.line)
         scale: mouse.pressed ? 0.98 : 1
 
         Behavior on color { ColorAnimation { duration: 340; easing.type: Easing.OutCubic } }
         Behavior on y { NumberAnimation { duration: 220; easing.type: Easing.OutBack; easing.overshoot: 2.2 } }
         Behavior on scale { NumberAnimation { duration: 90 } }
+
+        // Cyberdeck corner accent tick on the swatch face
+        Rectangle {
+            visible: mt.edgy
+            x: 4
+            y: 4
+            width: root.mini ? 10 : 16
+            height: 2
+            color: root.ink
+            opacity: 0.65
+        }
 
         // the colour picker button (top-left, in PaletteTool)
         Rectangle {
@@ -93,10 +105,12 @@ Item {
             y: 8
             width: 30
             height: 30
-            radius: 15
+            radius: mt.edgy ? 2 : 15
             color: root.selected
                 ? Qt.rgba(root.ink.r, root.ink.g, root.ink.b, 0.28)
                 : Qt.rgba(root.ink.r, root.ink.g, root.ink.b, editMouse.containsMouse ? 0.18 : 0.08)
+            border.width: mt.edgy ? 1 : 0
+            border.color: Qt.rgba(root.ink.r, root.ink.g, root.ink.b, 0.45)
             opacity: (root.selected || root.hovered) ? 1 : 0
             antialiasing: true
 
@@ -125,8 +139,10 @@ Item {
             y: root.mini ? 4 : (root.compact ? 5 : 8)
             width: root.mini ? 20 : (root.compact ? 24 : 30)
             height: width
-            radius: width / 2
+            radius: mt.edgy ? 2 : width / 2
             color: root.locked ? Qt.rgba(root.ink.r, root.ink.g, root.ink.b, 0.22) : Qt.rgba(root.ink.r, root.ink.g, root.ink.b, lockMouse.containsMouse ? 0.18 : 0.08)
+            border.width: mt.edgy ? 1 : 0
+            border.color: Qt.rgba(root.ink.r, root.ink.g, root.ink.b, 0.45)
             opacity: (root.locked || root.hovered) ? 1 : 0
             antialiasing: true
 
@@ -160,8 +176,8 @@ Item {
                 width: parent.width
                 text: root.mini ? root.hex.toUpperCase().replace("#", "") : root.hex.toUpperCase()
                 color: root.ink
-                font.family: mt.fontFamily
-                font.pixelSize: root.mini ? 10 : (root.compact ? 12 : 17)
+                font.family: mt.edgy ? mt.monoFontFamily : mt.fontFamily
+                font.pixelSize: root.mini ? 10 : (root.compact ? (mt.edgy ? 11 : 12) : (mt.edgy ? 15 : 17))
                 font.weight: Font.ExtraBold
                 font.styleName: mt.fontStyleBold
                 elide: Text.ElideRight
@@ -174,10 +190,10 @@ Item {
 
                 Text {
                     anchors.verticalCenter: parent.verticalCenter
-                    text: root.locked ? "locked" : ((root.compact || root.mini) ? "copy" : "click to copy")
+                    text: root.locked ? (mt.edgy ? "LOCKED" : "locked") : ((root.compact || root.mini) ? (mt.edgy ? "COPY" : "copy") : (mt.edgy ? "CLICK // COPY" : "click to copy"))
                     color: root.ink
                     opacity: root.copied ? 0 : (root.hovered || root.locked ? 0.8 : 0)
-                    font.family: mt.fontFamily
+                    font.family: mt.edgy ? mt.monoFontFamily : mt.fontFamily
                     font.pixelSize: root.mini ? 9 : (root.compact ? 10 : 11)
                     font.weight: Font.Bold
                     Behavior on opacity { NumberAnimation { duration: 140 } }

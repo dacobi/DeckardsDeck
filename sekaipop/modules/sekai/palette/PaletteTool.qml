@@ -277,21 +277,46 @@ Scope {
 
                     // the card: hard shadow straight down, outline, fill
                     Rectangle {
+                        x: Theme.edgy ? 3 : 0
                         y: Theme.shadowOffset + 2
                         width: parent.width
                         height: parent.height
-                        radius: 22
+                        radius: Theme.edgy ? Theme.radiusOuter : 22
                         color: Theme.lineShadow
                         antialiasing: true
                     }
 
                     Rectangle {
                         anchors.fill: parent
-                        radius: 22
-                        color: Theme.surface
+                        radius: Theme.edgy ? Theme.radiusOuter : 22
+                        color: Theme.edgy ? Theme.hudSurface : Theme.surface
                         border.width: Theme.borderWidth
-                        border.color: Theme.line
+                        border.color: Theme.edgy ? Theme.accentFrame : Theme.line
                         antialiasing: true
+                        clip: true
+
+                        CyberStripe {
+                            visible: Theme.edgy
+                            anchors.fill: parent
+                            anchors.margins: 8
+                            mode: "grid"
+                            color: Qt.rgba(Theme.accentCyan.r, Theme.accentCyan.g, Theme.accentCyan.b, 0.08)
+                            gap: 18
+                        }
+
+                        // Cyberdeck corner accent bars
+                        Rectangle {
+                            visible: Theme.edgy
+                            x: 0; y: 0; width: 28; height: 4
+                            color: Theme.accentCyan
+                        }
+                        Rectangle {
+                            visible: Theme.edgy
+                            anchors.right: parent.right
+                            anchors.bottom: parent.bottom
+                            width: 36; height: 4
+                            color: Theme.accentYellow
+                        }
 
                         // a click on the card is not a click outside it
                         MouseArea {
@@ -315,7 +340,26 @@ Scope {
                                 anchors.verticalCenter: parent.verticalCenter
                                 spacing: 10
 
+                                Rectangle {
+                                    visible: Theme.edgy
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: 30
+                                    height: 30
+                                    radius: Theme.radiusInner
+                                    color: Theme.hudSurface
+                                    border.width: 1
+                                    border.color: Theme.accentFrame
+
+                                    MaterialIcon {
+                                        anchors.centerIn: parent
+                                        name: "palette"
+                                        size: 20
+                                        color: Theme.accentCyan
+                                    }
+                                }
+
                                 MaterialIcon {
+                                    visible: !Theme.edgy
                                     anchors.verticalCenter: parent.verticalCenter
                                     name: "palette"
                                     size: 28
@@ -324,12 +368,13 @@ Scope {
 
                                 Text {
                                     anchors.verticalCenter: parent.verticalCenter
-                                    text: "Palette"
-                                    color: Theme.ink
+                                    text: Theme.edgy ? "PALETTE // STUDIO" : "Palette"
+                                    color: Theme.edgy ? Theme.accentCyan : Theme.ink
                                     font.family: Theme.fontFamily
-                                    font.pixelSize: 24
+                                    font.pixelSize: Theme.edgy ? 21 : 24
                                     font.weight: Font.ExtraBold
                                     font.styleName: Theme.fontStyleBold
+                                    font.letterSpacing: Theme.edgy ? 0.8 : 0
                                 }
                             }
 
@@ -343,11 +388,17 @@ Scope {
                                     anchors.verticalCenter: parent.verticalCenter
                                     height: 28
                                     width: statusRow.implicitWidth + 20
-                                    radius: 14
+                                    radius: Theme.edgy ? Theme.radiusInner : 14
                                     antialiasing: true
-                                    color: PaletteService.applied ? Theme.accentMint : Theme.surfaceHover
-                                    border.width: 2
-                                    border.color: Theme.line
+                                    color: Theme.edgy
+                                        ? (PaletteService.applied
+                                            ? Qt.rgba(Theme.accentGreen.r, Theme.accentGreen.g, Theme.accentGreen.b, 0.18)
+                                            : Theme.hudSurface)
+                                        : (PaletteService.applied ? Theme.accentMint : Theme.surfaceHover)
+                                    border.width: Theme.edgy ? 1 : 2
+                                    border.color: Theme.edgy
+                                        ? (PaletteService.applied ? Theme.accentGreen : Theme.accentFrame)
+                                        : Theme.line
 
                                     Behavior on color { ColorAnimation { duration: 200 } }
 
@@ -360,15 +411,21 @@ Scope {
                                             anchors.verticalCenter: parent.verticalCenter
                                             name: PaletteService.applied ? "check_circle" : "visibility"
                                             size: 16
-                                            color: PaletteService.applied ? Theme.colBorder : Theme.ink
+                                            color: Theme.edgy
+                                                ? (PaletteService.applied ? Theme.accentGreen : Theme.accentYellow)
+                                                : (PaletteService.applied ? Theme.colBorder : Theme.ink)
                                         }
 
                                         Text {
                                             anchors.verticalCenter: parent.verticalCenter
-                                            text: PaletteService.applied ? "Applied to the theme" : "Preview only, theme unchanged"
-                                            color: PaletteService.applied ? Theme.colBorder : Theme.ink
-                                            font.family: Theme.fontFamily
-                                            font.pixelSize: 12
+                                            text: Theme.edgy
+                                                ? (PaletteService.applied ? "THEME SYNCED" : "PREVIEW ONLY // UNCHANGED")
+                                                : (PaletteService.applied ? "Applied to the theme" : "Preview only, theme unchanged")
+                                            color: Theme.edgy
+                                                ? (PaletteService.applied ? Theme.accentGreen : Theme.accentYellow)
+                                                : (PaletteService.applied ? Theme.colBorder : Theme.ink)
+                                            font.family: Theme.edgy ? Theme.monoFontFamily : Theme.fontFamily
+                                            font.pixelSize: Theme.edgy ? 11 : 12
                                             font.weight: Font.ExtraBold
                                             font.styleName: Theme.fontStyleBold
                                         }
@@ -380,11 +437,11 @@ Scope {
                                     anchors.verticalCenter: parent.verticalCenter
                                     width: 30
                                     height: 30
-                                    radius: 15
+                                    radius: Theme.edgy ? Theme.radiusInner : 15
                                     antialiasing: true
-                                    color: closeMouse.containsMouse ? Theme.surfaceTint : Theme.surfaceHover
-                                    border.width: 2
-                                    border.color: Theme.line
+                                    color: closeMouse.containsMouse ? Theme.surfaceTint : (Theme.edgy ? Theme.hudSurface : Theme.surfaceHover)
+                                    border.width: Theme.edgy ? 1 : 2
+                                    border.color: Theme.edgy ? Theme.accentFrame : Theme.line
 
                                     Behavior on color { ColorAnimation { duration: 120 } }
 
@@ -392,7 +449,7 @@ Scope {
                                         anchors.centerIn: parent
                                         name: "close"
                                         size: 18
-                                        color: Theme.ink
+                                        color: Theme.edgy ? Theme.accentCyan : Theme.ink
                                     }
 
                                     MouseArea {
@@ -403,6 +460,22 @@ Scope {
                                         onClicked: root.close()
                                     }
                                 }
+                            }
+
+                            CyberStripe {
+                                visible: Theme.edgy
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                anchors.bottom: parent.bottom
+                                anchors.bottomMargin: -6
+                                height: 3
+                                mode: "stripes"
+                                fillRatio: PaletteService.applied ? 1.0 : 0.72
+                                color: Theme.accentCyan
+                                altColor: Theme.accentYellow
+                                trackColor: Qt.rgba(Theme.accentFrame.r, Theme.accentFrame.g, Theme.accentFrame.b, 0.28)
+                                stripeWidth: 6
+                                gap: 3
                             }
                         }
 
@@ -844,11 +917,11 @@ Scope {
                                         Rectangle {
                                             width: 22
                                             height: 22
-                                            radius: 7
+                                            radius: Theme.edgy ? 2 : 7
                                             antialiasing: true
                                             color: root.shell[modelData.key]
                                             border.width: 2
-                                            border.color: Theme.line
+                                            border.color: Theme.edgy ? Theme.accentFrame : Theme.line
                                             Behavior on color { ColorAnimation { duration: 320; easing.type: Easing.OutCubic } }
                                         }
 

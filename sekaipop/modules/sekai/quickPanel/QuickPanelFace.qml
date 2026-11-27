@@ -45,9 +45,11 @@ Item {
 
     // This monitor's theme: Theme.of() gives the shell's own unless the monitor has one.
     readonly property var mt: Theme.of(QsWindow.window)
+    readonly property bool edgy: mt.quickEdgy
 
-    // Keeps the classic (white) look in the first dark mode; see Theme.classicFor.
-    readonly property bool classicPanel: true
+    // Keeps the classic (white) look in the first dark mode only when SekaiPop style is used;
+    // in Cyberpunk style the Quick Panel wears the dark cyberdeck HUD theme.
+    readonly property bool classicPanel: !edgy
 
     // Texels per design unit at the size the phone ends up on screen —
     // the same number as PhoneBody.renderScale, fed by QuickPanel.qml.
@@ -386,7 +388,7 @@ Item {
             y: 4
             width: fk.width - 4
             height: fk.height - 4
-            radius: height / 2
+            radius: face.edgy ? mt.quickRadiusInner : height / 2
             color: mt.pLineShadow
         }
         Rectangle {
@@ -394,11 +396,16 @@ Item {
             height: fk.height - 4
             x: fkArea.pressed ? 4 : 0
             y: fkArea.pressed ? 4 : 0
-            radius: height / 2
-            color: fkArea.containsMouse ? mt.pSurfaceHover : mt.pSurface
-            border.width: 3
-            border.color: fkArea.containsMouse ? mt.colBorder : mt.pLine
+            radius: face.edgy ? mt.quickRadiusInner : height / 2
+            color: face.edgy
+                ? (fkArea.containsMouse ? Qt.lighter(mt.hudSurface, 1.25) : mt.hudSurface)
+                : (fkArea.containsMouse ? mt.pSurfaceHover : mt.pSurface)
+            border.width: face.edgy ? 2 : 3
+            border.color: face.edgy
+                ? (fkArea.containsMouse ? mt.accentCyan : mt.accentFrame)
+                : (fkArea.containsMouse ? mt.colBorder : mt.pLine)
             Rectangle {
+                visible: !face.edgy
                 anchors.fill: parent
                 anchors.margins: 3
                 radius: height / 2
@@ -414,15 +421,15 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                     name: fk.icon
                     size: fk.text === "" ? 20 : 22
-                    color: mt.pInk
+                    color: face.edgy ? mt.accentCyan : mt.pInk
                 }
                 Text {
                     visible: fk.text !== ""
                     anchors.verticalCenter: parent.verticalCenter
-                    text: fk.text
-                    color: mt.pInk
-                    font.family: mt.fontFamily
-                    font.pixelSize: 19
+                    text: face.edgy ? fk.text.toUpperCase() : fk.text
+                    color: face.edgy ? mt.accentCyan : mt.pInk
+                    font.family: face.edgy ? mt.monoFontFamily : mt.fontFamily
+                    font.pixelSize: face.edgy ? 15 : 19
                     font.weight: Font.ExtraBold
                     font.styleName: mt.fontStyleBold
                 }
@@ -442,9 +449,11 @@ Item {
     property bool bannerDarkRight: false
     readonly property bool bannerHasImage: bannerImage.status === Image.Ready
     readonly property color bannerInkLeft: bannerHasImage
-        ? (bannerDarkLeft ? "#ffffff" : mt.colBorder) : mt.pInk
+        ? (bannerDarkLeft ? "#ffffff" : mt.colBorder)
+        : (face.edgy ? mt.accentCyan : mt.pInk)
     readonly property color bannerInkRight: bannerHasImage
-        ? (bannerDarkRight ? "#ffffff" : mt.colBorder) : mt.pInk
+        ? (bannerDarkRight ? "#ffffff" : mt.colBorder)
+        : (face.edgy ? mt.accentYellow : mt.pInk)
 
     // ===== banner =====
     Item {
@@ -453,16 +462,73 @@ Item {
         y: 26
         width: 602
         height: 240
+        readonly property real cornerR: face.edgy ? mt.quickRadiusOuter : 16
 
-        // Empty look
+        // Empty look (SekaiPop mode)
         Rectangle {
             anchors.fill: parent
             color: face.placeholderGrey
-            topLeftRadius: 16
-            topRightRadius: 16
-            bottomLeftRadius: 16
-            bottomRightRadius: 16
-            visible: bannerImage.status !== Image.Ready
+            topLeftRadius: banner.cornerR
+            topRightRadius: banner.cornerR
+            bottomLeftRadius: banner.cornerR
+            bottomRightRadius: banner.cornerR
+            visible: bannerImage.status !== Image.Ready && !face.edgy
+        }
+
+        // Empty look (Cyberdeck mode: matches UserCardWidget.qml's HUD banner)
+        Rectangle {
+            anchors.fill: parent
+            radius: banner.cornerR
+            visible: bannerImage.status !== Image.Ready && face.edgy
+            gradient: Gradient {
+                GradientStop { position: 0.0; color: mt.hudTint }
+                GradientStop { position: 1.0; color: "#07080e" }
+            }
+
+            CyberStripe {
+                anchors.fill: parent
+                anchors.margins: 6
+                mode: "grid"
+                color: Qt.rgba(mt.accentCyan.r, mt.accentCyan.g, mt.accentCyan.b, 0.20)
+                gap: 14
+            }
+
+            // Cyberdeck ZONE : SAFE // NC-77 badge
+            Rectangle {
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                anchors.rightMargin: 16
+                anchors.bottomMargin: 20
+                width: 148
+                height: 24
+                radius: 2
+                color: Qt.rgba(0.03, 0.05, 0.09, 0.88)
+                border.width: 1
+                border.color: mt.accentGreen
+
+                Text {
+                    anchors.centerIn: parent
+                    text: "ZONE : SAFE // NC-77"
+                    color: mt.accentGreen
+                    font.family: mt.monoFontFamily
+                    font.pixelSize: 10
+                    font.weight: Font.Bold
+                    font.letterSpacing: 1.0
+                }
+            }
+
+            CyberStripe {
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                anchors.rightMargin: 172
+                anchors.bottomMargin: 24
+                width: 56
+                height: 14
+                mode: "chevrons"
+                color: Qt.rgba(mt.accentYellow.r, mt.accentYellow.g, mt.accentYellow.b, 0.72)
+                stripeWidth: 3
+                gap: 8
+            }
         }
 
         // The picture, framed (PanelImages.framingFor: which part shows) and cropped
@@ -559,10 +625,10 @@ Item {
             Rectangle {
                 anchors.fill: parent
                 color: "black"
-                topLeftRadius: 16
-                topRightRadius: 16
-                bottomLeftRadius: 16
-                bottomRightRadius: 16
+                topLeftRadius: banner.cornerR
+                topRightRadius: banner.cornerR
+                bottomLeftRadius: banner.cornerR
+                bottomRightRadius: banner.cornerR
             }
         }
 
@@ -574,15 +640,51 @@ Item {
             visible: bannerImage.status === Image.Ready
         }
 
+        // Cyberdeck HUD reticle + bottom diagonal stripe bar + neon border frame
+        CyberStripe {
+            visible: face.edgy && bannerImage.status === Image.Ready
+            anchors.fill: parent
+            anchors.margins: 6
+            mode: "grid"
+            color: Qt.rgba(mt.accentCyan.r, mt.accentCyan.g, mt.accentCyan.b, 0.16)
+            gap: 16
+        }
+
+        CyberStripe {
+            visible: face.edgy
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.margins: 2
+            height: 6
+            mode: "stripes"
+            fillRatio: 0.72
+            color: mt.accentFrame
+            altColor: mt.accentYellow
+            trackColor: Qt.rgba(mt.accentCyan.r, mt.accentCyan.g, mt.accentCyan.b, 0.25)
+            stripeWidth: 6
+            gap: 4
+        }
+
+        Rectangle {
+            visible: face.edgy
+            anchors.fill: parent
+            radius: banner.cornerR
+            color: "transparent"
+            border.width: 2
+            border.color: mt.accentFrame
+            antialiasing: true
+        }
+
         // Hover: a light tint and a pencil, so it's clear it can be changed
         Rectangle {
             anchors.fill: parent
-            color: mt.pLine
+            color: face.edgy ? mt.accentCyan : mt.pLine
             opacity: face.bannerHovered ? 0.14 : 0
-            topLeftRadius: 16
-            topRightRadius: 16
-            bottomLeftRadius: 16
-            bottomRightRadius: 16
+            topLeftRadius: banner.cornerR
+            topRightRadius: banner.cornerR
+            bottomLeftRadius: banner.cornerR
+            bottomRightRadius: banner.cornerR
 
             Behavior on opacity {
                 NumberAnimation {
@@ -839,12 +941,13 @@ Item {
         // far inside the outer edge, so its soft anti-aliased rim sits UNDER
         // the 3px ring instead of poking out past it. Bigger = tighter.
         readonly property real imgInset: 2
+        readonly property real avatarR: face.edgy ? 4 : width / 2
 
         Rectangle {
             anchors.fill: parent
             anchors.margins: avatar.imgInset
-            radius: width / 2
-            color: face.placeholderGrey
+            radius: avatar.avatarR
+            color: face.edgy ? mt.hudSurface : face.placeholderGrey
             visible: avatarImage.status !== Image.Ready
             antialiasing: true
         }
@@ -852,6 +955,7 @@ Item {
         MaterialIcon {
             name: "account_circle"
             size: 24
+            color: face.edgy ? mt.accentCyan : mt.pInk
             anchors.centerIn: parent
             visible: avatarImage.status !== Image.Ready && !face.avatarHovered
         }
@@ -883,7 +987,7 @@ Item {
 
             Rectangle {
                 anchors.fill: parent
-                radius: width / 2
+                radius: avatar.avatarR
                 color: "black"
                 antialiasing: true
             }
@@ -902,8 +1006,8 @@ Item {
         Rectangle {
             anchors.fill: parent
             anchors.margins: avatar.imgInset
-            radius: width / 2
-            color: mt.pLine
+            radius: avatar.avatarR
+            color: face.edgy ? mt.accentCyan : mt.pLine
             opacity: face.avatarHovered ? 0.14 : 0
 
             Behavior on opacity {
@@ -917,6 +1021,7 @@ Item {
         MaterialIcon {
             name: "stylus"
             size: 28
+            color: face.edgy ? mt.accentCyan : mt.pInk
             anchors.centerIn: parent
             opacity: face.avatarHovered ? 1 : 0
 
@@ -927,14 +1032,32 @@ Item {
             }
         }
 
-        // The white ring around it
+        // The ring around it (neon cyan HUD frame in Cyberpunk mode, white ring in SekaiPop)
         Rectangle {
             anchors.fill: parent
-            radius: width / 2
+            radius: avatar.avatarR
             color: "transparent"
-            border.width: 3
-            border.color: mt.pRingWhite
+            border.width: face.edgy ? 2 : 3
+            border.color: face.edgy ? mt.accentCyan : mt.pRingWhite
             antialiasing: true
+        }
+
+        // Cyberdeck corner accent bracket on the avatar housing
+        Rectangle {
+            visible: face.edgy
+            x: -3
+            y: -3
+            width: 14
+            height: 3
+            color: mt.accentYellow
+        }
+        Rectangle {
+            visible: face.edgy
+            x: -3
+            y: -3
+            width: 3
+            height: 14
+            color: mt.accentYellow
         }
 
         MouseArea {
@@ -1053,12 +1176,14 @@ Item {
         // at 321; a long name is cut with "...".)
         width: 254
         elide: Text.ElideRight
-        text: face.userName + "@" + face.hostName
-        color: face.wallOn ? "#ffffff" : mt.pInk
-        style: face.wallOn ? Text.Outline : Text.Normal
+        text: face.edgy ? (face.userName.toUpperCase() + " // @" + face.hostName.toUpperCase()) : (face.userName + "@" + face.hostName)
+        color: face.edgy ? mt.accentCyan : (face.wallOn ? "#ffffff" : mt.pInk)
+        style: (face.wallOn && !face.edgy) ? Text.Outline : Text.Normal
         styleColor: Qt.rgba(0.10, 0.10, 0.22, 0.85)
-        font.family: mt.fontFamily
-        font.pixelSize: 20
+        font.family: face.edgy ? mt.monoFontFamily : mt.fontFamily
+        font.pixelSize: face.edgy ? 15 : 20
+        font.weight: face.edgy ? Font.Bold : Font.Normal
+        font.letterSpacing: face.edgy ? 0.6 : 0
     }
 
     // ===== Settings / Refresh / Edit =====
@@ -1341,9 +1466,37 @@ Item {
         y: 362
         width: 575
         height: 275 + face.tileExtra
-        radius: 18
-        color: face.wallOn ? Qt.alpha(face.placeholderGrey, face.cardAlpha) : face.placeholderGrey
+        radius: face.edgy ? mt.quickRadiusOuter : 18
+        color: face.edgy
+            ? (face.wallOn ? Qt.alpha(mt.hudSurface, face.cardAlpha) : mt.hudSurface)
+            : (face.wallOn ? Qt.alpha(face.placeholderGrey, face.cardAlpha) : face.placeholderGrey)
+        border.width: face.edgy ? 2 : 0
+        border.color: mt.accentFrame
         antialiasing: true
+        clip: true
+
+        CyberStripe {
+            visible: face.edgy
+            anchors.fill: parent
+            anchors.margins: 6
+            mode: "grid"
+            color: Qt.rgba(mt.accentCyan.r, mt.accentCyan.g, mt.accentCyan.b, 0.11)
+            gap: 16
+        }
+
+        // Cyberdeck corner tick accents on the control bay
+        Rectangle {
+            visible: face.edgy
+            x: 0; y: 0; width: 18; height: 4
+            color: mt.accentCyan
+        }
+        Rectangle {
+            visible: face.edgy
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            width: 24; height: 4
+            color: mt.accentYellow
+        }
     }
 
     // One slot per catalog button, always present: a button that isn't on
@@ -1820,7 +1973,7 @@ Item {
         y: 655 + 4 + face.tileExtra
         width: 575
         height: 515 - face.tileExtra
-        radius: 18
+        radius: face.edgy ? mt.quickRadiusOuter : 18
         color: mt.pLineShadow
         antialiasing: true
         // Under a see-through card it would show through as a dark slab, not a shadow.
@@ -1836,11 +1989,35 @@ Item {
         y: 655 + face.tileExtra
         width: 575
         height: 515 - face.tileExtra
-        radius: 18
-        color: face.wallOn ? Qt.alpha(mt.pSurface, face.cardAlpha) : mt.pSurface
-        border.width: 3
-        border.color: mt.pLine
+        radius: face.edgy ? mt.quickRadiusOuter : 18
+        color: face.edgy
+            ? (face.wallOn ? Qt.alpha(mt.hudSurface, face.cardAlpha) : mt.hudSurface)
+            : (face.wallOn ? Qt.alpha(mt.pSurface, face.cardAlpha) : mt.pSurface)
+        border.width: face.edgy ? 2 : 3
+        border.color: face.edgy ? mt.accentFrame : mt.pLine
         clip: true
+
+        CyberStripe {
+            visible: face.edgy
+            anchors.fill: parent
+            anchors.margins: 6
+            mode: "grid"
+            color: Qt.rgba(mt.accentCyan.r, mt.accentCyan.g, mt.accentCyan.b, 0.10)
+            gap: 16
+        }
+
+        // Cyberdeck corner markers + bottom telemetry serial on notifications bay
+        Rectangle {
+            visible: face.edgy
+            x: 0; y: 0; width: 16; height: 4
+            color: mt.accentCyan
+        }
+        Rectangle {
+            visible: face.edgy
+            anchors.right: parent.right
+            y: 0; width: 16; height: 4
+            color: mt.accentYellow
+        }
 
         readonly property bool empty: face.notifications.length === 0
 
@@ -2061,8 +2238,10 @@ Item {
                     y: row.headerH - 30
                     width: 508
                     height: 35
-                    radius: 16.5
-                    color: row.peekTone
+                    radius: face.edgy ? mt.quickRadiusInner : 16.5
+                    color: face.edgy ? Qt.darker(mt.hudSurface, 1.2) : row.peekTone
+                    border.width: face.edgy ? 1 : 0
+                    border.color: Qt.rgba(mt.accentFrame.r, mt.accentFrame.g, mt.accentFrame.b, 0.4)
                     antialiasing: true
                 }
 
@@ -2073,8 +2252,10 @@ Item {
                     y: row.headerH - 30
                     width: 490
                     height: 38
-                    radius: 16.5
-                    color: Qt.darker(row.peekTone, 1.06)
+                    radius: face.edgy ? mt.quickRadiusInner : 16.5
+                    color: face.edgy ? Qt.darker(mt.hudSurface, 1.35) : Qt.darker(row.peekTone, 1.06)
+                    border.width: face.edgy ? 1 : 0
+                    border.color: Qt.rgba(mt.accentFrame.r, mt.accentFrame.g, mt.accentFrame.b, 0.3)
                     antialiasing: true
                 }
 
@@ -2185,10 +2366,10 @@ Item {
         // notification list runs to). shownH is the part that is always on screen.
         readonly property real reachH: Math.max(0, Math.min(height,
             face.visibleBottomLeft + face.visibleExtra - y))
-        radius: 41
-        color: mt.pSurface
-        border.width: 3
-        border.color: mt.pLine
+        radius: face.edgy ? mt.quickRadiusOuter : 41
+        color: face.edgy ? mt.hudSurface : mt.pSurface
+        border.width: face.edgy ? 2 : 3
+        border.color: face.edgy ? mt.accentFrame : mt.pLine
         clip: true
         opacity: face.editing ? 1 : 0
         visible: opacity > 0.01
@@ -2247,10 +2428,12 @@ Item {
 
                         width: 46
                         height: 40
-                        radius: 20
-                        color: chip.current ? mt.accentMint : mt.pSurfaceDivider
-                        border.width: 3
-                        border.color: mt.pLine
+                        radius: face.edgy ? mt.quickRadiusInner : 20
+                        color: face.edgy
+                            ? (chip.current ? Qt.rgba(mt.accentCyan.r, mt.accentCyan.g, mt.accentCyan.b, 0.25) : mt.hudSurface)
+                            : (chip.current ? mt.accentMint : mt.pSurfaceDivider)
+                        border.width: face.edgy ? 2 : 3
+                        border.color: face.edgy ? (chip.current ? mt.accentCyan : mt.accentFrame) : mt.pLine
                         opacity: chip.allowed || chip.current ? 1 : 0.4
                         antialiasing: true
 
@@ -2263,8 +2446,8 @@ Item {
                         Text {
                             anchors.centerIn: parent
                             text: chip.modelData
-                            color: chip.current ? mt.colBorder : mt.pInk
-                            font.family: mt.fontFamily
+                            color: face.edgy ? (chip.current ? mt.accentCyan : mt.pInk) : (chip.current ? mt.colBorder : mt.pInk)
+                            font.family: face.edgy ? mt.monoFontFamily : mt.fontFamily
                             font.pixelSize: 18
                             font.weight: Font.ExtraBold
                             font.styleName: mt.fontStyleBold
@@ -2402,14 +2585,17 @@ Item {
     Rectangle {
         id: tag
 
+        readonly property bool activeHover: tagArea.containsMouse && !notificationsCard.empty && !notificationsCard.clearing
         x: 212
         y: 639 + face.tileExtra
         width: 229
         height: 31
-        radius: 27
-        color: tagArea.containsMouse && !notificationsCard.empty && !notificationsCard.clearing ? mt.accentMint : mt.pSurface
-        border.width: 3
-        border.color: mt.pLine
+        radius: face.edgy ? mt.quickRadiusInner : 27
+        color: face.edgy
+            ? (activeHover ? Qt.tint(mt.hudSurface, Qt.rgba(mt.accentCyan.r, mt.accentCyan.g, mt.accentCyan.b, 0.25)) : mt.hudSurface)
+            : (activeHover ? mt.accentMint : mt.pSurface)
+        border.width: face.edgy ? 2 : 3
+        border.color: face.edgy ? (activeHover ? mt.accentYellow : mt.accentCyan) : mt.pLine
 
         Behavior on color {
             ColorAnimation {
@@ -2417,15 +2603,30 @@ Item {
             }
         }
 
+        // Cyberdeck status dot on the Notifications header tab
+        Rectangle {
+            visible: face.edgy
+            x: 10
+            anchors.verticalCenter: parent.verticalCenter
+            width: 6
+            height: 6
+            radius: 1
+            color: notificationsCard.empty ? mt.accentGreen : mt.accentYellow
+        }
+
         Text {
             anchors.centerIn: parent
-            text: face.editing ? "Add buttons"
-                : (tagArea.containsMouse && !notificationsCard.empty && !notificationsCard.clearing ? "Clear all" : "Notifications")
-            color: mt.pInk
-            font.family: mt.fontFamily
-            font.pixelSize: 20
+            text: {
+                const raw = face.editing ? "Add buttons"
+                    : (tag.activeHover ? "Clear all" : "Notifications")
+                return face.edgy ? ("// " + raw.toUpperCase()) : raw
+            }
+            color: face.edgy ? (tag.activeHover ? mt.accentYellow : mt.accentCyan) : mt.pInk
+            font.family: face.edgy ? mt.monoFontFamily : mt.fontFamily
+            font.pixelSize: face.edgy ? 14 : 20
             font.weight: Font.ExtraBold
             font.styleName: mt.fontStyleBold
+            font.letterSpacing: face.edgy ? 0.8 : 0
         }
 
         MouseArea {
@@ -2607,18 +2808,28 @@ Item {
             y: 4
             width: parent.width
             height: parent.height
-            radius: 34
+            radius: face.edgy ? mt.quickRadiusOuter : 34
             color: mt.pLineShadow
             antialiasing: true
         }
 
         Rectangle {
             anchors.fill: parent
-            radius: 34
-            color: mt.pSurface
-            border.width: alertCard.critical ? 5 : 3
-            border.color: mt.pLine
+            radius: face.edgy ? mt.quickRadiusOuter : 34
+            color: face.edgy ? mt.hudSurface : mt.pSurface
+            border.width: face.edgy ? 2 : (alertCard.critical ? 5 : 3)
+            border.color: face.edgy ? (alertCard.critical ? mt.accentYellow : mt.accentCyan) : mt.pLine
             antialiasing: true
+
+            Rectangle {
+                visible: face.edgy
+                x: 4
+                y: 10
+                width: 4
+                height: parent.height - 20
+                radius: 1
+                color: alertCard.critical ? mt.accentYellow : mt.accentCyan
+            }
         }
 
         Item {
@@ -2631,8 +2842,10 @@ Item {
             Rectangle {
                 visible: !alertCard.shellIcon
                 anchors.fill: parent
-                radius: width / 2
-                color: mt.pSurface
+                radius: face.edgy ? mt.quickRadiusInner : width / 2
+                color: face.edgy ? Qt.darker(mt.hudSurface, 1.2) : mt.pSurface
+                border.width: face.edgy ? 1 : 0
+                border.color: mt.accentFrame
                 antialiasing: true
             }
 

@@ -81,7 +81,7 @@ Item {
         y: 200 + 4
         width: 575
         height: card.height
-        radius: 41
+        radius: mt.quickEdgy ? mt.quickRadiusOuter : 41
         color: mt.pLineShadow
         antialiasing: true
     }
@@ -92,10 +92,10 @@ Item {
         y: 200
         width: 575
         height: 470
-        radius: 41
-        color: mt.pSurface
-        border.width: 3
-        border.color: mt.pLine
+        radius: mt.quickEdgy ? mt.quickRadiusOuter : 41
+        color: mt.quickEdgy ? mt.hudSurface : mt.pSurface
+        border.width: mt.quickEdgy ? 2 : 3
+        border.color: mt.quickEdgy ? mt.accentFrame : mt.pLine
         clip: true
 
         MouseArea { anchors.fill: parent }
@@ -103,10 +103,10 @@ Item {
         Text {
             x: 28
             y: 26
-            text: "Night Light"
-            color: mt.pInk
+            text: mt.quickEdgy ? "NIGHT LIGHT // FILTER" : "Night Light"
+            color: mt.quickEdgy ? mt.accentCyan : mt.pInk
             font.family: mt.fontFamily
-            font.pixelSize: 26
+            font.pixelSize: mt.quickEdgy ? 22 : 26
             font.weight: Font.ExtraBold
             font.styleName: mt.fontStyleBold
         }
@@ -118,17 +118,17 @@ Item {
             y: 22
             width: powerLabel.implicitWidth + 28
             height: 34
-            radius: 17
-            color: root.nightOn ? mt.accentMint : (powerArea.containsMouse ? mt.pSurfaceHover : "transparent")
+            radius: mt.quickEdgy ? mt.quickRadiusInner : 17
+            color: root.nightOn ? (mt.quickEdgy ? Qt.rgba(mt.accentCyan.r, mt.accentCyan.g, mt.accentCyan.b, 0.25) : mt.accentMint) : (powerArea.containsMouse ? mt.pSurfaceHover : "transparent")
             border.width: 2
-            border.color: mt.pLine
+            border.color: mt.quickEdgy ? (root.nightOn ? mt.accentCyan : mt.accentFrame) : mt.pLine
 
             Text {
                 id: powerLabel
                 anchors.centerIn: parent
                 text: root.nightOn ? "ON" : "OFF"
-                color: root.nightOn ? mt.colBorder : mt.pInk
-                font.family: mt.fontFamily
+                color: mt.quickEdgy ? (root.nightOn ? mt.accentCyan : mt.pInk) : (root.nightOn ? mt.colBorder : mt.pInk)
+                font.family: mt.quickEdgy ? mt.monoFontFamily : mt.fontFamily
                 font.pixelSize: 14
                 font.weight: Font.ExtraBold
                 font.styleName: mt.fontStyleBold
@@ -188,32 +188,46 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 width: parent.width
                 height: 16
-                radius: 8
-                border.width: 2
-                border.color: mt.pLine
+                radius: mt.quickEdgy ? mt.quickRadiusInner : 8
+                border.width: mt.quickEdgy ? 1 : 2
+                border.color: mt.quickEdgy ? mt.accentFrame : mt.pLine
+                color: mt.hudSurface
                 antialiasing: true
                 opacity: root.nightOn ? 1 : 0.6
                 gradient: Gradient {
                     orientation: Gradient.Horizontal
-                    GradientStop { position: 0.0; color: "#dcecff" }
-                    GradientStop { position: 0.5; color: "#ffe3b8" }
-                    GradientStop { position: 1.0; color: "#ff9a3c" }
+                    GradientStop { position: 0.0; color: mt.quickEdgy ? mt.hudSurface : "#dcecff" }
+                    GradientStop { position: 0.5; color: mt.quickEdgy ? mt.hudSurface : "#ffe3b8" }
+                    GradientStop { position: 1.0; color: mt.quickEdgy ? mt.hudSurface : "#ff9a3c" }
                 }
                 Behavior on opacity {
                     NumberAnimation { duration: 150 }
+                }
+
+                CyberStripe {
+                    visible: mt.quickEdgy
+                    anchors.fill: parent
+                    anchors.margins: 2
+                    mode: "stripes"
+                    fillRatio: Math.max(0, Math.min(1, slider.ratio))
+                    color: mt.accentYellow
+                    altColor: mt.accentAmber
+                    trackColor: Qt.rgba(mt.accentCyan.r, mt.accentCyan.g, mt.accentCyan.b, 0.25)
+                    stripeWidth: 5
+                    gap: 3
                 }
             }
 
             Rectangle {
                 id: handle
-                width: 30
+                width: mt.quickEdgy ? 16 : 30
                 height: 30
-                radius: 15
+                radius: mt.quickEdgy ? mt.quickRadiusInner : 15
                 x: slider.ratio * (slider.width - width)
                 anchors.verticalCenter: parent.verticalCenter
-                color: mt.pSurface
-                border.width: 3
-                border.color: mt.pLine
+                color: mt.quickEdgy ? mt.hudSurface : mt.pSurface
+                border.width: mt.quickEdgy ? 2 : 3
+                border.color: mt.quickEdgy ? mt.accentYellow : mt.pLine
                 antialiasing: true
                 scale: sliderArea.pressed ? 1.12 : 1
                 Behavior on scale {
@@ -287,9 +301,9 @@ Item {
             y: 230
             width: 60
             height: 32
-            radius: 16
-            border.width: 3
-            border.color: mt.pLine
+            radius: mt.quickEdgy ? mt.quickRadiusInner : 16
+            border.width: mt.quickEdgy ? 2 : 3
+            border.color: mt.quickEdgy ? (root.autoOn ? mt.accentCyan : mt.accentFrame) : mt.pLine
             antialiasing: true
             gradient: Gradient {
                 orientation: Gradient.Horizontal
@@ -300,12 +314,12 @@ Item {
             Rectangle {
                 width: 22
                 height: 22
-                radius: 11
+                radius: mt.quickEdgy ? mt.quickRadiusInner : 11
                 y: 3
                 x: root.autoOn ? parent.width - width - 5 : 3
-                color: mt.pSurface
+                color: mt.quickEdgy ? mt.hudSurface : mt.pSurface
                 border.width: 2
-                border.color: mt.pLine
+                border.color: mt.quickEdgy ? mt.accentCyan : mt.pLine
                 antialiasing: true
                 Behavior on x {
                     NumberAnimation { duration: 140; easing.type: Easing.OutCubic }
@@ -367,11 +381,11 @@ Item {
                     Rectangle {
                         width: 40
                         height: 40
-                        radius: 20
+                        radius: mt.quickEdgy ? mt.quickRadiusInner : 20
                         anchors.verticalCenter: parent.verticalCenter
                         color: minusArea.containsMouse ? mt.pSurfaceHover : "transparent"
                         border.width: 2
-                        border.color: mt.pLine
+                        border.color: mt.quickEdgy ? mt.accentFrame : mt.pLine
                         antialiasing: true
 
                         MaterialIcon {
@@ -396,8 +410,8 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         horizontalAlignment: Text.AlignHCenter
                         text: root.hourLabel(timeRow.hour)
-                        color: mt.pInk
-                        font.family: mt.fontFamily
+                        color: mt.quickEdgy ? mt.accentCyan : mt.pInk
+                        font.family: mt.quickEdgy ? mt.monoFontFamily : mt.fontFamily
                         font.pixelSize: 17
                         font.weight: Font.ExtraBold
                         font.styleName: mt.fontStyleBold
@@ -406,11 +420,11 @@ Item {
                     Rectangle {
                         width: 40
                         height: 40
-                        radius: 20
+                        radius: mt.quickEdgy ? mt.quickRadiusInner : 20
                         anchors.verticalCenter: parent.verticalCenter
                         color: plusArea.containsMouse ? mt.pSurfaceHover : "transparent"
                         border.width: 2
-                        border.color: mt.pLine
+                        border.color: mt.quickEdgy ? mt.accentFrame : mt.pLine
                         antialiasing: true
 
                         MaterialIcon {

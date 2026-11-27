@@ -54,8 +54,9 @@ Item {
     property real dragBrightness: -1
     readonly property real shownGamma: dragging && dragGamma >= 0 ? dragGamma : gamma
     readonly property real shownBrightness: dragging && dragBrightness >= 0 ? dragBrightness : brightness
+    property bool edgy: mt.quickEdgy
 
-    readonly property color ink: mt.pInk
+    readonly property color ink: root.edgy ? mt.accentCyan : mt.pInk
     readonly property color inkSub: Qt.rgba(ink.r, ink.g, ink.b, 0.667)
 
     // ===== headers =====
@@ -70,7 +71,7 @@ Item {
             x: 0
             y: (32 - height) / 2
             size: 24
-            color: root.ink
+            color: root.edgy ? mt.accentYellow : root.ink
             name: "contrast"
         }
         Text {
@@ -78,10 +79,10 @@ Item {
             anchors.left: gammaGlyph.right
             anchors.leftMargin: 8
             y: (32 - height) / 2
-            text: Math.round(root.shownGamma) + "%"
-            color: root.ink
-            font.family: mt.fontFamily
-            font.pixelSize: 17
+            text: (root.edgy ? "GAM // " : "") + Math.round(root.shownGamma) + "%"
+            color: root.edgy ? mt.accentYellow : root.ink
+            font.family: root.edgy ? mt.monoFontFamily : mt.fontFamily
+            font.pixelSize: root.edgy ? 14 : 17
             font.weight: Font.ExtraBold
             font.styleName: mt.fontStyleBold
         }
@@ -106,10 +107,10 @@ Item {
             anchors.left: brightGlyph.right
             anchors.leftMargin: 8
             y: (32 - height) / 2
-            text: Math.round(root.shownBrightness) + "%"
+            text: (root.edgy ? "LUM // " : "") + Math.round(root.shownBrightness) + "%"
             color: root.ink
-            font.family: mt.fontFamily
-            font.pixelSize: 17
+            font.family: root.edgy ? mt.monoFontFamily : mt.fontFamily
+            font.pixelSize: root.edgy ? 14 : 17
             font.weight: Font.ExtraBold
             font.styleName: mt.fontStyleBold
         }
@@ -122,12 +123,46 @@ Item {
         y: 42
         width: root.trackWidth
         height: 14
-        radius: 7
-        color: mt.pSurfaceDivider
+        radius: root.edgy ? mt.quickRadiusInner : 7
+        color: root.edgy ? mt.hudSurface : mt.pSurfaceDivider
+        border.width: root.edgy ? 1 : 0
+        border.color: Qt.rgba(mt.accentFrame.r, mt.accentFrame.g, mt.accentFrame.b, 0.55)
         antialiasing: true
 
-        // gamma's stretch
+        // Cyberdeck diagonal stripe progress bars (when root.edgy)
+        CyberStripe {
+            visible: root.edgy
+            x: 2
+            y: 2
+            width: Math.max(0, root.gammaWidth - 4)
+            height: parent.height - 4
+            mode: "stripes"
+            fillRatio: Math.max(0, Math.min(1, root.shownGamma / 100))
+            color: mt.accentYellow
+            altColor: mt.accentAmber
+            trackColor: Qt.rgba(mt.accentFrame.r, mt.accentFrame.g, mt.accentFrame.b, 0.25)
+            stripeWidth: 5
+            gap: 3
+        }
+
+        CyberStripe {
+            visible: root.edgy
+            x: root.gammaWidth + 2
+            y: 2
+            width: Math.max(0, root.brightnessWidth - 4)
+            height: parent.height - 4
+            mode: "stripes"
+            fillRatio: Math.max(0, Math.min(1, root.shownBrightness / 100))
+            color: mt.accentCyan
+            altColor: mt.accentMint
+            trackColor: Qt.rgba(mt.accentFrame.r, mt.accentFrame.g, mt.accentFrame.b, 0.25)
+            stripeWidth: 5
+            gap: 3
+        }
+
+        // gamma's stretch (SekaiPop curvy mode)
         Rectangle {
+            visible: !root.edgy
             width: root.gammaWidth * Math.max(0, Math.min(1, root.shownGamma / 100))
             height: parent.height
             radius: 7
@@ -143,8 +178,9 @@ Item {
             }
         }
 
-        // brightness's stretch
+        // brightness's stretch (SekaiPop curvy mode)
         Rectangle {
+            visible: !root.edgy
             x: root.gammaWidth
             width: root.brightnessWidth * Math.max(0, Math.min(1, root.shownBrightness / 100))
             height: parent.height
@@ -167,9 +203,9 @@ Item {
             y: -3
             width: 3
             height: parent.height + 6
-            radius: 1.5
-            color: root.ink
-            opacity: 0.55
+            radius: root.edgy ? 0 : 1.5
+            color: root.edgy ? mt.accentFrame : root.ink
+            opacity: root.edgy ? 0.9 : 0.55
             antialiasing: true
         }
 

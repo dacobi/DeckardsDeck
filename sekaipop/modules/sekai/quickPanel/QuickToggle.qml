@@ -94,11 +94,17 @@ Item {
 
     readonly property bool hovered: area.containsMouse
     readonly property bool lit: on || (hoverLights && (hovered || keyFocused))
+    property bool edgy: mt.quickEdgy
 
-    // Text / glyph colour: the mode's ink when OFF, the fixed dark ink when
-    // the tile is lit (the accent gradient behind it is bright in both modes).
-    readonly property color inkNow: Qt.tint(mt.classicFor(root) ? mt.pInk : mt.ink, Qt.rgba(mt.colBorder.r, mt.colBorder.g, mt.colBorder.b, litP))
-    readonly property color inkSubNow: Qt.rgba(inkNow.r, inkNow.g, inkNow.b, 0.667)
+    // Text / glyph colour: in cyberdeck mode, glowing cyan when lit and crisp HUD ink when off;
+    // in SekaiPop mode, mode ink when OFF and dark ink over the bright accent gradient when lit.
+    readonly property color baseInk: mt.classicFor(root) ? mt.pInk : mt.ink
+    readonly property color inkNow: root.edgy
+        ? (root.litP > 0.5 ? mt.accentCyan : (root.hovered ? mt.accentMint : baseInk))
+        : Qt.tint(baseInk, Qt.rgba(mt.colBorder.r, mt.colBorder.g, mt.colBorder.b, litP))
+    readonly property color inkSubNow: root.edgy
+        ? (root.litP > 0.5 ? mt.accentYellow : Qt.rgba(baseInk.r, baseInk.g, baseInk.b, 0.72))
+        : Qt.rgba(inkNow.r, inkNow.g, inkNow.b, 0.667)
 
     // 0 = OFF look, 1 = ON look; glides between them — the
     // fill/outline/shadow all read litP.
@@ -191,29 +197,28 @@ Item {
         width: root.capW + shadowDx
         height: root.capH + shadowDy
 
-        cornerRadius: root.kind === "square" ? 30 : 40
-        borderWidth: 3 + 2 * root.shadowLitP
-        ringWidth: 3 + 11 * root.shadowLitP
+        edgy: root.edgy
+        cornerRadius: root.edgy ? mt.quickRadiusOuter : (root.kind === "square" ? 30 : 40)
+        borderWidth: root.edgy ? 2 : (3 + 2 * root.shadowLitP)
+        ringWidth: root.edgy ? 3 : (3 + 11 * root.shadowLitP)
+        borderColor: root.edgy
+            ? (root.litP > 0.5 ? mt.accentCyan : (root.hovered ? mt.accentMint : mt.accentFrame))
+            : mt.pLine
+        fillColor: root.edgy
+            ? (root.litP > 0.05
+                ? Qt.tint(mt.hudSurface, Qt.rgba(mt.accentCyan.r, mt.accentCyan.g, mt.accentCyan.b, 0.18 * root.litP))
+                : (root.hovered ? Qt.lighter(mt.hudSurface, 1.25) : mt.hudSurface))
+            : mt.pSurface
         shadowDx: root.flatShadow ? 0 : 3 + 2 * root.shadowLitP + root.hoverBoostP * root.hoverShadowExtraX
         shadowDy: root.flatShadow ? 3 + root.shadowLitP + root.hoverBoostP * root.hoverShadowExtraY
                                   : 1 + root.shadowLitP + root.hoverBoostP * root.hoverShadowExtraY
 
         pressed: area.pressed || root.keyPulse
 
-        // The white base is Pill's own default fillColor (Theme.colBg) —
-        // always there, nothing drawn over it. This gradient is the ON
-        // look, fading IN on top as the button lights up, rather than a
-        // white sheet fading OUT over an always-on gradient underneath,
-        // which is how this used to work: OFF pills — litP 0 — used
-        // to show a thin ring of the gradient color around their edge
-        // even at rest: two opaque, identically-shaped rounded rects
-        // stacked on top of each other don't fully cancel at their
-        // antialiased edge, since each one's own edge softening lets a
-        // little of what's beneath it show through, and stacking two
-        // of those compounds rather than hiding it. A single layer that
-        // simply isn't drawn at all when litP is 0 doesn't have that
-        // problem — there's nothing there to leak.
+        // SekaiPop curvy ON fill gradient (hidden in cyberdeck mode so Pill's
+        // 45-degree chamfered hudFace polygon stays crisp and uncovered).
         Rectangle {
+            visible: !root.edgy
             anchors.fill: parent
             radius: parent.radius
             gradient: Gradient {
@@ -235,10 +240,31 @@ Item {
             width: cap.capWidth
             height: cap.capHeight
 
+            // Cyberdeck active status indicator bar + corner telemetry tick
+            Rectangle {
+                visible: root.edgy
+                x: 4
+                y: 12
+                width: 3
+                height: parent.height - 24
+                radius: 1
+                color: root.litP > 0.5 ? mt.accentGreen : Qt.rgba(mt.accentFrame.r, mt.accentFrame.g, mt.accentFrame.b, 0.45)
+            }
+
+            Rectangle {
+                visible: root.edgy && root.kind === "wide"
+                anchors.right: parent.right
+                anchors.rightMargin: 10
+                y: 8
+                width: 14
+                height: 3
+                color: root.litP > 0.5 ? mt.accentYellow : Qt.rgba(mt.accentCyan.r, mt.accentCyan.g, mt.accentCyan.b, 0.35)
+            }
+
             MaterialIcon {
                 id: glyph
                 size: 24
-                x: root.kind === "wide" ? 28 - 8 * root.litP : (parent.width - width) / 2
+                x: root.kind === "wide" ? (root.edgy ? 22 : 28 - 8 * root.litP) : (parent.width - width) / 2
                 y: (parent.height - height) / 2
                 name: root.icon
                 fill: root.iconFilled ? 1 : mt.iconFill
@@ -247,19 +273,20 @@ Item {
 
             Column {
                 visible: root.kind === "wide"
-                x: 62 - 8 * root.litP
-                width: root.wideWidth - 73
+                x: root.edgy ? 54 : (62 - 8 * root.litP)
+                width: root.wideWidth - (root.edgy ? 66 : 73)
                 anchors.verticalCenter: parent.verticalCenter
 
                 Text {
                     width: parent.width
                     elide: Text.ElideRight
-                    text: root.label
+                    text: root.edgy ? root.label.toUpperCase() : root.label
                     color: root.inkNow
                     font.family: mt.fontFamily
-                    font.pixelSize: 18
+                    font.pixelSize: root.edgy ? 16 : 18
                     font.weight: Font.ExtraBold
                     font.styleName: mt.fontStyleBold
+                    font.letterSpacing: root.edgy ? 0.6 : 0
                     lineHeight: root.lineHeightPx > 0 ? root.lineHeightPx : root.titleLine
                     lineHeightMode: Text.FixedHeight
                 }
@@ -269,9 +296,9 @@ Item {
                     elide: Text.ElideRight
                     text: root.subtitle
                     color: root.inkSubNow
-                    font.family: mt.fontFamily
-                    font.pixelSize: 15
-                    font.weight: Font.Normal
+                    font.family: root.edgy ? mt.monoFontFamily : mt.fontFamily
+                    font.pixelSize: root.edgy ? 13 : 15
+                    font.weight: root.edgy ? Font.Bold : Font.Normal
                     lineHeight: root.lineHeightPx > 0 ? root.lineHeightPx : root.subLine
                     lineHeightMode: Text.FixedHeight
                 }

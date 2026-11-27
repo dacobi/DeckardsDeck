@@ -76,9 +76,9 @@ Item {
     readonly property string title: root.media ? root.media.title : ""
     readonly property string artist: root.media ? root.media.artist : ""
 
-    // The game's gold, for the critical star; the green of the slide, for the voice.
-    readonly property color cCrit: "#ffd640"
-    readonly property color cVoice: "#3de085"
+    // Accent colours from the current desktop palette.
+    readonly property color cCrit: mt.accentYellow
+    readonly property color cVoice: mt.accentGreen
 
     // ===== colours of the screen =====
     readonly property color well: mt.colBorder
@@ -126,7 +126,6 @@ Item {
     property bool pointerDown: false
     property double voiceSeen: 0
     property real voiceLane: 6
-    property int starHead: 0
     property real fingerX: 0
     property real fingerY: 0
     property real fingerAmp: 0
@@ -140,16 +139,16 @@ Item {
     onColsChanged: root.rebuild()
     onRowsChanged: root.rebuild()
     onColorModeChanged: {
-        if (root.colorMode === 0)
-            root.sample()
         root.refreshPalette(true)
     }
 
     Connections {
-        target: Theme
+        target: mt
 
         function onAccentCyanChanged() { root.refreshPalette(false) }
         function onAccentMintChanged() { root.refreshPalette(false) }
+        function onAccentFrameChanged() { root.refreshPalette(false) }
+        function onAttributeColorsChanged() { root.refreshPalette(false) }
     }
 
     Component.onCompleted: root.rebuild()
@@ -158,7 +157,6 @@ Item {
         root.bed = KB.create(root.cols, root.rows)
         root.coverCells = null
         root.refreshPalette(false)
-        root.sample()
     }
 
     // ===== colours of the keys =====
@@ -179,17 +177,12 @@ Item {
         return [c.r, c.g, c.b, 0]
     }
 
-    // Rebuild the colour of every key. `sweep`: re-key with the wave instead of at once.
+    // Rebuild the colour of every key from the current desktop palette. `sweep`: re-key with the wave instead of at once.
     function refreshPalette(sweep) {
         const n = root.cols * root.rows
-        let pal
-        if (root.colorMode === 0 && root.coverCells !== null) {
-            pal = KB.layCover(root.coverCells, root.coverCols, root.rows, root.cols, root.rows)
-        } else {
-            pal = new Array(n)
-            for (let i = 0; i < n; i++)
-                pal[i] = root.patternAt(i)
-        }
+        const pal = new Array(n)
+        for (let i = 0; i < n; i++)
+            pal[i] = root.patternAt(i)
         root.keyColors = pal
         if (sweep && root.visible && keys.count === n) {
             KB.rekey(root.bed)
@@ -392,12 +385,6 @@ Item {
             root.press(kind, lane, strength)
         }
         root.awake = true
-        if (kind === "crit") {
-            const s = stars.itemAt(root.starHead)
-            root.starHead = (root.starHead + 1) % 3
-            if (s)
-                s.fire(root.bedX + root.bedW / 2 + (root.starHead - 1) * root.bedW * 0.18, root.bedY + root.bedH * 0.5, strength)
-        }
     }
 
     Connections {
@@ -665,67 +652,6 @@ Item {
                 weight: 700
                 fill: 1
                 color: root.wellDeep
-            }
-        }
-    }
-
-    // ===== the gold star =====
-    Repeater {
-        id: stars
-        model: 3
-
-        delegate: Item {
-            id: star
-            property real t: 1
-            property real pop: 0
-            property real power: 0.5
-            property real tilt: 0
-            readonly property real sz: 24 + power * 12
-
-            width: 1
-            height: 1
-            visible: star.t < 1
-
-            function fire(cx, cy, p) {
-                star.x = cx
-                star.y = cy
-                star.power = p
-                star.tilt = (root.starHead % 2 === 0 ? -1 : 1) * (8 + p * 12)
-                floatAnim.restart()
-                popAnim.restart()
-            }
-
-            NumberAnimation {
-                id: floatAnim
-                target: star
-                property: "t"
-                from: 0
-                to: 1
-                duration: 900
-                easing.type: Easing.OutCubic
-            }
-
-            NumberAnimation {
-                id: popAnim
-                target: star
-                property: "pop"
-                from: 0.3
-                to: 1
-                duration: 320
-                easing.type: Easing.OutBack
-                easing.overshoot: 2.8
-            }
-
-            Item {
-                y: -star.t * 30
-                scale: star.pop
-                rotation: star.tilt
-                opacity: star.t < 0.55 ? 1 : Math.max(0, (1 - star.t) / 0.45)
-
-                MaterialIcon { x: -width / 2 + 2; y: -height / 2 + 3; name: "star"; fill: 1; weight: 700; size: star.sz + 10; color: root.wellDeep }
-                MaterialIcon { x: -width / 2; y: -height / 2; name: "star"; fill: 1; weight: 700; size: star.sz + 10; color: mt.colBorder }
-                MaterialIcon { x: -width / 2; y: -height / 2; name: "star"; fill: 1; weight: 700; size: star.sz + 5; color: "#ffffff" }
-                MaterialIcon { x: -width / 2; y: -height / 2; name: "star"; fill: 1; weight: 700; size: star.sz; color: root.cCrit }
             }
         }
     }
