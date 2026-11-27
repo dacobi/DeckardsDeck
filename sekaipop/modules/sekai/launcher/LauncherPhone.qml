@@ -545,7 +545,21 @@ Scope {
                 root.openWallpapersOn(root.focusedScreen())
         }
 
+        function open(): void {
+            if (root.quickPanel)
+                root.quickPanel.openWallpapers(root.focusedScreen())
+            else
+                root.openWallpapersOn(root.focusedScreen())
+        }
+
         function hide(): void {
+            if (root.quickPanel && root.quickPanel.wallpapersOpen)
+                root.quickPanel.close()
+            else if (root.wallpapersOpen)
+                root.close()
+        }
+
+        function close(): void {
             if (root.quickPanel && root.quickPanel.wallpapersOpen)
                 root.quickPanel.close()
             else if (root.wallpapersOpen)

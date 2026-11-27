@@ -108,7 +108,15 @@ Singleton {
             root.show()
         }
 
+        function open(): void {
+            root.show()
+        }
+
         function hide(): void {
+            root.hide()
+        }
+
+        function close(): void {
             root.hide()
         }
     }

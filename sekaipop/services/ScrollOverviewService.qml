@@ -287,7 +287,15 @@ Singleton {
             root.dispatch("on")
         }
 
+        function open(): void {
+            root.dispatch("on")
+        }
+
         function hide(): void {
+            root.dispatch("off")
+        }
+
+        function close(): void {
             root.dispatch("off")
         }
 

@@ -295,7 +295,25 @@ Singleton {
                 st.setShown(true)
         }
 
+        function enable(id: string): void {
+            const st = root.stateFor(id)
+            if (st)
+                st.setShown(true)
+        }
+
         function hide(id: string): void {
+            const st = root.stateFor(id)
+            if (st)
+                st.setShown(false)
+        }
+
+        function close(id: string): void {
+            const st = root.stateFor(id)
+            if (st)
+                st.setShown(false)
+        }
+
+        function disable(id: string): void {
             const st = root.stateFor(id)
             if (st)
                 st.setShown(false)

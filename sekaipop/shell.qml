@@ -368,7 +368,15 @@ ShellRoot {
             overview.openOn(overview.focusedScreen())
         }
 
+        function open(): void {
+            overview.openOn(overview.focusedScreen())
+        }
+
         function hide(): void {
+            overview.hide()
+        }
+
+        function close(): void {
             overview.hide()
         }
 
@@ -439,7 +447,15 @@ ShellRoot {
             cheatSheetEntry.open(cheatSheetEntry.focusedScreen())
         }
 
+        function open(): void {
+            cheatSheetEntry.open(cheatSheetEntry.focusedScreen())
+        }
+
         function hide(): void {
+            cheatSheetEntry.close()
+        }
+
+        function close(): void {
             cheatSheetEntry.close()
         }
     }
@@ -487,8 +503,18 @@ ShellRoot {
             keybindsEntry.open(keybindsEntry.focusedScreen())
         }
 
+        function open(): void {
+            console.log("[keybinds] ipc open")
+            keybindsEntry.open(keybindsEntry.focusedScreen())
+        }
+
         function hide(): void {
             console.log("[keybinds] ipc hide")
+            keybindsEntry.close()
+        }
+
+        function close(): void {
+            console.log("[keybinds] ipc close")
             keybindsEntry.close()
         }
     }
@@ -528,7 +554,15 @@ ShellRoot {
             paletteToolEntry.open(paletteToolEntry.focusedScreen())
         }
 
+        function open(): void {
+            paletteToolEntry.open(paletteToolEntry.focusedScreen())
+        }
+
         function hide(): void {
+            paletteToolEntry.close()
+        }
+
+        function close(): void {
             paletteToolEntry.close()
         }
 
@@ -651,7 +685,15 @@ ShellRoot {
             SettingsService.set("bar.visible", true)
         }
 
+        function open(): void {
+            SettingsService.set("bar.visible", true)
+        }
+
         function hide(): void {
+            SettingsService.set("bar.visible", false)
+        }
+
+        function close(): void {
             SettingsService.set("bar.visible", false)
         }
 
@@ -1137,7 +1179,9 @@ ShellRoot {
         target: "todo"
         function toggle(): void { TodoService.setShown(!TodoService.shown) }
         function show(): void { TodoService.setShown(true) }
+        function open(): void { TodoService.setShown(true) }
         function hide(): void { TodoService.setShown(false) }
+        function close(): void { TodoService.setShown(false) }
         // The card's size: 2x2 (the clock / user card / weather card footprint) or full.
         function size(mode: string): void { TodoService.setSize(mode) }
         function toggleSize(): void { TodoService.toggleSize() }
@@ -1152,7 +1196,9 @@ ShellRoot {
         target: "clock"
         function toggle(): void { ClockService.setShown(!ClockService.shown) }
         function show(): void { ClockService.setShown(true) }
+        function open(): void { ClockService.setShown(true) }
         function hide(): void { ClockService.setShown(false) }
+        function close(): void { ClockService.setShown(false) }
         function toggleFormat(): void { ClockService.toggleFormat() }
         function nextDesign(): void { ClockService.cycleDesign() }
         function setDesign(index: int): void { ClockService.setDesign(index) }
@@ -1168,7 +1214,9 @@ ShellRoot {
         target: "visualizer"
         function toggle(): void { VisualizerService.setShown(!VisualizerService.shown) }
         function show(): void { VisualizerService.setShown(true) }
+        function open(): void { VisualizerService.setShown(true) }
         function hide(): void { VisualizerService.setShown(false) }
+        function close(): void { VisualizerService.setShown(false) }
         function nextSize(): void { VisualizerService.cycleSize() }
         // bands only: true = up the side of the screen, false = along the bottom
         function vertical(on: bool): void { VisualizerService.setVertical(on) }
@@ -1197,7 +1245,9 @@ ShellRoot {
         target: "usercard"
         function toggle(): void { UserCardService.setShown(!UserCardService.shown) }
         function show(): void { UserCardService.setShown(true) }
+        function open(): void { UserCardService.setShown(true) }
         function hide(): void { UserCardService.setShown(false) }
+        function close(): void { UserCardService.setShown(false) }
         function resetPosition(): void {
             shellRoot.userCardResetRequested = true
             if (userCardWidgetLoader.item) userCardWidgetLoader.item.resetPosition()
@@ -1210,7 +1260,9 @@ ShellRoot {
         target: "weathercard"
         function toggle(): void { WeatherCardService.setShown(!WeatherCardService.shown) }
         function show(): void { WeatherCardService.setShown(true) }
+        function open(): void { WeatherCardService.setShown(true) }
         function hide(): void { WeatherCardService.setShown(false) }
+        function close(): void { WeatherCardService.setShown(false) }
         // "minimal" or "classic" (anything else, the old "full" too, is "classic").
         function style(mode: string): void { WeatherCardService.setStyle(mode) }
         // Ask Open-Meteo again now (only does something while the card is on screen).
@@ -1228,7 +1280,9 @@ ShellRoot {
         target: "image"
         function toggle(): void { ImageService.setShown(!ImageService.shown) }
         function show(): void { ImageService.setShown(true) }
+        function open(): void { ImageService.setShown(true) }
         function hide(): void { ImageService.setShown(false) }
+        function close(): void { ImageService.setShown(false) }
         // An empty frame on the desktop at once; drop picture files on it.
         function add(): void { ImageService.addEmpty("") }
         // A picture you already have (png, jpg, webp, gif, apng, bmp, svg). It is copied.
@@ -1247,7 +1301,9 @@ ShellRoot {
         target: "notes"
         function toggle(): void { NotesService.setShown(!NotesService.active) }
         function show(): void { NotesService.setShown(true) }
+        function open(): void { NotesService.setShown(true) }
         function hide(): void { NotesService.setShown(false) }
+        function close(): void { NotesService.setShown(false) }
         // A new empty note (also shows the notes). Not called `new`: that is a JS keyword.
         function create(): void { NotesService.add("") }
         // Every note back into a tidy cascade (text, colour, size and pins are kept).
@@ -1263,7 +1319,9 @@ ShellRoot {
         target: "calendarcard"
         function toggle(): void { CalendarCardService.setShown(!CalendarCardService.shown) }
         function show(): void { CalendarCardService.setShown(true) }
+        function open(): void { CalendarCardService.setShown(true) }
         function hide(): void { CalendarCardService.setShown(false) }
+        function close(): void { CalendarCardService.setShown(false) }
         // The card's size: 2x2 (the clock / user card / weather card footprint) or full.
         function size(mode: string): void { CalendarCardService.setSize(mode) }
         function toggleSize(): void { CalendarCardService.toggleSize() }
@@ -1284,7 +1342,9 @@ ShellRoot {
         target: "palettecard"
         function toggle(): void { PaletteService.setShown(!PaletteService.shown) }
         function show(): void { PaletteService.setShown(true) }
+        function open(): void { PaletteService.setShown(true) }
         function hide(): void { PaletteService.setShown(false) }
+        function close(): void { PaletteService.setShown(false) }
         // The card's size: 2x2 (the clock / user card / weather card footprint) or full.
         function size(mode: string): void { PaletteService.setSize(mode) }
         function toggleSize(): void { PaletteService.toggleSize() }
@@ -1302,7 +1362,9 @@ ShellRoot {
         target: "lyrics"
         function toggle(): void { LyricsService.setShown(!LyricsService.shown) }
         function show(): void { LyricsService.setShown(true) }
+        function open(): void { LyricsService.setShown(true) }
         function hide(): void { LyricsService.setShown(false) }
+        function close(): void { LyricsService.setShown(false) }
         // Show THIS song's lyrics this many milliseconds earlier (negative: later). Remembered
         // for the song. The widget's own "earlier" / "later" keys do the same.
         function nudge(ms: int): void { LyricsService.nudge(ms) }

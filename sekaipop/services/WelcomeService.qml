@@ -165,11 +165,25 @@ Singleton {
         target: "welcome"
 
         // Does nothing while Game Mode is on (see the top of this file).
+        // `open` / `play` / `close` work without `--` (Quickshell's CLI parser treats
+        // bare `show` as the `qs ipc show` subcommand unless `-- show` is passed).
         function show(): void {
             root.open();
         }
 
+        function open(): void {
+            root.open();
+        }
+
+        function play(): void {
+            root.open();
+        }
+
         function hide(): void {
+            root.beginClose();
+        }
+
+        function close(): void {
             root.beginClose();
         }
 

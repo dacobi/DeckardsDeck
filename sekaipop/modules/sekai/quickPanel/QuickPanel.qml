@@ -1122,7 +1122,15 @@ Scope {
             root.openOn(root.focusedScreen())
         }
 
+        function open(): void {
+            root.openOn(root.focusedScreen())
+        }
+
         function hide(): void {
+            root.close()
+        }
+
+        function close(): void {
             root.close()
         }
       function keepAwake(): void {
@@ -1142,7 +1150,15 @@ Scope {
             root.openOn(root.focusedScreen())
         }
 
+        function open(): void {
+            root.openOn(root.focusedScreen())
+        }
+
         function hide(): void {
+            root.close()
+        }
+
+        function close(): void {
             root.close()
         }
 
@@ -1176,7 +1192,16 @@ Scope {
             root.openAppsOn(root.focusedScreen())
         }
 
+        function open(): void {
+            root.openAppsOn(root.focusedScreen())
+        }
+
         function hide(): void {
+            if (root.open && root.faceScreen === "apps")
+                root.close()
+        }
+
+        function close(): void {
             if (root.open && root.faceScreen === "apps")
                 root.close()
         }
@@ -1205,7 +1230,16 @@ Scope {
             root.openAppsOn(root.focusedScreen())
         }
 
+        function open(): void {
+            root.openAppsOn(root.focusedScreen())
+        }
+
         function hide(): void {
+            if (root.open && root.faceScreen === "apps")
+                root.close()
+        }
+
+        function close(): void {
             if (root.open && root.faceScreen === "apps")
                 root.close()
         }
@@ -1239,7 +1273,16 @@ Scope {
             root.openWallpapers(root.focusedScreen())
         }
 
+        function open(): void {
+            root.openWallpapers(root.focusedScreen())
+        }
+
         function hide(): void {
+            if (root.wallpapersOpen)
+                root.close()
+        }
+
+        function close(): void {
             if (root.wallpapersOpen)
                 root.close()
         }
@@ -1255,6 +1298,10 @@ Scope {
         }
 
         function showlock(): void {
+            root.openWallpapers(root.focusedScreen(), "lock")
+        }
+
+        function openlock(): void {
             root.openWallpapers(root.focusedScreen(), "lock")
         }
     }
@@ -1273,7 +1320,16 @@ Scope {
             root.openSettings(root.focusedScreen())
         }
 
+        function open(): void {
+            root.openSettings(root.focusedScreen())
+        }
+
         function hide(): void {
+            if (root.settingsOpen)
+                root.close()
+        }
+
+        function close(): void {
             if (root.settingsOpen)
                 root.close()
         }
