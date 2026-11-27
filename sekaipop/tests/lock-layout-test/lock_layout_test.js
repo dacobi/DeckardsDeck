@@ -83,4 +83,9 @@ for (const [name, src, id] of [["LockSurface", gacha, "layoutTag"], ["LockCalend
 ok(gacha.indexOf("id: layoutTag") > gacha.indexOf("id: pwGroup") && gacha.indexOf("id: layoutTag") < gacha.indexOf("id: unlockPill"), "LockSurface: the tag is on the password pill");
 ok(calendar.indexOf("id: calLayoutTag") > calendar.indexOf("id: pwGroup"), "LockCalendar: the tag is on the password plate");
 
+// ---- persistence across logout/login via SettingsService ("kb.layouts", "kb.active") ----
+ok(/SettingsService\.get\("kb\.layouts"\)/.test(service) && /SettingsService\.set\("kb\.layouts"/.test(service), "persists configured layouts in SettingsService");
+ok(/SettingsService\.get\("kb\.active"\)/.test(service) && /SettingsService\.set\("kb\.active"/.test(service), "persists active layout in SettingsService");
+ok(/function restoreSaved\(\)/.test(service) && /target: SettingsService[\s\S]{0,120}root\.restoreSaved\(\)/.test(service), "restores saved layouts and active layout on startup when SettingsService loads");
+
 console.log("lock layout: " + n + " checks passed");

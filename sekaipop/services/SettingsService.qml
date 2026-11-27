@@ -44,6 +44,8 @@ Singleton {
         "bar.resources": false,         // CPU & RAM pill: off in the default bar (switch it on here)
         "bar.battery": true,
         "bar.keyboardLayout": true,
+        "kb.layouts": "",               // configured keyboard layouts ("us,dk"); "" = use Hyprland's input.kb_layout
+        "kb.active": "",                // active keyboard layout code ("dk") restored on login
         "bar.notifications": true,
         "bar.tray": true,
         "bar.weather": true,

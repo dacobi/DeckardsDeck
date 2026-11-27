@@ -21,8 +21,7 @@ SettingsPage {
     // kb_layout is a comma list ("us,ru"); the first is the one you start on. The
     // bar's layout key (and the key combo below) switch between them.
     readonly property var commonLayouts: KeyboardLayoutService.commonLayouts
-    readonly property var activeLayouts: HyprlandSettings.str("input.kb_layout", "us")
-        .split(",").map(c => c.trim()).filter(c => c.length > 0)
+    readonly property var activeLayouts: KeyboardLayoutService.configuredLayouts
     // The common ones, then any other layout that is already on (so it can be turned off).
     readonly property var layoutChips: {
         const out = page.commonLayouts.slice()
@@ -48,11 +47,7 @@ SettingsPage {
     function setLayouts(list) {
         if (list.length === 0)
             return
-        // A variant list ("," + "phonetic") is matched to the layouts by position, so it
-        // would point at the wrong layout once the list changes.
-        if (HyprlandSettings.str("input.kb_variant") !== "")
-            HyprlandSettings.set("input.kb_variant", "str", "")
-        HyprlandSettings.set("input.kb_layout", "str", list.join(","))
+        KeyboardLayoutService.setConfiguredLayouts(list)
     }
 
     function toggleLayout(id) {

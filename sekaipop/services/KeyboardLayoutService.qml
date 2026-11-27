@@ -46,19 +46,73 @@ Singleton {
         { id: "kr", label: "Korean" }, { id: "ara", label: "Arabic" }
     ]
 
-    // Configured layouts from HyprlandSettings ("us" by default), and helpers to manage
-    // primary + second language from Settings > Bar or Settings > Hyprland.
-    readonly property var configuredLayouts: HyprlandSettings.str("input.kb_layout", "us")
-        .split(",").map(c => c.trim()).filter(c => c.length > 0)
+    // Configured layouts persisted in SettingsService ("kb.layouts", "kb.active") and mirrored
+    // to HyprlandSettings ("input.kb_layout"), with helpers for Settings > Bar and Settings > Hyprland.
+    readonly property string savedLayouts: SettingsService.get("kb.layouts")
+    readonly property string savedActive: SettingsService.get("kb.active")
+    readonly property var configuredLayouts: {
+        const raw = root.savedLayouts !== ""
+            ? root.savedLayouts
+            : (HyprlandSettings.str("input.kb_layout", "") || root.layoutIds.join(",") || "us")
+        return raw.split(",").map(c => c.trim()).filter(c => c.length > 0)
+    }
     readonly property string primaryLayout: root.configuredLayouts.length > 0 ? root.configuredLayouts[0] : "us"
     readonly property string secondLayout: root.configuredLayouts.length > 1 ? root.configuredLayouts[1] : ""
+
+    property bool restored: false
+    property bool applyingLayouts: false
 
     function setConfiguredLayouts(list) {
         if (!list || list.length === 0)
             return
+        const clean = list.map(c => String(c).trim()).filter(c => c.length > 0)
+        if (clean.length === 0)
+            return
+        const joined = clean.join(",")
+        root.applyingLayouts = true
+        SettingsService.set("kb.layouts", joined)
+        if (root.savedActive === "" || clean.indexOf(root.savedActive) < 0)
+            SettingsService.set("kb.active", clean[0])
         if (HyprlandSettings.str("input.kb_variant") !== "")
             HyprlandSettings.set("input.kb_variant", "str", "")
-        HyprlandSettings.set("input.kb_layout", "str", list.join(","))
+        HyprlandSettings.set("input.kb_layout", "str", joined)
+    }
+
+    function applySavedActiveLayout() {
+        if (!SettingsService.loaded || root.savedActive === "")
+            return
+        const list = root.configuredLayouts
+        const idx = list.indexOf(root.savedActive)
+        if (idx >= 0) {
+            root.activeIndex = idx
+            Quickshell.execDetached(["hyprctl", "switchxkblayout", "all", String(idx)])
+        }
+    }
+
+    function restoreSaved() {
+        if (!SettingsService.loaded || root.restored)
+            return
+        root.restored = true
+        if (root.savedLayouts !== "") {
+            root.applyingLayouts = true
+            HyprlandSettings.set("input.kb_layout", "str", root.savedLayouts)
+        } else if (root.savedActive !== "") {
+            root.applySavedActiveLayout()
+            refetch.restart()
+        }
+    }
+
+    Component.onCompleted: {
+        if (SettingsService.loaded)
+            root.restoreSaved()
+    }
+
+    Connections {
+        target: SettingsService
+        function onLoadedChanged() {
+            if (SettingsService.loaded)
+                root.restoreSaved()
+        }
     }
 
     function setPrimaryLayout(id) {
@@ -95,6 +149,11 @@ Singleton {
     // same on a Lua-mode and a hyprlang config. "all" moves every keyboard together, so the
     // code shown is always the one you are typing with.
     function cycle() {
+        const ids = root.layoutIds.length > 0 ? root.layoutIds : root.configuredLayouts
+        if (ids.length > 1) {
+            const nextIdx = (root.activeIndex + 1) % ids.length
+            SettingsService.set("kb.active", ids[nextIdx])
+        }
         Quickshell.execDetached(["hyprctl", "switchxkblayout", "all", "next"])
         refetch.restart()
     }
@@ -102,6 +161,9 @@ Singleton {
     // Straight to one layout, on every keyboard.
     function select(index) {
         root.activeIndex = index
+        const ids = root.layoutIds.length > 0 ? root.layoutIds : root.configuredLayouts
+        if (index >= 0 && index < ids.length)
+            SettingsService.set("kb.active", ids[index])
         Quickshell.execDetached(["hyprctl", "switchxkblayout", "all", String(index)])
         refetch.restart()
     }
@@ -144,6 +206,12 @@ Singleton {
                         root.layoutIds = ids
                         root.layoutCount = ids.length
                         root.activeIndex = kb.active_layout_index || 0
+                        if (SettingsService.loaded && root.restored && !root.applyingLayouts) {
+                            if (root.savedLayouts === "" && ids.length > 1)
+                                SettingsService.set("kb.layouts", ids.join(","))
+                            if (ids.length > 0 && root.activeIndex >= 0 && root.activeIndex < ids.length)
+                                SettingsService.set("kb.active", ids[root.activeIndex])
+                        }
                     }
                     root.failures = 0
                 } catch (e) {
@@ -168,8 +236,14 @@ Singleton {
                 root.refresh()
             }
             // A reload can add or drop layouts (kb_layout = "us,ru"), so ask again.
-            else if (event.name === "configreloaded")
-                root.refresh()
+            else if (event.name === "configreloaded") {
+                if (SettingsService.loaded && root.savedLayouts !== "") {
+                    root.applyingLayouts = true
+                    HyprlandSettings.set("input.kb_layout", "str", root.savedLayouts)
+                } else {
+                    root.refresh()
+                }
+            }
         }
     }
 
@@ -178,8 +252,11 @@ Singleton {
     Connections {
         target: HyprlandSettings
         function onApplied(path) {
-            if (path.indexOf("input.kb_") === 0)
+            if (path.indexOf("input.kb_") === 0) {
+                root.applySavedActiveLayout()
+                root.applyingLayouts = false
                 refetch.restart()
+            }
         }
     }
 

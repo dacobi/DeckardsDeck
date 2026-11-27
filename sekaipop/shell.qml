@@ -169,6 +169,7 @@ ShellRoot {
     // apps in step with the theme or matugen until you opened that page. Reading it
     // here starts it with the shell.
     readonly property bool appThemingOn: AppThemeService.ready
+    readonly property string kbLayoutOn: KeyboardLayoutService.code
 
     // One tray for the whole shell, so a pin made from one monitor's
     // bar shows up on every other monitor's bar too.

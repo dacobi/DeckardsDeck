@@ -128,10 +128,16 @@ Singleton {
     }
 
     function reset(path) {
+        if (path === "input.kb_layout") {
+            SettingsService.set("kb.layouts", "")
+            SettingsService.set("kb.active", "")
+        }
         writer.enqueueReset(path)
     }
 
     function resetAll() {
+        SettingsService.set("kb.layouts", "")
+        SettingsService.set("kb.active", "")
         writer.queue = []
         writer.exec(["sh", root.script, "reset-all"])
         root.values = ({})
