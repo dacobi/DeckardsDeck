@@ -29,6 +29,7 @@ Item {
 
     readonly property real capH: 70
     readonly property bool hovered: area.containsMouse && clickable
+    readonly property bool edgy: mt.settingsEdgy
 
     signal clicked()
 
@@ -75,27 +76,45 @@ Item {
 
         capW: root.tileWidth
         capH: root.capH
+        edgy: root.edgy
         skew: 0.2 * mt.settingsLean
         radius: 26
         lit: root.lit || (root.hoverLights && root.hovered)
         hovered: root.hovered
         pressed: (area.pressed && root.clickable) || root.keyPulse
-        flatShadow: mt.quickFlat
+        flatShadow: mt.settingsFlat
 
-        readonly property color ink: Qt.tint(mt.pInk, Qt.rgba(mt.colBorder.r, mt.colBorder.g, mt.colBorder.b, litP))
-        readonly property real badgeX: 48
+        readonly property color ink: root.edgy
+            ? (litP > 0.5 ? mt.accentCyan : (root.hovered ? mt.accentMint : mt.pInk))
+            : Qt.tint(mt.pInk, Qt.rgba(mt.colBorder.r, mt.colBorder.g, mt.colBorder.b, litP))
+        readonly property real badgeX: root.edgy ? 40 : 48
 
-        // the diamond badge
+        // Cyberdeck vertical neon LED status bar (matches QuickToggle.qml)
+        Rectangle {
+            visible: root.edgy
+            x: 6
+            y: 12
+            width: 3
+            height: key.capH - 24
+            radius: 1
+            color: key.litP > 0.5 ? mt.accentGreen : Qt.rgba(mt.accentFrame.r, mt.accentFrame.g, mt.accentFrame.b, 0.45)
+        }
+
+        // the icon badge (angular HUD square in Cyberpunk mode, rotated diamond in SekaiPop)
         Rectangle {
             x: key.badgeX - width / 2
             y: (key.capH - height) / 2
             width: 33
             height: 33
-            radius: 9
-            rotation: 45
-            color: Qt.tint(mt.pSurfaceDivider, Qt.rgba(1, 1, 1, key.litP))
-            border.width: 3
-            border.color: key.litP > 0.5 ? mt.colBorder : mt.pLine
+            radius: root.edgy ? mt.settingsRadiusInner : 9
+            rotation: root.edgy ? 0 : 45
+            color: root.edgy
+                ? mt.hudSurface
+                : Qt.tint(mt.pSurfaceDivider, Qt.rgba(1, 1, 1, key.litP))
+            border.width: root.edgy ? 1.5 : 3
+            border.color: root.edgy
+                ? (key.litP > 0.5 ? mt.accentCyan : mt.accentFrame)
+                : (key.litP > 0.5 ? mt.colBorder : mt.pLine)
             antialiasing: true
         }
 
@@ -110,17 +129,17 @@ Item {
         }
 
         Column {
-            x: key.badgeX + 34
+            x: key.badgeX + (root.edgy ? 28 : 34)
             width: Math.max(10, key.capW - x - root.textRightPad)
             anchors.verticalCenter: parent.verticalCenter
 
             SettingsMarquee {
                 width: parent.width
                 hovered: textHover.hovered
-                text: root.label
+                text: root.edgy ? root.label.toUpperCase() : root.label
                 color: key.ink
                 font.family: mt.fontFamily
-                font.pixelSize: 18
+                font.pixelSize: root.edgy ? 16 : 18
                 font.weight: Font.ExtraBold
                 font.styleName: mt.fontStyleBold
                 lineHeight: 22
@@ -131,10 +150,12 @@ Item {
                 hovered: textHover.hovered
                 visible: root.subtitle !== ""
                 text: root.subtitle
-                color: key.litP > 0.5 ? Qt.rgba(mt.colBorder.r, mt.colBorder.g, mt.colBorder.b, 0.78) : mt.pInkSub
-                font.family: mt.fontFamily
-                font.pixelSize: 15
-                font.weight: Font.DemiBold
+                color: root.edgy
+                    ? (key.litP > 0.5 ? mt.accentYellow : mt.pInkSub)
+                    : (key.litP > 0.5 ? Qt.rgba(mt.colBorder.r, mt.colBorder.g, mt.colBorder.b, 0.78) : mt.pInkSub)
+                font.family: root.edgy ? mt.monoFontFamily : mt.fontFamily
+                font.pixelSize: root.edgy ? 13 : 15
+                font.weight: root.edgy ? Font.Bold : Font.DemiBold
                 lineHeight: 20
             }
         }

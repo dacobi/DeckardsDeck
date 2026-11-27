@@ -39,9 +39,10 @@ Item {
 
     // This monitor's theme: Theme.of() gives the shell's own unless the monitor has one.
     readonly property var mt: Theme.of(QsWindow.window)
+    readonly property bool edgy: mt.settingsEdgy
 
-    // Keeps the classic (white) look in the first dark mode; see Theme.classicFor.
-    readonly property bool classicPanel: true
+    // Keeps the classic (white) look in the first dark mode only when SekaiPop style is used.
+    readonly property bool classicPanel: !edgy
 
     width: 1440
     height: 760
@@ -265,6 +266,7 @@ Item {
 
         SekaiBackdrop {
             id: backdrop
+            edgy: face.edgy
             x: -face.screenInset
             y: -face.screenInset
             width: face.width
@@ -327,6 +329,7 @@ Item {
 
             capW: Math.max(420, 92 + Math.max(titleText.implicitWidth, subText.implicitWidth) + 120)
             capH: 66
+            edgy: face.edgy
             skew: 0.26 * mt.settingsLean
             radius: 26
             lit: true
@@ -336,7 +339,7 @@ Item {
             ringExtra: 5
             shadowBaseX: 5
             shadowBaseY: 4
-            flatShadow: mt.quickFlat
+            flatShadow: mt.settingsFlat
 
             Behavior on capW {
                 NumberAnimation {
@@ -351,44 +354,40 @@ Item {
                 anchors.fill: parent
 
                 Rectangle {
-                    x: 54 - width / 2
+                    x: (face.edgy ? 40 : 54) - width / 2
                     y: (bannerKey.capH - height) / 2
                     width: 34
                     height: 34
-                    radius: 10
-                    rotation: 45
-                    color: mt.colBg
-                    border.width: 3
-                    border.color: mt.colBorder
+                    radius: face.edgy ? mt.settingsRadiusInner : 10
+                    rotation: face.edgy ? 0 : 45
+                    color: face.edgy ? mt.hudSurface : mt.colBg
+                    border.width: face.edgy ? 1.5 : 3
+                    border.color: face.edgy ? mt.accentCyan : mt.colBorder
                     antialiasing: true
                 }
 
                 MaterialIcon {
-                    x: 54 - width / 2
+                    x: (face.edgy ? 40 : 54) - width / 2
                     y: (bannerKey.capH - height) / 2
                     size: 24
                     name: face.shownInfo.icon
                     weight: mt.settingsIconWeight
-                    // Outline like every other icon (Theme.iconFill); this one
-                    // used to be forced solid, which turned the gear into a blob.
-                    color: mt.colBorder
+                    color: face.edgy ? mt.accentCyan : mt.colBorder
                 }
 
                 Column {
-                    x: 92
+                    x: face.edgy ? 74 : 92
                     anchors.verticalCenter: parent.verticalCenter
 
                     Text {
                         id: titleText
-                        text: face.shownInfo.title
-                        color: mt.colBorder
+                        text: face.edgy ? face.shownInfo.title.toUpperCase() : face.shownInfo.title
+                        color: face.edgy ? mt.accentCyan : mt.colBorder
                         font.family: mt.fontFamily
-                        // The lit band inside the plate is 48 px tall (66 - 2 * (4 + 5));
-                        // 26 + 15 = 41 px of text leaves it centred with ~3 px each side
-                        // (it was 29 + 17 = 46: touching both edges).
-                        font.pixelSize: 25
+                        font.pixelSize: face.edgy ? 22 : 25
                         font.weight: Font.ExtraBold
                         font.styleName: mt.fontStyleBold
+                        font.letterSpacing: face.edgy ? 0.8 : 0
                         lineHeight: 26
                         lineHeightMode: Text.FixedHeight
                     }
@@ -396,18 +395,33 @@ Item {
                     Text {
                         id: subText
                         text: face.shownInfo.headerSub !== undefined ? face.shownInfo.headerSub : face.shownInfo.sub
-                        color: Qt.rgba(mt.colBorder.r, mt.colBorder.g, mt.colBorder.b, 0.78)
-                        font.family: mt.fontFamily
-                        font.pixelSize: 13
-                        font.weight: Font.DemiBold
+                        color: face.edgy ? mt.accentYellow : Qt.rgba(mt.colBorder.r, mt.colBorder.g, mt.colBorder.b, 0.78)
+                        font.family: face.edgy ? mt.monoFontFamily : mt.fontFamily
+                        font.pixelSize: face.edgy ? 12 : 13
+                        font.weight: face.edgy ? Font.Bold : Font.DemiBold
                         lineHeight: 15
                         lineHeightMode: Text.FixedHeight
                     }
                 }
             }
 
-            // a star at the far end of the plate
+            // Cyberdeck chevrons at the far end of the banner plate
+            CyberStripe {
+                visible: face.edgy
+                x: bannerKey.capW - 64
+                anchors.verticalCenter: parent.verticalCenter
+                width: 48
+                height: 12
+                mode: "chevrons"
+                color: mt.accentYellow
+                altColor: mt.accentCyan
+                stripeWidth: 3
+                gap: 6
+            }
+
+            // a star at the far end of the plate (SekaiPop mode)
             MaterialIcon {
+                visible: !face.edgy
                 x: bannerKey.capW - 52
                 y: 8
                 size: 24
@@ -426,11 +440,12 @@ Item {
 
         x: closeButton.x - 16 - capW - 6
         y: 34
-        capW: Math.max(clockLabel.implicitWidth, dateLabel.implicitWidth) + 62
+        capW: Math.max(clockLabel.implicitWidth, dateLabel.implicitWidth) + (face.edgy ? 42 : 62)
         capH: 56
+        edgy: face.edgy
         skew: 0.26 * mt.settingsLean
         radius: 20
-        flatShadow: mt.quickFlat
+        flatShadow: mt.settingsFlat
 
         Column {
             anchors.centerIn: parent
@@ -439,9 +454,9 @@ Item {
                 id: clockLabel
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: face.clockText
-                color: mt.pInk
-                font.family: mt.fontFamily
-                font.pixelSize: 21
+                color: face.edgy ? mt.accentCyan : mt.pInk
+                font.family: face.edgy ? mt.monoFontFamily : mt.fontFamily
+                font.pixelSize: face.edgy ? 18 : 21
                 font.weight: Font.ExtraBold
                 font.styleName: mt.fontStyleBold
                 lineHeight: 24
@@ -451,10 +466,10 @@ Item {
             Text {
                 id: dateLabel
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: face.dateText
-                color: mt.pInkSub
-                font.family: mt.fontFamily
-                font.pixelSize: 14
+                text: face.edgy ? face.dateText.toUpperCase() : face.dateText
+                color: face.edgy ? mt.accentYellow : mt.pInkSub
+                font.family: face.edgy ? mt.monoFontFamily : mt.fontFamily
+                font.pixelSize: face.edgy ? 12 : 14
                 font.weight: Font.DemiBold
                 lineHeight: 16
                 lineHeightMode: Text.FixedHeight
@@ -578,6 +593,7 @@ Item {
 
     SearchPill {
         id: search
+        edgy: face.edgy
         x: menuKey.x - 24 - width
         y: 36
         width: 280
@@ -751,11 +767,24 @@ Item {
 
                         width: resultsColumn.width
                         height: 68
-                        radius: 20
-                        color: row.index === face.selected ? mt.pSurfaceHover : mt.pSurface
-                        border.width: 3
-                        border.color: mt.pLine
+                        radius: face.edgy ? mt.settingsRadiusInner : 20
+                        color: face.edgy
+                            ? (row.index === face.selected ? Qt.lighter(mt.hudSurface, 1.25) : mt.hudSurface)
+                            : (row.index === face.selected ? mt.pSurfaceHover : mt.pSurface)
+                        border.width: face.edgy ? 2 : 3
+                        border.color: face.edgy
+                            ? (row.index === face.selected ? mt.accentCyan : mt.accentFrame)
+                            : mt.pLine
                         antialiasing: true
+
+                        Rectangle {
+                            visible: face.edgy
+                            x: 6
+                            y: 12
+                            width: 3
+                            height: parent.height - 24
+                            color: row.index === face.selected ? mt.accentCyan : mt.accentFrame
+                        }
 
                         MaterialIcon {
                             x: 26
@@ -763,7 +792,7 @@ Item {
                             size: 28
                             name: row.modelData.icon !== "" ? row.modelData.icon : "settings"
                             weight: mt.settingsIconWeight
-                            color: mt.pInk
+                            color: face.edgy ? (row.index === face.selected ? mt.accentCyan : mt.pInk) : mt.pInk
                         }
 
                         Column {
@@ -771,18 +800,18 @@ Item {
                             anchors.verticalCenter: parent.verticalCenter
 
                             Text {
-                                text: row.modelData.label
-                                color: mt.pInk
+                                text: face.edgy ? row.modelData.label.toUpperCase() : row.modelData.label
+                                color: face.edgy ? (row.index === face.selected ? mt.accentCyan : mt.pInk) : mt.pInk
                                 font.family: mt.fontFamily
-                                font.pixelSize: 20
+                                font.pixelSize: face.edgy ? 18 : 20
                                 font.weight: Font.ExtraBold
                                 font.styleName: mt.fontStyleBold
                             }
 
                             Text {
                                 text: face.pages[row.modelData.page].label + (row.modelData.card !== "" ? "  ·  " + row.modelData.card : "")
-                                color: mt.pInkSub
-                                font.family: mt.fontFamily
+                                color: face.edgy ? mt.accentYellow : mt.pInkSub
+                                font.family: face.edgy ? mt.monoFontFamily : mt.fontFamily
                                 font.pixelSize: 14
                                 font.weight: Font.DemiBold
                             }

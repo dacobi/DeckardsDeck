@@ -33,7 +33,8 @@ Item {
 
     property real capW: 200
     property real capH: 60
-    property real skew: 0.14 * mt.settingsLean
+    property bool edgy: mt.settingsEdgy
+    property real skew: root.edgy ? 0 : 0.14 * mt.settingsLean
     property real radius: 10
 
     property bool lit: false
@@ -60,10 +61,10 @@ Item {
 
     property real shadowBaseX: 4
     property real shadowBaseY: 3
-    // The 2D look (Theme.quickFlat, set by the Settings' keys): the shadow drops straight
+    // The 2D look (Theme.settingsFlat, set by the Settings' keys): the shadow drops straight
     // down, like the bar's pills and the Quick Panel's 2D buttons, instead of down and to the
     // right. The depth (shadowBaseY + 1 when lit) is unchanged.
-    property bool flatShadow: false
+    property bool flatShadow: mt.settingsFlat
     readonly property real shadowDx: flatShadow ? 0 : shadowBaseX + 2 * litP
     readonly property real shadowDy: shadowBaseY + 1 * litP
 
@@ -91,7 +92,29 @@ Item {
         return t * (1.02 + root.skew)
     }
 
+    // Cyberdeck 45-degree chamfered HUD key / plate (when root.edgy is true)
+    Pill {
+        id: hudPill
+        visible: root.edgy
+        width: root.capW + shadowDx
+        height: root.capH + shadowDy
+        edgy: true
+        cornerRadius: mt.settingsRadiusOuter
+        borderWidth: 2
+        ringWidth: 2
+        shadowDx: root.shadowDx
+        shadowDy: root.shadowDy
+        pressed: root.pressed
+        borderColor: root.litP > 0.5 ? mt.accentCyan : (root.hovered ? mt.accentMint : mt.accentFrame)
+        fillColor: root.litP > 0.05
+            ? Qt.tint(mt.hudSurface, Qt.rgba(mt.accentCyan.r, mt.accentCyan.g, mt.accentCyan.b, 0.18 * root.litP))
+            : (root.hovered
+                ? Qt.lighter(mt.hudSurface, 1.25)
+                : (root.idleColor === mt.pSurface ? mt.hudSurface : root.idleColor))
+    }
+
     Slant {
+        visible: !root.edgy
         x: root.shadowDx
         y: root.shadowDy
         width: root.capW
@@ -127,6 +150,7 @@ Item {
 
         // outline + ring
         Slant {
+            visible: !root.edgy
             anchors.fill: parent
             skew: root.skew
             radius: root.radius
@@ -137,6 +161,7 @@ Item {
 
         // the idle fill
         Slant {
+            visible: !root.edgy
             x: root.insetX(root.inset)
             y: root.inset
             width: root.capW - 2 * x
@@ -148,7 +173,7 @@ Item {
 
         // the lit fill, wiping in from the left
         Slant {
-            visible: root.litP > 0.01
+            visible: !root.edgy && root.litP > 0.01
             x: root.insetX(root.inset)
             y: root.inset
             width: Math.max(0, (root.capW - 2 * x) * root.litP)

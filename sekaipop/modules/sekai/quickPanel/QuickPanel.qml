@@ -3192,8 +3192,8 @@ Scope {
                 pixelRatio: root.targetScreen ? root.targetScreen.devicePixelRatio : 1
                 // 2D: where this window's corner is on the monitor, so the flat Settings
                 // screen lands on a whole device pixel of the monitor (like `stage.direct`).
-                gridOffsetX: root.flat2d ? (win.monitorW - win.implicitWidth) / 2 : 0
-                gridOffsetY: root.flat2d ? win.monitorH + Math.ceil(win.bleed) - win.implicitHeight : 0
+                gridOffsetX: sstage.flatLook ? (win.monitorW - win.implicitWidth) / 2 : 0
+                gridOffsetY: sstage.flatLook ? win.monitorH + Math.ceil(win.bleed) - win.implicitHeight : 0
 
                 fit: win.sFit
                 centerX: stage.flipCX

@@ -71,20 +71,25 @@ Item {
         onTriggered: root.suppressPulse = false
     }
 
+    readonly property bool edgy: mt.settingsEdgy
+
     SekaiKey {
         id: key
 
         capW: root.capW
         capH: root.capH
+        edgy: root.edgy
         skew: 0.24 * mt.settingsLean
         radius: 17
         lit: root.selected
         hovered: root.hovered
         pressed: area.pressed || root.keyPulse
-        flatShadow: mt.quickFlat
+        flatShadow: mt.settingsFlat
         ringExtra: 5
 
-        readonly property color ink: Qt.tint(mt.pInk, Qt.rgba(mt.colBorder.r, mt.colBorder.g, mt.colBorder.b, litP))
+        readonly property color ink: root.edgy
+            ? (litP > 0.5 ? mt.accentCyan : (root.hovered ? mt.accentMint : mt.pInk))
+            : Qt.tint(mt.pInk, Qt.rgba(mt.colBorder.r, mt.colBorder.g, mt.colBorder.b, litP))
 
         Row {
             id: row
@@ -127,10 +132,10 @@ Item {
                         x: index * 11
                         width: 18
                         height: 18
-                        radius: 9
+                        radius: root.edgy ? 2 : 9
                         color: modelData
-                        border.width: 2
-                        border.color: mt.pRingWhite
+                        border.width: root.edgy ? 1.5 : 2
+                        border.color: root.edgy ? mt.accentFrame : mt.pRingWhite
                         antialiasing: true
                     }
                 }
@@ -138,10 +143,10 @@ Item {
 
             Text {
                 anchors.verticalCenter: parent.verticalCenter
-                text: root.label
+                text: root.edgy ? root.label.toUpperCase() : root.label
                 color: key.ink
-                font.family: mt.fontFamily
-                font.pixelSize: root.fontSize
+                font.family: root.edgy ? mt.monoFontFamily : mt.fontFamily
+                font.pixelSize: root.edgy ? Math.max(12, root.fontSize - 3) : root.fontSize
                 font.weight: Font.ExtraBold
                 font.styleName: mt.fontStyleBold
             }

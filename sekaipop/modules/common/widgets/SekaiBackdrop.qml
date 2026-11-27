@@ -15,10 +15,11 @@ Item {
 
     // This monitor's theme: Theme.of() gives the shell's own unless the monitor has one.
     readonly property var mt: Theme.of(QsWindow.window)
+    property bool edgy: mt.settingsEdgy
 
     property color base: mt.pSurface
     readonly property bool deep: mt.dark && !mt.classic
-    readonly property color color: mt.edgy && root.deep
+    readonly property color color: root.edgy
         ? Qt.tint(Qt.color("#07080e"), Qt.rgba(mt.hudTint.r, mt.hudTint.g, mt.hudTint.b, 0.55))
         : Qt.tint(base, Qt.rgba(mt.accentMint.r, mt.accentMint.g, mt.accentMint.b, deep ? 0.12 : 0.17))
 
@@ -34,7 +35,7 @@ Item {
 
     // diagonal bands (classic mode)
     Slant {
-        visible: !mt.edgy
+        visible: !root.edgy
         x: -150
         y: -30
         width: 560
@@ -44,7 +45,7 @@ Item {
     }
 
     Slant {
-        visible: !mt.edgy
+        visible: !root.edgy
         x: 190
         y: -30
         width: 420
@@ -54,7 +55,7 @@ Item {
     }
 
     Slant {
-        visible: !mt.edgy
+        visible: !root.edgy
         x: 330
         y: -30
         width: 340
@@ -65,7 +66,7 @@ Item {
 
     // halftones (classic mode)
     DotField {
-        visible: !mt.edgy
+        visible: !root.edgy
         x: root.width - width
         y: 0
         width: 640
@@ -77,7 +78,7 @@ Item {
     }
 
     DotField {
-        visible: !mt.edgy
+        visible: !root.edgy
         x: 0
         y: root.height - height
         width: 420
@@ -88,10 +89,10 @@ Item {
         dotColor: root.mix(mt.colBorder, root.deep ? 0.22 : 0.10)
     }
 
-    // Cyberpunk 2077 / Anna Kuzminska HUD Backdrop (when mt.edgy is true)
+    // Cyberpunk 2077 / Anna Kuzminska HUD Backdrop (when root.edgy is true)
     Item {
         anchors.fill: parent
-        visible: mt.edgy
+        visible: root.edgy
 
         CyberStripe {
             anchors.fill: parent

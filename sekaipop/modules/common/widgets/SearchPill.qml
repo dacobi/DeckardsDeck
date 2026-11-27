@@ -16,6 +16,7 @@ Item {
 
     // This monitor's theme: Theme.of() gives the shell's own unless the monitor has one.
     readonly property var mt: Theme.of(QsWindow.window)
+    property bool edgy: mt.edgy
 
     property alias text: input.text
     property string placeholder: "Search"
@@ -50,17 +51,17 @@ Item {
         y: mt.shadowOffset - 1
         width: root.width
         height: root.height
-        radius: height / 2
+        radius: root.edgy ? mt.radiusInner : height / 2
         color: mt.lineShadow
         antialiasing: true
     }
 
     Rectangle {
         anchors.fill: parent
-        radius: height / 2
-        color: mt.surface
+        radius: root.edgy ? mt.radiusInner : height / 2
+        color: root.edgy ? mt.hudSurface : mt.surface
         border.width: mt.borderWidth
-        border.color: mt.line
+        border.color: root.edgy ? (input.activeFocus ? mt.accentCyan : mt.accentFrame) : mt.line
         antialiasing: true
 
         MouseArea {
@@ -73,9 +74,9 @@ Item {
         Rectangle {
             anchors.fill: parent
             anchors.margins: 3
-            radius: height / 2
+            radius: root.edgy ? mt.radiusInner : height / 2
             color: "transparent"
-            border.width: 2
+            border.width: root.edgy ? 1 : 2
             border.color: mt.accentCyan
             visible: input.activeFocus
             antialiasing: true
@@ -88,7 +89,7 @@ Item {
             name: "search"
             size: 22
             weight: 550
-            color: mt.ink
+            color: root.edgy ? mt.accentCyan : mt.ink
         }
 
         // Ends in "..." at the field's edge rather than running past it, whatever it says.
@@ -100,10 +101,10 @@ Item {
             anchors.rightMargin: 16
             anchors.verticalCenter: parent.verticalCenter
             elide: Text.ElideRight
-            text: root.placeholder
+            text: root.edgy ? root.placeholder.toUpperCase() : root.placeholder
             color: ScrapbookTheme.inkSoft
-            font.family: mt.fontFamily
-            font.pixelSize: 14
+            font.family: root.edgy ? mt.monoFontFamily : mt.fontFamily
+            font.pixelSize: root.edgy ? 12 : 14
         }
 
         TextInput {
@@ -116,8 +117,8 @@ Item {
             clip: true
             selectByMouse: true
             color: mt.ink
-            font.family: mt.fontFamily
-            font.pixelSize: 15
+            font.family: root.edgy ? mt.monoFontFamily : mt.fontFamily
+            font.pixelSize: root.edgy ? 13 : 15
 
             Keys.onEscapePressed: event => {
                 if (input.text.length > 0) {
@@ -146,7 +147,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             width: 22
             height: 22
-            radius: 11
+            radius: root.edgy ? 2 : 11
             color: clearArea.containsMouse ? mt.surfaceTint : mt.surfaceDivider
 
             MaterialIcon {

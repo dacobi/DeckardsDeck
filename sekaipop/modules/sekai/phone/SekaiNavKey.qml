@@ -32,20 +32,25 @@ Item {
     implicitWidth: capW + 7
     implicitHeight: capH + 4
 
+    readonly property bool edgy: mt.settingsEdgy
+
     SekaiKey {
         id: key
 
         capW: root.capW
         capH: root.capH
+        edgy: root.edgy
         skew: 0.16 * mt.settingsLean
         radius: 10
-        lit: root.selected
+        lit: root.selected || (root.edgy && root.hovered)
         hovered: root.hovered
         pressed: area.pressed
-        flatShadow: mt.quickFlat
+        flatShadow: mt.settingsFlat
         ringExtra: 5
 
-        readonly property color ink: Qt.tint(mt.pInk, Qt.rgba(mt.colBorder.r, mt.colBorder.g, mt.colBorder.b, litP))
+        readonly property color ink: root.edgy
+            ? (litP > 0.5 ? mt.accentCyan : mt.pInk)
+            : Qt.tint(mt.pInk, Qt.rgba(mt.colBorder.r, mt.colBorder.g, mt.colBorder.b, litP))
 
         Row {
             id: row
@@ -64,10 +69,10 @@ Item {
             Text {
                 visible: root.label !== ""
                 anchors.verticalCenter: parent.verticalCenter
-                text: root.label
+                text: root.edgy ? root.label.toUpperCase() : root.label
                 color: key.ink
-                font.family: mt.fontFamily
-                font.pixelSize: 18
+                font.family: root.edgy ? mt.monoFontFamily : mt.fontFamily
+                font.pixelSize: root.edgy ? 15 : 18
                 font.weight: Font.ExtraBold
                 font.styleName: mt.fontStyleBold
             }

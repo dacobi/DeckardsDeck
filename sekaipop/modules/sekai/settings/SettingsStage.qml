@@ -34,14 +34,12 @@ Item {
     readonly property var mt: Theme.of(QsWindow.window)
 
     // ===== 2D =====
-    // The Quick Panel's 2D look (Theme.quickFlat: Settings -> Quick -> Quick Panel -> Phone,
-    // and always while Game Mode is on), worn by this phone too. In 2D the Settings face
-    // straight on the whole time, like the Wallpapers do once they have landed: no tilt,
-    // no side wall, a plain rim and notch (PhoneBody `plain`), no tilt on the entrance, the
-    // screen drawn straight to the device pixels (`direct`), and the front's own middle
-    // (not the tilted pose's) on the middle of the monitor. The buttons' shadows drop
-    // straight down (SekaiKey `flatShadow`, set by the Settings' own keys).
-    readonly property bool flatLook: mt.quickFlat
+    // The Settings Panel's 2D look (Theme.settingsFlat: Settings -> Quick -> Settings Panel -> Pose,
+    // and always while Game Mode is on). In 2D the Settings face straight on the whole time, like
+    // the Wallpapers do once they have landed: no tilt, no side wall, a plain rim and notch in
+    // SekaiPop mode, no tilt on the entrance, the screen drawn straight to the device pixels
+    // (`direct`), and the front's own middle on the middle of the monitor.
+    readonly property bool flatLook: mt.settingsFlat
 
     // Where this window's top-left corner is on the monitor, in design pixels. Only the 2D
     // pixel snap reads it (QuickPanel.qml sets it in 2D), so the screen's top-left is put on
@@ -67,7 +65,7 @@ Item {
     // ===== the phone itself =====
     property real faceWidth: 1440
     property real faceHeight: 760
-    property real cornerRadius: 24
+    property real cornerRadius: mt.settingsCornerRadius
 
     // How thick the body is. The Quick Panel's is 92 on a phone 654 wide (14%
     // of its width); this phone is more than twice as wide, so the same chunky
@@ -81,8 +79,8 @@ Item {
     // a signpost, so it turns less and the camera is further away
     // (`perspective`) to keep the near/far difference between its two ends
     // about the same as the Quick Panel's.
-    property real yaw: 0
-    property real pitch: 0
+    property real yaw: 24
+    property real pitch: 12
     property real roll: 0
     property real perspective: 6000
 
@@ -90,9 +88,9 @@ Item {
     // turned by these many degrees, and pops up to full size with an overshoot
     // while the turn rings out like the Quick Panel's.
     property real popFrom: 0.55
-    property real tiltYaw: 0
-    property real tiltPitch: 0
-    property real tiltRoll: 0
+    property real tiltYaw: -22
+    property real tiltPitch: 14
+    property real tiltRoll: 7
     // How much of that turn the entrance really uses: none in 2D. The numbers above stay the
     // same in 2D on purpose, because they are also the ROOM the phone's picture and the window
     // are made with (`swingYaw/Pitch/Roll` below): the wobble that rings out when the turn lands
@@ -170,7 +168,7 @@ Item {
     // Off: the gallery rests tilted like the Settings do.
     property bool straightOn: true
     // 2D: both screens face straight on. Otherwise only the Wallpapers do (`straightOn`).
-    readonly property real straightGoal: 1
+    readonly property real straightGoal: root.flatLook || (root.straightOn && root.content === "wallpapers") ? 1 : 0
     // 0 = the Settings' own pose, 1 = facing straight on. Animates only while the
     // phone is up and still (the Settings <-> Wallpapers swap); at any other time it
     // snaps, so the turn into the Wallpapers simply lands straight.
@@ -301,6 +299,7 @@ Item {
             id: phone
 
             landscape: true
+            edgy: mt.settingsEdgy
             faceWidth: root.faceWidth
             faceHeight: root.faceHeight
             cornerRadius: root.cornerRadius
@@ -328,8 +327,8 @@ Item {
             // (2D: edge-on the whole time, so the wall is never built, the entrance included.)
             flat: root.direct || (root.flatLook && root.straightK >= 1)
             faceDirect: root.direct
-            // Keep cyberdeck bezel details visible in 2D front-facing mode.
-            plain: false
+            // Keep cyberdeck bezel details visible in Cyberpunk mode.
+            plain: !mt.settingsEdgy && root.flatLook
             // Where the flat front lands, not the tilted pose's middle: no hop when
             // the pixel path takes over.
             directCenterX: phone.frontCenter.x

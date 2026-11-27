@@ -39,6 +39,7 @@ Item {
     property real dragValue: 0
     readonly property real shownValue: dragging ? dragValue : value
     readonly property real ratio: to > from ? Math.max(0, Math.min(1, (shownValue - from) / (to - from))) : 0
+    readonly property bool edgy: mt.settingsEdgy
 
     function snap(v) {
         const s = Math.max(1e-6, root.step)
@@ -62,7 +63,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             name: root.icon
             weight: mt.settingsIconWeight
-            color: mt.pInk
+            color: root.edgy ? mt.accentCyan : mt.pInk
         }
 
         Text {
@@ -72,10 +73,10 @@ Item {
             anchors.rightMargin: 8
             anchors.verticalCenter: parent.verticalCenter
             elide: Text.ElideRight
-            text: root.label
+            text: root.edgy ? root.label.toUpperCase() : root.label
             color: mt.pInk
             font.family: mt.fontFamily
-            font.pixelSize: 18
+            font.pixelSize: root.edgy ? 16 : 18
             font.weight: Font.ExtraBold
             font.styleName: mt.fontStyleBold
         }
@@ -87,8 +88,9 @@ Item {
             anchors.right: parent.right
             anchors.rightMargin: 6
             anchors.verticalCenter: parent.verticalCenter
-            capW: valueLabel.implicitWidth + 40
+            capW: valueLabel.implicitWidth + (root.edgy ? 26 : 40)
             capH: 28
+            edgy: root.edgy
             skew: 0.3 * mt.settingsLean
             radius: 10
             borderBase: 2.5
@@ -96,16 +98,18 @@ Item {
             ringExtra: 0
             shadowBaseX: 2
             shadowBaseY: 2
-            flatShadow: mt.quickFlat
+            flatShadow: mt.settingsFlat
             lit: root.dragging
 
             Text {
                 id: valueLabel
                 anchors.centerIn: parent
                 text: root.valueText
-                color: root.dragging ? mt.colBorder : mt.pInk
-                font.family: mt.fontFamily
-                font.pixelSize: 16
+                color: root.edgy
+                    ? (root.dragging ? mt.accentYellow : mt.accentCyan)
+                    : (root.dragging ? mt.colBorder : mt.pInk)
+                font.family: root.edgy ? mt.monoFontFamily : mt.fontFamily
+                font.pixelSize: root.edgy ? 14 : 16
                 font.weight: Font.ExtraBold
                 font.styleName: mt.fontStyleBold
             }
@@ -119,9 +123,35 @@ Item {
         width: parent.width
         height: 36
 
-        // the lane
+        // Cyberdeck diagonal stripe progress track (when root.edgy is true)
+        Rectangle {
+            visible: root.edgy
+            x: 14
+            y: 4
+            width: parent.width - 28
+            height: 18
+            radius: mt.settingsRadiusInner
+            color: mt.hudSurface
+            border.width: 1
+            border.color: Qt.rgba(mt.accentFrame.r, mt.accentFrame.g, mt.accentFrame.b, 0.6)
+
+            CyberStripe {
+                anchors.fill: parent
+                anchors.margins: 2
+                mode: "stripes"
+                fillRatio: root.ratio
+                color: mt.accentCyan
+                altColor: mt.accentMint
+                trackColor: Qt.rgba(mt.accentFrame.r, mt.accentFrame.g, mt.accentFrame.b, 0.25)
+                stripeWidth: 5
+                gap: 3
+            }
+        }
+
+        // the lane (SekaiPop mode)
         Slant {
             id: track
+            visible: !root.edgy
             x: 14
             y: 4
             width: parent.width - 28
@@ -134,8 +164,9 @@ Item {
 
         }
 
-        // the fill, up to the knob
+        // the fill, up to the knob (SekaiPop mode)
         Slant {
+            visible: !root.edgy
             x: track.x + 3 + 1
             y: track.y + 3
             height: track.height - 6
@@ -167,13 +198,15 @@ Item {
                 y: track.y + track.height + 3
                 width: index % 5 === 0 ? 3 : 2
                 height: index % 5 === 0 ? 7 : 4
-                radius: 1
-                color: at <= root.ratio + 0.001 ? mt.pInk : mt.pSurfaceDivider
+                radius: root.edgy ? 0 : 1
+                color: at <= root.ratio + 0.001
+                    ? (root.edgy ? mt.accentCyan : mt.pInk)
+                    : (root.edgy ? Qt.rgba(mt.accentFrame.r, mt.accentFrame.g, mt.accentFrame.b, 0.35) : mt.pSurfaceDivider)
                 antialiasing: true
             }
         }
 
-        // the knob: a diamond, like a note
+        // the knob: angular cyberdeck thumb in Cyberpunk mode, diamond in SekaiPop
         Item {
             id: knob
 
@@ -194,28 +227,30 @@ Item {
             }
 
             Rectangle {
-                x: 6.5 + (mt.quickFlat ? 0 : 2)
-                y: 6.5 + 2
-                width: 15
-                height: 15
-                radius: 4
-                rotation: 45
-                scale: 1.35
+                x: (root.edgy ? 8 : 6.5) + (mt.settingsFlat ? 0 : 2)
+                y: (root.edgy ? 3 : 6.5) + 2
+                width: root.edgy ? 12 : 15
+                height: root.edgy ? 22 : 15
+                radius: root.edgy ? mt.settingsRadiusInner : 4
+                rotation: root.edgy ? 0 : 45
+                scale: root.edgy ? 1.0 : 1.35
                 color: mt.pLineShadow
                 antialiasing: true
             }
 
             Rectangle {
-                x: 6.5
-                y: 6.5
-                width: 15
-                height: 15
-                radius: 4
-                rotation: 45
-                scale: 1.35
-                color: area.pressed ? mt.accentMint : mt.pSurface
-                border.width: 2.5
-                border.color: mt.pLine
+                x: root.edgy ? 8 : 6.5
+                y: root.edgy ? 3 : 6.5
+                width: root.edgy ? 12 : 15
+                height: root.edgy ? 22 : 15
+                radius: root.edgy ? mt.settingsRadiusInner : 4
+                rotation: root.edgy ? 0 : 45
+                scale: root.edgy ? 1.0 : 1.35
+                color: root.edgy
+                    ? (area.pressed ? mt.accentCyan : mt.hudSurface)
+                    : (area.pressed ? mt.accentMint : mt.pSurface)
+                border.width: root.edgy ? 2 : 2.5
+                border.color: root.edgy ? (area.pressed ? mt.accentYellow : mt.accentCyan) : mt.pLine
                 antialiasing: true
             }
         }

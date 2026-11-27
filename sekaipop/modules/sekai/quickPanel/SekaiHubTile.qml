@@ -35,6 +35,7 @@ Item {
 
     readonly property bool hovered: area.containsMouse
     readonly property color accent: mt.attributeColors[slot % mt.attributeColors.length]
+    readonly property bool edgy: mt.settingsEdgy
 
     implicitWidth: tileW + 9
     implicitHeight: tileH + 7
@@ -44,55 +45,69 @@ Item {
 
         capW: root.tileW
         capH: root.tileH
+        edgy: root.edgy
         skew: 0.08 * mt.settingsLean
         radius: 40
         lit: root.hovered
         hovered: root.hovered
         pressed: area.pressed
-        flatShadow: mt.quickFlat
+        flatShadow: mt.settingsFlat
         borderBase: 4
         borderLit: 4.5
         ringExtra: 7
         shadowBaseX: 6
         shadowBaseY: 5
 
-        readonly property color ink: Qt.tint(mt.pInk, Qt.rgba(mt.colBorder.r, mt.colBorder.g, mt.colBorder.b, litP))
+        readonly property color ink: root.edgy
+            ? (litP > 0.5 ? mt.accentCyan : mt.pInk)
+            : Qt.tint(mt.pInk, Qt.rgba(mt.colBorder.r, mt.colBorder.g, mt.colBorder.b, litP))
+
+        // Cyberdeck left vertical neon accent bar
+        Rectangle {
+            visible: root.edgy
+            x: 8
+            y: 18
+            width: 4
+            height: key.capH - 36
+            radius: 1
+            color: key.litP > 0.5 ? mt.accentCyan : root.accent
+        }
 
         // the big number
         Text {
-            x: key.capW - implicitWidth - 46
-            y: 20
-            text: "0" + root.number
-            color: Qt.rgba(key.ink.r, key.ink.g, key.ink.b, 0.14)
-            font.family: mt.fontFamily
-            font.pixelSize: 68
+            x: key.capW - implicitWidth - (root.edgy ? 32 : 46)
+            y: root.edgy ? 22 : 20
+            text: root.edgy ? ("0" + root.number) : ("0" + root.number)
+            color: root.edgy
+                ? Qt.rgba(root.accent.r, root.accent.g, root.accent.b, 0.36)
+                : Qt.rgba(key.ink.r, key.ink.g, key.ink.b, 0.14)
+            font.family: root.edgy ? mt.monoFontFamily : mt.fontFamily
+            font.pixelSize: root.edgy ? 54 : 68
             font.weight: Font.ExtraBold
             font.styleName: mt.fontStyleBold
         }
 
-        // the diamond with the icon
+        // the icon badge (angular HUD housing in Cyberpunk mode, rotated diamond in SekaiPop)
         Rectangle {
-            x: 88 - width / 2
-            y: 100 - height / 2
+            x: (root.edgy ? 76 : 88) - width / 2
+            y: (root.edgy ? 92 : 100) - height / 2
             width: 66
             height: 66
-            radius: 18
-            rotation: 45
-            color: root.accent
-            border.width: 4
-            border.color: key.litP > 0.5 ? mt.colBorder : mt.pLine
+            radius: root.edgy ? mt.settingsRadiusInner : 18
+            rotation: root.edgy ? 0 : 45
+            color: root.edgy ? mt.hudSurface : root.accent
+            border.width: root.edgy ? 2 : 4
+            border.color: root.edgy ? root.accent : (key.litP > 0.5 ? mt.colBorder : mt.pLine)
             antialiasing: true
         }
 
         MaterialIcon {
-            x: 88 - width / 2
-            y: 100 - height / 2
+            x: (root.edgy ? 76 : 88) - width / 2
+            y: (root.edgy ? 92 : 100) - height / 2
             size: 40
             name: root.icon
             weight: mt.settingsIconWeight
-            // Outline like every other icon (Theme.iconFill); this one used to
-            // be forced solid, which filled in Bar, Desktop, Hyprland and About.
-            color: mt.colBorder
+            color: root.edgy ? root.accent : mt.colBorder
         }
 
         Rectangle {
@@ -101,10 +116,10 @@ Item {
             y: 44
             width: 22
             height: 22
-            radius: 11
-            color: ScrapbookTheme.accentPink
-            border.width: 3.5
-            border.color: mt.pLine
+            radius: root.edgy ? mt.settingsRadiusInner : 11
+            color: root.edgy ? mt.accentYellow : ScrapbookTheme.accentPink
+            border.width: root.edgy ? 2 : 3.5
+            border.color: root.edgy ? mt.hudSurface : mt.pLine
             antialiasing: true
         }
 
@@ -113,12 +128,13 @@ Item {
             y: key.capH - 108
             width: key.capW - 84
             elide: Text.ElideRight
-            text: root.label
+            text: root.edgy ? root.label.toUpperCase() : root.label
             color: key.ink
             font.family: mt.fontFamily
-            font.pixelSize: 40
+            font.pixelSize: root.edgy ? 34 : 40
             font.weight: Font.ExtraBold
             font.styleName: mt.fontStyleBold
+            font.letterSpacing: root.edgy ? 0.8 : 0
             lineHeight: 44
             lineHeightMode: Text.FixedHeight
         }
@@ -129,15 +145,33 @@ Item {
             width: key.capW - 84
             elide: Text.ElideRight
             text: root.subtitle
-            color: key.litP > 0.5 ? Qt.rgba(mt.colBorder.r, mt.colBorder.g, mt.colBorder.b, 0.78) : mt.pInkSub
-            font.family: mt.fontFamily
-            font.pixelSize: 19
-            font.weight: Font.DemiBold
+            color: root.edgy
+                ? (key.litP > 0.5 ? mt.accentYellow : mt.pInkSub)
+                : (key.litP > 0.5 ? Qt.rgba(mt.colBorder.r, mt.colBorder.g, mt.colBorder.b, 0.78) : mt.pInkSub)
+            font.family: root.edgy ? mt.monoFontFamily : mt.fontFamily
+            font.pixelSize: root.edgy ? 15 : 19
+            font.weight: root.edgy ? Font.Bold : Font.DemiBold
         }
 
-        // three stripes between the number and the name, in the next card colours
+        // Cyberdeck diagonal stripe telemetry bar (when root.edgy is true)
+        CyberStripe {
+            visible: root.edgy
+            x: key.capW - 136
+            y: 132
+            width: 104
+            height: 10
+            mode: "stripes"
+            fillRatio: key.litP > 0.5 ? 1.0 : 0.72
+            color: root.accent
+            altColor: mt.accentYellow
+            trackColor: Qt.rgba(mt.accentFrame.r, mt.accentFrame.g, mt.accentFrame.b, 0.28)
+            stripeWidth: 5
+            gap: 3
+        }
+
+        // three stripes between the number and the name, in the next card colours (SekaiPop mode)
         Repeater {
-            model: 3
+            model: root.edgy ? 0 : 3
 
             delegate: Slant {
                 required property int index

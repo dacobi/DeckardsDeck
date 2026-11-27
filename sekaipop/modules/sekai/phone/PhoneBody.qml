@@ -1350,16 +1350,37 @@ Item {
                         x: -10
                         width: parent.width + 10
                         height: parent.height
-                        radius: 8
+                        radius: root.edgy ? 8 : 24
                         color: root.bezelColor
-                        border.width: 1.5
+                        border.width: root.edgy ? 1.5 : 0
                         border.color: root.rimHighlight
                         antialiasing: true
                     }
 
+                    // Classic SekaiPop centered camera lens (when !root.edgy)
+                    Rectangle {
+                        visible: !root.edgy
+                        x: 12 + root.notchLead
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 22
+                        height: 22
+                        radius: 11
+                        color: root.hardwareDark
+                        antialiasing: true
+
+                        Rectangle {
+                            anchors.centerIn: parent
+                            width: 10
+                            height: 10
+                            radius: 5
+                            color: mt.phoneLens
+                            antialiasing: true
+                        }
+                    }
+
                     // Inner recessed vertical sensor bay
                     Rectangle {
-                        visible: !root.plain
+                        visible: !root.plain && root.edgy
                         x: 6 + root.notchLead
                         y: 8
                         width: 34
@@ -1373,7 +1394,7 @@ Item {
 
                     // 3 Diagnostic Status LEDs at the top of the landscape sensor bay
                     Column {
-                        visible: !root.plain
+                        visible: !root.plain && root.edgy
                         x: 19 + root.notchLead
                         y: 22
                         spacing: 7
@@ -1396,7 +1417,7 @@ Item {
 
                     // Vertical cooling vent slots
                     Column {
-                        visible: !root.plain
+                        visible: !root.plain && root.edgy
                         x: 16 + root.notchLead
                         y: 85
                         spacing: 5
@@ -1415,7 +1436,7 @@ Item {
 
                     // Voight-Kampff optical scanner lens at bottom of bay
                     Rectangle {
-                        visible: !root.plain
+                        visible: !root.plain && root.edgy
                         x: 12 + root.notchLead
                         y: 249 - 18 - 22
                         width: 22

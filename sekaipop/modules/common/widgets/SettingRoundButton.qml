@@ -24,6 +24,7 @@ Item {
 
     readonly property bool hovered: area.containsMouse
     readonly property bool lit: on || hovered
+    readonly property bool edgy: mt.settingsEdgy
 
     property real litP: lit ? 1 : 0
     Behavior on litP {
@@ -33,11 +34,13 @@ Item {
         }
     }
 
-    readonly property color inkNow: Qt.tint(mt.pInk, Qt.rgba(mt.colBorder.r, mt.colBorder.g, mt.colBorder.b, litP))
+    readonly property color inkNow: root.edgy
+        ? (root.litP > 0.5 ? mt.accentCyan : mt.pInk)
+        : Qt.tint(mt.pInk, Qt.rgba(mt.colBorder.r, mt.colBorder.g, mt.colBorder.b, litP))
 
     // The side of the square that, turned 45 degrees, is `size` across.
-    readonly property real side: size * 0.7
-    readonly property real shadowDx: 3 + 2 * litP
+    readonly property real side: root.edgy ? size * 0.82 : size * 0.7
+    readonly property real shadowDx: mt.settingsFlat ? 0 : (3 + 2 * litP)
     readonly property real shadowDy: 3 + 1 * litP
 
     implicitWidth: size + 5
@@ -48,8 +51,8 @@ Item {
         y: (root.size - root.side) / 2 + root.shadowDy
         width: root.side
         height: root.side
-        radius: root.side * 0.3
-        rotation: 45
+        radius: root.edgy ? mt.settingsRadiusInner : root.side * 0.3
+        rotation: root.edgy ? 0 : 45
         color: mt.pLineShadow
         antialiasing: true
     }
@@ -83,14 +86,19 @@ Item {
             anchors.centerIn: parent
             width: root.side
             height: root.side
-            radius: root.side * 0.3
-            rotation: 45
-            color: mt.pRingWhite
-            border.width: 3 + 1 * root.litP
-            border.color: mt.pLine
+            radius: root.edgy ? mt.settingsRadiusInner : root.side * 0.3
+            rotation: root.edgy ? 0 : 45
+            color: root.edgy
+                ? (root.litP > 0.05
+                    ? Qt.tint(mt.hudSurface, Qt.rgba(mt.accentCyan.r, mt.accentCyan.g, mt.accentCyan.b, 0.22 * root.litP))
+                    : mt.hudSurface)
+                : mt.pRingWhite
+            border.width: root.edgy ? 2 : (3 + 1 * root.litP)
+            border.color: root.edgy ? (root.litP > 0.5 ? mt.accentCyan : mt.accentFrame) : mt.pLine
             antialiasing: true
 
             Rectangle {
+                visible: !root.edgy
                 anchors.fill: parent
                 anchors.margins: outline.border.width + 3 * root.litP
                 radius: Math.max(0, outline.radius - anchors.margins)
@@ -99,6 +107,7 @@ Item {
             }
 
             Rectangle {
+                visible: !root.edgy
                 anchors.fill: parent
                 anchors.margins: outline.border.width + 3
                 radius: Math.max(0, outline.radius - anchors.margins)

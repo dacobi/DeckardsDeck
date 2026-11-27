@@ -155,11 +155,11 @@ SettingsPage {
     }
 
     SectionCard {
-        title: "Quick Panel Style"
+        title: "Cyberdeck"
 
         SettingChoice {
             label: "Style"
-            sublabel: "Follow the shell look, or pin Quick Panel to Cyberdeck or SekaiPop"
+            sublabel: "Follow the shell look, or pin the popup Cyberdeck to Cyberpunk or SekaiPop"
             current: {
                 const s = SettingsService.get("quick.style")
                 return (s === "cyberpunk" || s === "sekaipop") ? s : "auto"
@@ -185,7 +185,7 @@ SettingsPage {
 
         SettingChoice {
             label: "Phone wallpaper"
-            sublabel: "Backdrop behind the Quick Panel and Apps screen"
+            sublabel: "Backdrop behind the Cyberdeck and Apps screen"
             current: PanelImages.phoneMode
             options: [
                 { id: "off", label: "Off", icon: "hide_image" },
@@ -222,6 +222,36 @@ SettingsPage {
             detail: SettingsService.flag("panel.hotPeek") ? "Tip first" : "Full open"
             checked: SettingsService.flag("panel.hotPeek")
             onToggled: SettingsService.toggle("panel.hotPeek")
+        }
+    }
+
+    SectionCard {
+        title: "Settings Panel"
+
+        SettingChoice {
+            label: "Style"
+            sublabel: "Follow the shell look, or pin the rotate-out Settings panel to Cyberpunk or SekaiPop"
+            current: {
+                const s = SettingsService.get("settings.style")
+                return (s === "cyberpunk" || s === "sekaipop") ? s : "auto"
+            }
+            options: [
+                { id: "auto", label: "Auto", icon: "hdr_auto" },
+                { id: "cyberpunk", label: "Cyberpunk", icon: "terminal" },
+                { id: "sekaipop", label: "SekaiPop", icon: "auto_awesome" }
+            ]
+            onPicked: id => SettingsService.set("settings.style", id)
+        }
+
+        SettingChoice {
+            label: "Pose"
+            sublabel: "2.5D tilted landscape deck chassis or 2D flat front-on view"
+            current: SettingsService.flag("settings.flat") ? "flat" : "tilt"
+            options: [
+                { id: "flat", label: "2D Flat", icon: "crop_landscape" },
+                { id: "tilt", label: "2.5D Deck", icon: "view_in_ar" }
+            ]
+            onPicked: id => SettingsService.set("settings.flat", id === "flat")
         }
     }
 

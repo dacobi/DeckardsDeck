@@ -56,9 +56,11 @@ Item {
     }
 
     readonly property color accent: mt.attributeColors[slot % mt.attributeColors.length]
+    readonly property bool edgy: mt.settingsEdgy
 
     readonly property var iconFor: ({
         "look": "palette", "shell": "widgets", "bar": "toast", "desktop widgets": "dashboard",
+        "cyberdeck": "smartphone", "settings panel": "tune", "quick panel style": "smartphone",
         "time & alerts": "schedule", "quick panel": "instant_mix", "launcher & lock": "lock",
         "modules": "extension", "utility keys": "keyboard", "size": "aspect_ratio",
         "wallpaper": "wallpaper", "widgets": "dashboard", "dock": "dock_to_bottom", "effects": "auto_awesome",
@@ -73,11 +75,11 @@ Item {
 
     // hard shadow
     Rectangle {
-        x: mt.quickFlat ? 0 : 5
+        x: mt.settingsFlat ? 0 : 5
         y: 4
         width: card.width
         height: card.height
-        radius: 30
+        radius: root.edgy ? mt.settingsRadiusOuter : 30
         color: mt.pLineShadow
         antialiasing: true
     }
@@ -86,13 +88,38 @@ Item {
         id: card
         width: root.width - 5
         height: root.height - 4
-        radius: 30
-        color: mt.pSurface
-        border.width: 3
-        border.color: mt.pLine
+        radius: root.edgy ? mt.settingsRadiusOuter : 30
+        color: root.edgy ? mt.hudSurface : mt.pSurface
+        border.width: root.edgy ? 2 : 3
+        border.color: root.edgy ? mt.accentFrame : mt.pLine
         antialiasing: true
+        clip: root.edgy
+
+        CyberStripe {
+            visible: root.edgy
+            anchors.fill: parent
+            anchors.margins: 8
+            mode: "grid"
+            color: Qt.rgba(mt.accentCyan.r, mt.accentCyan.g, mt.accentCyan.b, 0.09)
+            gap: 18
+        }
+
+        // Cyberdeck corner accent bars on SectionCard
+        Rectangle {
+            visible: root.edgy
+            x: 0; y: 0; width: 22; height: 4
+            color: root.accent
+        }
+        Rectangle {
+            visible: root.edgy
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            width: 28; height: 4
+            color: mt.accentYellow
+        }
 
         DotField {
+            visible: !root.edgy
             x: card.width - width - 16
             y: card.height - height - 16
             width: 300
@@ -120,51 +147,69 @@ Item {
         y: -22
         capW: 18 + 36 + 10 + tagText.implicitWidth + 38
         capH: 44
+        edgy: root.edgy
         skew: 0.3 * mt.settingsLean
         radius: 15
         shadowBaseX: 3
         shadowBaseY: 3
-        flatShadow: mt.quickFlat
-        idleColor: root.accent
+        flatShadow: mt.settingsFlat
+        idleColor: root.edgy ? mt.hudSurface : root.accent
 
         Rectangle {
-            x: 40
+            x: root.edgy ? 16 : 40
             y: (plate.capH - height) / 2
             width: 28
             height: 28
-            radius: 8
-            rotation: 45
-            color: mt.colBg
-            border.width: 2.5
-            border.color: mt.pLine
+            radius: root.edgy ? mt.settingsRadiusInner : 8
+            rotation: root.edgy ? 0 : 45
+            color: root.edgy ? mt.hudSurface : mt.colBg
+            border.width: root.edgy ? 1.5 : 2.5
+            border.color: root.edgy ? root.accent : mt.pLine
             antialiasing: true
         }
 
         MaterialIcon {
-            x: 40 + 14 - 11
+            x: (root.edgy ? 16 : 40) + 14 - 11
             y: (plate.capH - height) / 2
             size: 22
             name: root.shownIcon
             weight: mt.settingsIconWeight
-            color: mt.colBorder
+            color: root.edgy ? root.accent : mt.colBorder
         }
 
         Text {
             id: tagText
-            x: 40 + 28 + 14
+            x: (root.edgy ? 16 : 40) + 28 + 14
             anchors.verticalCenter: parent.verticalCenter
-            text: root.title
-            color: mt.colBorder
+            text: root.edgy ? root.title.toUpperCase() : root.title
+            color: root.edgy ? root.accent : mt.colBorder
             font.family: mt.fontFamily
-            font.pixelSize: 21
+            font.pixelSize: root.edgy ? 19 : 21
             font.weight: Font.ExtraBold
             font.styleName: mt.fontStyleBold
+            font.letterSpacing: root.edgy ? 0.8 : 0
         }
     }
 
-    // Three stripes at the other end of the edge.
+    // Cyberdeck diagonal stripe telemetry bar at top-right of SectionCard
+    CyberStripe {
+        visible: root.edgy
+        x: card.width - 134
+        y: -7
+        width: 108
+        height: 10
+        mode: "stripes"
+        fillRatio: 0.78
+        color: root.accent
+        altColor: mt.accentYellow
+        trackColor: Qt.rgba(mt.accentFrame.r, mt.accentFrame.g, mt.accentFrame.b, 0.32)
+        stripeWidth: 5
+        gap: 3
+    }
+
+    // Three stripes at the other end of the edge (SekaiPop mode).
     Repeater {
-        model: 3
+        model: root.edgy ? 0 : 3
 
         delegate: Slant {
             required property int index

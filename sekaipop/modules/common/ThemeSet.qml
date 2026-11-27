@@ -46,7 +46,7 @@ QtObject {
         ? "sekaipop" : "cyberpunk"
     readonly property bool edgy: widgetStyle === "cyberpunk"
 
-    // Quick Panel style: "auto" (follows widgetStyle), "cyberpunk", or "sekaipop".
+    // Quick Panel (Cyberdeck) style: "auto" (follows widgetStyle), "cyberpunk", or "sekaipop".
     readonly property string quickStyleSetting: {
         const s = SettingsService.get("quick.style")
         return (s === "cyberpunk" || s === "sekaipop") ? s : "auto"
@@ -55,6 +55,18 @@ QtObject {
     readonly property bool quickEdgy: quickStyle === "cyberpunk"
     readonly property int quickRadiusOuter: quickEdgy ? 3 : 18
     readonly property int quickRadiusInner: quickEdgy ? 2 : 12
+
+    // Rotate-out Settings Panel style & 2D/2.5D pose:
+    readonly property string settingsStyleSetting: {
+        const s = SettingsService.get("settings.style")
+        return (s === "cyberpunk" || s === "sekaipop") ? s : "auto"
+    }
+    readonly property string settingsStyle: settingsStyleSetting === "auto" ? widgetStyle : settingsStyleSetting
+    readonly property bool settingsEdgy: settingsStyle === "cyberpunk"
+    readonly property bool settingsFlat: SettingsService.flag("settings.flat") || GameModeService.enabled
+    readonly property int settingsCornerRadius: settingsEdgy ? 6 : 24
+    readonly property int settingsRadiusOuter: settingsEdgy ? 3 : 20
+    readonly property int settingsRadiusInner: settingsEdgy ? 2 : 12
 
     // Light mode: how much of the theme's border colour stays in the border
     // and in the drop shadow (0 = white, 1 = the full navy). Lower = lighter.

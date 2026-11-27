@@ -71,8 +71,12 @@ Singleton {
         // ===== General =====
         // Widget & shell style: "cyberpunk" (angular cyberdeck default) | "sekaipop" (classic curvy look).
         "appearance.style": "cyberpunk",
-        // Quick Panel style override: "auto" (follows appearance.style) | "cyberpunk" | "sekaipop".
+        // Quick Panel (Cyberdeck) style override: "auto" (follows appearance.style) | "cyberpunk" | "sekaipop".
         "quick.style": "auto",
+        // Rotate-out Settings Panel style override: "auto" (follows appearance.style) | "cyberpunk" | "sekaipop".
+        "settings.style": "auto",
+        // Rotate-out Settings Panel drawn flat (2D) instead of the 2.5D tilted landscape pose.
+        "settings.flat": true,
         "time.use24h": false,
         "weather.fahrenheit": false,
         // How a new notification announces itself: phone (the Quick Panel's phone rises and buzzes; the default) | popups (a stack of cards in the corner).

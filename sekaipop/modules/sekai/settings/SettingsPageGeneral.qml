@@ -159,8 +159,8 @@ SettingsPage {
         title: "Quick Panel"
 
         SettingChoice {
-            label: "Quick Panel style"
-            sublabel: "Auto follows the main Look style, or override Quick Panel to Cyberpunk or SekaiPop"
+            label: "Cyberdeck style"
+            sublabel: "Auto follows the main Look style, or override the popup Cyberdeck to Cyberpunk or SekaiPop"
             current: {
                 const s = SettingsService.get("quick.style")
                 return (s === "cyberpunk" || s === "sekaipop") ? s : "auto"
@@ -174,7 +174,7 @@ SettingsPage {
         }
 
         SettingChoice {
-            label: "Phone pose"
+            label: "Cyberdeck pose"
             sublabel: "2D flat front-on view or 2.5D tilted deck chassis"
             current: SettingsService.flag("quick.flat") ? "flat" : "tilt"
             options: [
@@ -182,6 +182,32 @@ SettingsPage {
                 { id: "tilt", label: "2.5D Deck", icon: "view_in_ar" }
             ]
             onPicked: id => SettingsService.set("quick.flat", id === "flat")
+        }
+
+        SettingChoice {
+            label: "Settings Panel style"
+            sublabel: "Auto follows the main Look style, or override the rotate-out Settings panel to Cyberpunk or SekaiPop"
+            current: {
+                const s = SettingsService.get("settings.style")
+                return (s === "cyberpunk" || s === "sekaipop") ? s : "auto"
+            }
+            options: [
+                { id: "auto", label: "Auto", icon: "hdr_auto" },
+                { id: "cyberpunk", label: "Cyberpunk", icon: "terminal" },
+                { id: "sekaipop", label: "SekaiPop", icon: "auto_awesome" }
+            ]
+            onPicked: id => SettingsService.set("settings.style", id)
+        }
+
+        SettingChoice {
+            label: "Settings Panel pose"
+            sublabel: "2D flat front-on view or 2.5D tilted landscape deck chassis"
+            current: SettingsService.flag("settings.flat") ? "flat" : "tilt"
+            options: [
+                { id: "flat", label: "2D Flat", icon: "crop_landscape" },
+                { id: "tilt", label: "2.5D Deck", icon: "view_in_ar" }
+            ]
+            onPicked: id => SettingsService.set("settings.flat", id === "flat")
         }
 
         SettingToggle {

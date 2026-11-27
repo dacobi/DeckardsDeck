@@ -77,9 +77,11 @@ Item {
         y: Math.max(0, (root.height - height) / 2)
         width: root.width - root.labelWidth - (root.clearable ? 58 : 0)
         height: 46 + mt.shadowOffset
-        cornerRadius: 16
-        ringWidth: 4
-        fillColor: mt.pSurface
+        edgy: mt.settingsEdgy
+        cornerRadius: mt.settingsEdgy ? mt.settingsRadiusInner : 16
+        ringWidth: mt.settingsEdgy ? 3 : 4
+        borderColor: mt.settingsEdgy ? (input.activeFocus ? mt.accentCyan : mt.accentFrame) : "transparent"
+        fillColor: mt.settingsEdgy ? mt.hudSurface : mt.pSurface
 
         MouseArea {
             anchors.fill: parent
